@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Items>
+	<Weapons>
+		<Weapon ID="1001" Name="Sharp Stick" Price="0" Description="Pointy" Damage="5"/>
+		<Weapon ID="1002" Name="Rat Claws" Price="0" Description="Rat claws" Damage="3"/>
+	</Weapons>
+	<Consumables>
+		<Consumable ID="2001" Name="Bread" Price="10" Description="Cold hard bread"/>
+	</Consumables>
+	<MiscellaneousItems>
+		<Miscellaneous ID="9001" Name="Red Beetle" Price="2" Description="A ruby red beetle"/>
+		<Miscellaneous ID="9002" Name="Rat Claw" Price="1" Description="The claw of a large rat"/>
+		<Miscellaneous ID="9003" Name="Rat Bone" Price="1" Description="The bones of a large rat. Gross"/>
+		<Miscellaneous ID="9004" Name="Rat Skull" Price="1" Description="Why do you have this?"/>
+		<Miscellaneous ID="9005" Name="Rat Hide" Price="1" Description="Soft and warm"/>
+		<Miscellaneous ID="9006" Name="Rat Meat" Price="1" Description="Tastes like iguana"/>
+	</MiscellaneousItems>
+</Items>

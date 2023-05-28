@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Locations>
+	<Location X="0" Y="0" Name="Front Gate" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[A large sandstone gate, crowds of people. This is the front gate of the capital city of Purrjata. 
+		To the east through the gate is the Dust District.]]></Description>
+	</Location>
+	
+	<Location X="1" Y="0" Name="Dust District" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[The district of travelers, full of inns and traders.]]></Description>
+		<Monsters>
+			<Monster ID="1" Percent="100"/>
+		</Monsters>
+	</Location>
+	
+	<Location X="0" Y="1" Name="Stick District" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[The district of the stick people, beggars selling what little they can find.]]></Description>
+		<Monsters>
+			<Monster ID="2" Percent="100"/>
+		</Monsters>
+	</Location>
+	
+</Locations>
+
