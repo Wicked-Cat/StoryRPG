@@ -19,13 +19,14 @@
             <RowDefinition Height="225"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="750"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="600"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <!-- Main Window -->
         <Label Grid.Row="0" Grid.Column="0" Content="Main Window" Background="Beige"/>
         <!-- Game Messages -->
-        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Gainsboro" BorderThickness="2">
+        <Border Grid.Row="0" Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="2">
             <RichTextBox x:Name="GameMessages" Background="Beige" VerticalScrollBarVisibility="Auto"
                          >
                 <RichTextBox.Resources>
@@ -37,13 +38,13 @@
         </Border>
         
         <!-- Text Box -->
-        <Label Grid.Row="1" Grid.Column="0" Background="RosyBrown">
+        <Label Grid.Row="1" Grid.Column="1" Background="RosyBrown">
             <TextBox Width="750" Name="TextBoxInput" 
                      KeyDown="OnEnterPressed"/>
         </Label>
 
         <!-- Player Stats -->
-        <Grid Grid.Row="0" Grid.Column="1" Background="Beige">
+        <Grid Grid.Row="0" Grid.Column="0" Background="Beige">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -94,7 +95,7 @@
         </Grid>
         
         <!-- Inventory -->
-        <Grid Grid.Row="2" Grid.Column="1" Background="Black">
+        <Grid Grid.Row="0" Grid.Column="2" Background="Black">
             <DataGrid ItemsSource="{Binding CurrentPlayer.Inventory}"
                       AutoGenerateColumns="False"
                       HeadersVisibility="Column">
@@ -111,7 +112,7 @@
         </Grid>
         
         <!-- Location -->
-        <Border Grid.Row="2" Grid.Column="0" BorderBrush="Aqua" BorderThickness="2">
+        <Border Grid.Row="2" Grid.Column="1" BorderBrush="Aqua" BorderThickness="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>

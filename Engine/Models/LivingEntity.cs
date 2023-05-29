@@ -315,10 +315,6 @@ namespace Engine.Models
             }
             Cats -= amountOfCats;
         }
-        public void IsWeapon(int id)
-        {
-
-        }
 
         #region Event Functions
         private void RaiseOnKilledEvent()

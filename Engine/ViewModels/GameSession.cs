@@ -13,6 +13,7 @@ namespace Engine.ViewModels
     public class GameSession : BaseNotificationClass
     {
         public event EventHandler<GameMessageEventArgs> OnMessageRaised;
+        public event EventHandler<OnMonsterEventArgs> OnMonsterAppeared;
 
         #region Private Variables
         private Player _currentPlayer;
@@ -74,6 +75,7 @@ namespace Engine.ViewModels
                     RaiseMessage("");
                     RaiseMessage($"You see a {CurrentMonster.Name} here!");
                 }
+                MonsterWatch();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(HasMonster));            }
         }
@@ -109,6 +111,11 @@ namespace Engine.ViewModels
         {
             OnMessageRaised?.Invoke(this, new GameMessageEventArgs(message));
             //if there is anything subscribed to OnMessageRaised, pass in itself and GameMessageEventArgs with the message
+        }
+
+        public void MonsterWatch()
+        {
+            OnMonsterAppeared?.Invoke(this, new OnMonsterEventArgs(CurrentMonster));
         }
         #region Movement Functions
         public void MoveNorth()
@@ -204,7 +211,7 @@ namespace Engine.ViewModels
         {
             RaiseMessage(result);
         }
-        public void MainWindowToSession(string aString)
+        public void WindowToSession(string aString)
         {
             Do(aString);
         }
@@ -420,5 +427,6 @@ namespace Engine.ViewModels
         }
 
         #endregion
+
     }
 }
