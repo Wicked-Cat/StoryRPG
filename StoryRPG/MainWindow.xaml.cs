@@ -23,9 +23,9 @@ namespace StoryRPG
         {
             InitializeComponent();
             _gameSession.OnMessageRaised += OnGameMessageRaised;
-            _gameSession.OnMonsterAppeared += CombatWindowControl;
+            _gameSession.OnEncounterEngaged += CombatWindowControl;
 
-            DataContext = _gameSession; //built in propery for xaml files
+            DataContext = _gameSession; //built in propery for xaml f/iles
         }
 
         private void OnFight_DisplayComabtScreen(object sender, RoutedEventArgs e)
@@ -39,8 +39,11 @@ namespace StoryRPG
 
         private void CloseCombatScreen()
         {
-            CombatWindowOpen = false;
-            combatWindow.Close();
+            if (combatWindow != null)
+            {
+                CombatWindowOpen = false;
+                combatWindow.Close();
+            }
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -67,9 +70,9 @@ namespace StoryRPG
             }
         }
 
-        public void CombatWindowControl(object sender, OnMonsterEventArgs monster)
+        public void CombatWindowControl(object sender, OnEncounterEventArgs encounter)
         {
-            if (monster.Monster != null)
+            if (encounter.Encounter != null && _gameSession.AreAllMonstersDead == false)
             {
                 OnFight_DisplayComabtScreen(this, new RoutedEventArgs());
             }

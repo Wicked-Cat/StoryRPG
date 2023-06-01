@@ -5,7 +5,7 @@ namespace Engine.Models
 {
     public class Monster : LivingEntity
     {
-        private readonly List<MonsterLoot> _lootTable = new List<MonsterLoot>();
+        public readonly List<MonsterLoot> _lootTable = new List<MonsterLoot>();
         public int ID { get; }
         public Monster(int id, string name, string ancestry, string charClass, int maxHealth, int currentHealth, string description, int experience, int cats,
             int strength, int dexterity, int endurance, int perception, int sensitivity, int willpower, int appearance, 
@@ -31,6 +31,14 @@ namespace Engine.Models
             Monster monster = new Monster(ID, Name, Ancestry, CharClass, MaximumHealth, CurrentHealth, Description, Experience, Cats,
                 Strength, Dexterity, Endurance, Perception, Sensitivity, Willpower, Appearance, Presence, Empathy, 
                 EquippedWeapon);
+
+            foreach (ItemQuantity item in Inventory)
+            {
+                for (int i = 0; i < item.Quantity; i++)
+                {
+                    monster.AddItemToInventory(item.BaseItem);
+                }
+            }
 
             foreach (MonsterLoot item in _lootTable)
             {

@@ -35,7 +35,7 @@ namespace Engine.Models
         public string Name
         {
             get { return _name; }
-            private set
+            set
             {
                 _name = value;
                 OnPropertyChanged();
@@ -326,9 +326,5 @@ namespace Engine.Models
             OnActionPerformed?.Invoke(this, result);
         }
         #endregion
-        private void ReportResult(string result)
-        {
-            OnActionPerformed?.Invoke(this, result);
-        }
     }
 }

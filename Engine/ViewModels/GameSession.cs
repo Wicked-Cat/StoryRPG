@@ -13,12 +13,18 @@ namespace Engine.ViewModels
     public class GameSession : BaseNotificationClass
     {
         public event EventHandler<GameMessageEventArgs> OnMessageRaised;
-        public event EventHandler<OnMonsterEventArgs> OnMonsterAppeared;
+        public event EventHandler<OnEncounterEventArgs> OnEncounterEngaged;
 
         #region Private Variables
         private Player _currentPlayer;
         private Location _currentLocation;
         private Monster _currentMonster;
+        private Monster _currentMonster2;
+        private Monster _currentMonster3;
+        private Monster _currentMonster4;
+        private Monster _currentMonster5;
+        private Encounter _currentEncounter;
+        private List<Monster> _currentMonsters;
 
         #endregion
 
@@ -53,31 +59,38 @@ namespace Engine.ViewModels
                 OnPropertyChanged(nameof(HasSouthExit));
                 OnPropertyChanged(nameof(HasEastExit));
                 OnPropertyChanged(nameof(HasWestExit));
-                GetMonsterAtLocation();
+                GetEncounterAtLocation();
             }
         }
-        public Monster CurrentMonster
+        public Encounter CurrentEncounter
         {
-            get { return _currentMonster; }
+            get { return _currentEncounter; }
             set
             {
-                if (_currentMonster != null)
+                if ( _currentEncounter != null)
                 {
-                    _currentMonster.OnActionPerformed -= OnMonsterAction;
-                    _currentMonster.OnKilled -= OnCurrentMonsterKilled;
+                    foreach (Monster monster in CurrentEncounter.Monsters)
+                    {
+                        monster.OnActionPerformed -= OnMonsterAction;
+                        monster.OnKilled -= OnMonsterKilled;
+                    }
                 }
-
-                _currentMonster = value;
-                if (_currentMonster != null)
+                _currentEncounter = value;
+                if ( _currentEncounter != null)
                 {
-                    _currentMonster.OnActionPerformed += OnMonsterAction;
-                    _currentMonster.OnKilled += OnCurrentMonsterKilled;
                     RaiseMessage("");
-                    RaiseMessage($"You see a {CurrentMonster.Name} here!");
+                    RaiseMessage($"You encounter a {CurrentEncounter.Name}");
+                    foreach(Monster monster in CurrentEncounter.Monsters)
+                    {
+                        if(monster.HasAction == false)
+                        monster.OnActionPerformed += OnMonsterAction;
+                        monster.OnKilled += OnMonsterKilled;
+                    }
                 }
-                MonsterWatch();
+                EncounterWatch();
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(HasMonster));            }
+                OnPropertyChanged(nameof(HasEncounter));
+            }
         }
 
         public bool HasNorthExit => 
@@ -88,8 +101,8 @@ namespace Engine.ViewModels
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate + 1, CurrentLocation.YCoordinate) != null;
         public bool HasWestExit =>
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate - 1, CurrentLocation.YCoordinate) != null;
-
-        public bool HasMonster => CurrentMonster != null;
+        public bool HasEncounter => CurrentEncounter != null;
+        public bool AreAllMonstersDead => CurrentEncounter.Monsters.All(m => m.IsDead == true);
         #endregion
 
         #region Constructor
@@ -98,7 +111,7 @@ namespace Engine.ViewModels
             CurrentPlayer = new Player("Laughing Zebra", "Human", "Druid", 100, 100, "A Human", 0, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1);
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(2001));
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(9001));
-
+            
             CurrentPlayer.EquippedWeapon = (ItemFactory.CreateGameItem(1001));
 
             CurrentWorld = WorldFactory.CreateWorld();
@@ -113,10 +126,12 @@ namespace Engine.ViewModels
             //if there is anything subscribed to OnMessageRaised, pass in itself and GameMessageEventArgs with the message
         }
 
-        public void MonsterWatch()
+        public void EncounterWatch()
         {
-            OnMonsterAppeared?.Invoke(this, new OnMonsterEventArgs(CurrentMonster));
+            OnEncounterEngaged?.Invoke(this, new OnEncounterEventArgs(CurrentEncounter));
+
         }
+
         #region Movement Functions
         public void MoveNorth()
         {
@@ -164,13 +179,15 @@ namespace Engine.ViewModels
         }
         #endregion
 
-        #region Monster Functions
+        #region Encounter Functions
         public void OnMonsterAction(object sender, string result)
         {
             RaiseMessage(result);
         }
-        private void OnCurrentMonsterKilled(object sender, System.EventArgs eventArgs)
+        private void OnMonsterKilled(object sender, System.EventArgs eventArgs)
         {
+           
+            /*
             RaiseMessage("");
             RaiseMessage($"You defeated the {CurrentMonster.Name}!");
             RaiseMessage($"You receive {CurrentMonster.Experience} experience points.");
@@ -187,11 +204,36 @@ namespace Engine.ViewModels
                     CurrentPlayer.AddItemToInventory(gameItem.BaseItem);
                 }
             }
+            */
         }
-
-        private void GetMonsterAtLocation()
+        private void OnEncounterEnd()
         {
-            CurrentMonster = CurrentLocation.GetMonster();
+            foreach (Monster monster in CurrentEncounter.Monsters)
+            {
+                RaiseMessage("");
+                foreach (ItemQuantity item in monster.Inventory)
+                {
+                    RaiseMessage($"You recieve {item.Quantity} {item.BaseItem.Name}.");
+                    for (int i = 0; i < item.Quantity; i++)
+                    {
+                        CurrentPlayer.AddItemToInventory(item.BaseItem);
+                    }
+                }
+            }
+                    int totalXp = CurrentEncounter.Monsters.Sum(e => e.Experience);
+                    RaiseMessage($"You recieve {totalXp} experience.");
+                    CurrentPlayer.AddExperience(totalXp);
+
+                    int totalCats = CurrentEncounter.Monsters.Sum(e => e.Cats);
+                    if (totalCats > 0)
+                    {
+                        RaiseMessage($"You recieve {totalCats} cats.");
+                        CurrentPlayer.ReceiveGold(totalCats);
+                    }
+        }
+        private void GetEncounterAtLocation()
+        {
+            CurrentEncounter = CurrentLocation.GetEncounter();
         }
 
         #endregion
@@ -287,7 +329,7 @@ namespace Engine.ViewModels
                     CurrentPlayer.FullHeal();
                     break;
                 case "attack":
-                    Attack();
+                    Attack(noun);
                     break;
                 case "equip":
                     Equip(noun);
@@ -295,8 +337,21 @@ namespace Engine.ViewModels
                 case "unequip":
                     Unequip(noun);
                     break;
+                case "flee":
+                    Flee();
+                    break;
+                case "loot":
+                    foreach(Monster monster in CurrentEncounter.Monsters)
+                    {
+                        RaiseMessage($"Count: {monster.Inventory.Count()}");
+                        foreach(ItemQuantity item in monster.Inventory)
+                        {
+                            RaiseMessage($" {item.Quantity} {item.BaseItem.Name}");
+                        }
+                    }
+                    break;
                 default:
-                    //Text.WriteError("Not a valid command");
+                    RaiseMessage($"{aString} is not a valid command");
                     break;
             }
         }
@@ -349,9 +404,9 @@ namespace Engine.ViewModels
             }
         }
 
-        public void Attack()
+        public void Attack(string noun)
         {
-            if (CurrentMonster == null)
+            if (CurrentEncounter == null)
             {
                 RaiseMessage("There is nothing to attack");
                 return;
@@ -362,15 +417,36 @@ namespace Engine.ViewModels
                 return;
             }
 
-            CurrentPlayer.Attack(CurrentMonster);
-
-            if (CurrentMonster.IsDead)
+            Monster target = DetermineTarget(noun);
+            if (target != null)
             {
-                CurrentMonster = null;
-                return;
+                RaiseMessage("");
+                CurrentPlayer.Attack(target);
+                RaiseMessage("");
             }
             else
-                CurrentMonster.Attack(CurrentPlayer);
+            {
+                RaiseMessage($"{noun} is not a valid target");
+            }
+
+            foreach (Monster monster in CurrentEncounter.Monsters)
+            {
+                if (!monster.IsDead)
+                {
+                    monster.Attack(CurrentPlayer);
+                }
+            }
+            if (AreAllMonstersDead)
+            {
+                OnEncounterEnd();
+                CurrentEncounter = null;
+            }
+
+        }
+        public void Flee()
+        {
+            RaiseMessage($"You flee from the {CurrentEncounter.Name}");
+            CurrentEncounter = null;
         }
         public void Equip(string aString)
         {
@@ -424,6 +500,25 @@ namespace Engine.ViewModels
             {
                 RaiseMessage("There is nothing to unequip");
             }
+        }
+
+        #endregion
+
+        #region Combat Functions
+        private Monster DetermineTarget(string aString)
+        {
+            foreach(Monster monster in CurrentEncounter.Monsters)
+            {
+                if (aString == monster.Name.ToLower())
+                {
+                    return monster;
+                }
+            }
+            return null;
+        }
+        private void DetermineActors()
+        {
+
         }
 
         #endregion

@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Items>
 	<Weapons>
-		<Weapon ID="1001" Name="Sharp Stick" Price="0" Description="Pointy" Damage="5"/>
+		<Weapon ID="1001" Name="Sharp Stick" Price="0" Description="Pointy" Damage="100"/>
 		<Weapon ID="1002" Name="Rat Claws" Price="0" Description="Rat claws" Damage="3"/>
+		<Weapon ID="1003" Name="Lion Claws" Price="0" Description="Lion claws" Damage="15"/>
+		<Weapon ID="1004" Name="Dog Jaws" Price="0" Description="Dog Jaws" Damage="7"/>
 	</Weapons>
 	<Consumables>
 		<Consumable ID="2001" Name="Bread" Price="10" Description="Cold hard bread"/>
@@ -14,5 +16,10 @@
 		<Miscellaneous ID="9004" Name="Rat Skull" Price="1" Description="Why do you have this?"/>
 		<Miscellaneous ID="9005" Name="Rat Hide" Price="1" Description="Soft and warm"/>
 		<Miscellaneous ID="9006" Name="Rat Meat" Price="1" Description="Tastes like iguana"/>
+		<Miscellaneous ID="9007" Name="Lion Claw" Price="100" Description=""/>
+		<Miscellaneous ID="9008" Name="Lion Bone" Price="200" Description=""/>
+		<Miscellaneous ID="9009" Name="Lion Skull" Price="500" Description=""/>
+		<Miscellaneous ID="9010" Name="Lion Hide" Price="200" Description=""/>
+		<Miscellaneous ID="9011" Name="Lion Meat" Price="100" Description=""/>
 	</MiscellaneousItems>
 </Items>

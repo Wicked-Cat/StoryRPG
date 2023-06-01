@@ -7,16 +7,25 @@
 	
 	<Location X="1" Y="0" Name="Dust District" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The district of travelers, full of inns and traders.]]></Description>
-		<Monsters>
-			<Monster ID="1" Percent="100"/>
-		</Monsters>
 	</Location>
 	
 	<Location X="0" Y="1" Name="Stick District" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The district of the stick people, beggars selling what little they can find.]]></Description>
-		<Monsters>
-			<Monster ID="2" Percent="100"/>
-		</Monsters>
+		<Encounters>
+			<Encounter ID="1" Percent="100"/>
+		</Encounters>
+	</Location>
+	<Location X="-1" Y="0" Name="Savannah" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[The barren savannah, full of wild animamls]]></Description>
+		<Encounters>
+			<Encounter ID="2" Percent="100"/>
+		</Encounters>
+	</Location>
+	<Location X="0" Y="-1" Name="Animal Stew" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[steeew]]></Description>
+		<Encounters>
+			<Encounter ID="3" Percent="100"/>
+		</Encounters>
 	</Location>
 	
 </Locations>

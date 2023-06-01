@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Encounters>
+	<Encounter Name="Large Rat" ID="1">
+		<Monsters>
+			<Monster ID="1"/>
+		</Monsters>
+	</Encounter>
+	<Encounter Name="Lion Pride" ID="2">
+		<Monsters>
+			<Monster ID="2"/>
+			<Monster ID="2"/>
+			<Monster ID="2"/>
+			<Monster ID="2"/>
+		</Monsters>
+	</Encounter>
+	<Encounter Name="Animal Stew" ID="3">
+		<Monsters>
+			<Monster ID="1"/>
+			<Monster ID="2"/>
+			<Monster ID="3"/>
+			<Monster ID="3"/>
+			<Monster ID="1"/>
+		</Monsters>
+	</Encounter>
+</Encounters>

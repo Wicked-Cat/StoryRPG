@@ -1,9 +1,4 @@
 ﻿using Engine.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Engine.EventArgs
 {
@@ -14,8 +9,6 @@ namespace Engine.EventArgs
         public OnMonsterEventArgs(Monster monster)
         {
             Monster = monster;
-
-
         }
     }
 }

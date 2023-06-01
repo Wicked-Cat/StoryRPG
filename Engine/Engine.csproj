@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="GameData\Encounters.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="GameData\Items.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

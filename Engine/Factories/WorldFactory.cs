@@ -41,21 +41,21 @@ namespace Engine.Factories
                     node.AttributeAsString("Region"),
                     node.AttributeAsString("Province"),
                     node.AttributeAsString("Country"));
-                AddMonsters(location, node.SelectNodes("./Monsters/Monster"));
+                AddEncounters(location, node.SelectNodes("./Encounters/Encounter"));
                 world.AddLocation(location);
             }
         }
 
-        private static void AddMonsters(Location location, XmlNodeList monsters)
+        private static void AddEncounters(Location location, XmlNodeList encounter)
         {
-            if (monsters == null)
+            if (encounter == null)
             {
                 return;
             }
-            foreach (XmlNode monsterNode in monsters)
+            foreach (XmlNode encounterNode in encounter)
             {
-                location.AddMonster(monsterNode.AttributeAsInt("ID"),
-                    monsterNode.AttributeAsInt("Percent"));
+                location.AddEncounter(encounterNode.AttributeAsInt("ID"),
+                    encounterNode.AttributeAsInt("Percent"));
             }
         }
     }

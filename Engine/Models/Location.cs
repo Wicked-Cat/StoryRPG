@@ -17,7 +17,7 @@ namespace Engine.Models
         public string Region { get; set; }
         public string Province { get; set; }
         public string Country { get; set; }
-        public List<Encounters> EncountersHere { get; set; } = new List<Encounters>();
+        public List<EncounterPercent> EncountersHere { get; set; } = new List<EncounterPercent>();
 
         public Location(
             int xCoordinate,
@@ -37,54 +37,39 @@ namespace Engine.Models
             Country = country;
         }
 
-        public void AddMonster(int monsterID, int chanceOfEncounter)
+        public void AddEncounter(int encounterID, int chanceOfEncounter)
         {
-            if(EncountersHere.Exists(e => e.MonsterID == monsterID))
+            if(EncountersHere.Exists(e => e.EncounterID == encounterID))
             {
                 //if the monster has already been added to this locationn, overwrite chanceOfEncounter
-                EncountersHere.First(m => m.MonsterID == monsterID).ChanceOfEncounter = chanceOfEncounter;
+                EncountersHere.First(m => m.EncounterID == encounterID).ChanceOfEncounter = chanceOfEncounter;
             }
             else
             {
                 //if the monster is not already at this location, add it
-                EncountersHere.Add(new Encounters(monsterID, chanceOfEncounter));
+                EncountersHere.Add(new EncounterPercent(encounterID, chanceOfEncounter));
             }
         }
 
-        public Monster GetMonster()
+        public Encounter GetEncounter()
         {
             if (!EncountersHere.Any())
                 return null;
 
-            int rand = RandomNumberGenerator.NumberBetween(1, 100);
-            foreach (Encounters encounter in EncountersHere)
+            foreach (EncounterPercent encounter in EncountersHere)
             {
-                if(rand <= encounter.ChanceOfEncounter)
+                int rand = RandomNumberGenerator.NumberBetween(1, 100);
+                if (rand <= encounter.ChanceOfEncounter)
                 {
-                    return MonsterFactory.GetMonster(encounter.MonsterID);
+                    return EncounterFactory.GetEncounter(encounter.EncounterID);
+                }
+                else
+                {
+                    return null;
                 }
             }
-            //if there was a problem, return the last monster in the list
-            return MonsterFactory.GetMonster(EncountersHere.Last().MonsterID);
-
-            /*
-            int totalChances = EncountersHere.Sum(m => m.ChanceOfEncounter);
-            int randomNum = RandomNumberGenerator.NumberBetween(1, totalChances);
-            int runningTotal = 0;
-
-            foreach(Encounters encounters in EncountersHere)
-            {
-                runningTotal += encounters.ChanceOfEncounter;
-
-                if(randomNum <= runningTotal)
-                {
-                    return MonsterFactory.GetMonster(encounters.MonsterID);
-                }
-            }
-
-            //if there was a problem, return the last monster in the list
-            return MonsterFactory.GetMonster(EncountersHere.Last().MonsterID);
-            */
+            //if there was a problem, return the last encounter in the list
+            return EncounterFactory.GetEncounter(EncountersHere.Last().EncounterID);
         }
     }
 }
