@@ -18,7 +18,7 @@ namespace StoryRPG
        private readonly GameSession _gameSession = new GameSession();
         CombatWindow combatWindow;
 
-        bool CombatWindowOpen;
+        private bool IsCombatWindowOpen;
         public MainWindow()
         {
             InitializeComponent();
@@ -30,10 +30,10 @@ namespace StoryRPG
 
         private void OnFight_DisplayComabtScreen(object sender, RoutedEventArgs e)
         {
+            IsCombatWindowOpen = true;
             combatWindow = new CombatWindow();
             combatWindow.Owner = this;
             combatWindow.DataContext = _gameSession;
-            CombatWindowOpen = true;
             combatWindow.ShowDialog();
         }
 
@@ -41,18 +41,18 @@ namespace StoryRPG
         {
             if (combatWindow != null)
             {
-                CombatWindowOpen = false;
+                IsCombatWindowOpen = false;
                 combatWindow.Close();
             }
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
-            if (CombatWindowOpen)
+            if (IsCombatWindowOpen)
             {
-                combatWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
-                combatWindow.GameMessages.ScrollToEnd();
                 GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 GameMessages.ScrollToEnd();
+                combatWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
+                combatWindow.GameMessages.ScrollToEnd();
             }
             else
             {

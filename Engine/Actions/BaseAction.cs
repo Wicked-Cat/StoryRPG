@@ -7,6 +7,7 @@ namespace Engine.Actions
     {
         protected readonly Item _itemInUse;
         public event EventHandler<string> OnActionPerformed;
+        public event EventHandler<string> OnCombatActionPerformed;
 
         protected BaseAction(
             Item itemInUse)

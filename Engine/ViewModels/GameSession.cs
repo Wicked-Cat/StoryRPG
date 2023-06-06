@@ -82,7 +82,6 @@ namespace Engine.ViewModels
                     RaiseMessage($"You encounter a {CurrentEncounter.Name}");
                     foreach(Monster monster in CurrentEncounter.Monsters)
                     {
-                        if(monster.HasAction == false)
                         monster.OnActionPerformed += OnMonsterAction;
                         monster.OnKilled += OnMonsterKilled;
                     }
