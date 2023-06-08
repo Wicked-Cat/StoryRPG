@@ -17,6 +17,10 @@ namespace StoryRPG
     {
        private readonly GameSession _gameSession = new GameSession();
         CombatWindow combatWindow;
+        InventoryWindow inventoryWindow;
+        CharacterWindow characterWindow;
+        EquipmentWindow equipmentWindow;
+        TradeWindow tradeWindow;
 
         private bool IsCombatWindowOpen;
         public MainWindow()
@@ -24,26 +28,11 @@ namespace StoryRPG
             InitializeComponent();
             _gameSession.OnMessageRaised += OnGameMessageRaised;
             _gameSession.OnEncounterEngaged += CombatWindowControl;
+            _gameSession.OnInventoryOpened += OpenInventoryScreen;
+            _gameSession.OnCharacterOpened += OpenCharacterScreen;
+            _gameSession.OnTradeInitiated += TradeWindowControl;
 
             DataContext = _gameSession; //built in propery for xaml f/iles
-        }
-
-        private void OnFight_DisplayComabtScreen(object sender, RoutedEventArgs e)
-        {
-            IsCombatWindowOpen = true;
-            combatWindow = new CombatWindow();
-            combatWindow.Owner = this;
-            combatWindow.DataContext = _gameSession;
-            combatWindow.ShowDialog();
-        }
-
-        private void CloseCombatScreen()
-        {
-            if (combatWindow != null)
-            {
-                IsCombatWindowOpen = false;
-                combatWindow.Close();
-            }
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -70,18 +59,65 @@ namespace StoryRPG
             }
         }
 
-        public void CombatWindowControl(object sender, OnEncounterEventArgs encounter)
+
+        #region Window Control Functions
+
+        private void OpenInventoryScreen(object sender, EventArgs e)
+        {
+            inventoryWindow = new InventoryWindow();
+            inventoryWindow.Owner = this;
+            inventoryWindow.DataContext = _gameSession;
+            equipmentWindow = new EquipmentWindow();
+            equipmentWindow.Owner = this;
+            equipmentWindow.DataContext = _gameSession;
+            equipmentWindow.Show();
+            inventoryWindow.Show();
+        }
+        private void OpenCharacterScreen(object sender, EventArgs e)
+        {
+            characterWindow = new CharacterWindow();
+            characterWindow.Owner = this;
+            characterWindow.DataContext = _gameSession;
+            characterWindow.Show();
+        }
+        private void CombatWindowControl(object sender, OnEncounterEventArgs encounter)
         {
             if (encounter.Encounter != null && _gameSession.AreAllMonstersDead == false)
             {
-                OnFight_DisplayComabtScreen(this, new RoutedEventArgs());
+                IsCombatWindowOpen = true;
+                combatWindow = new CombatWindow();
+                combatWindow.Owner = this;
+                combatWindow.DataContext = _gameSession;
+                combatWindow.ShowDialog();
             }
             else
             {
-                CloseCombatScreen();
+                if (combatWindow != null)
+                {
+                    IsCombatWindowOpen = false;
+                    combatWindow.Close();
+                }
             }
         }
-
+        private void TradeWindowControl(object sender, OnTradeEventArgs trade)
+        {
+            if (_gameSession.CurrentMerchant != null)
+            {
+                tradeWindow = new TradeWindow();
+                tradeWindow.Owner = this;
+                tradeWindow.DataContext = _gameSession;
+                tradeWindow.ShowDialog();
+            }
+            else
+            {
+                if (tradeWindow != null)
+                {
+                    tradeWindow.Close();
+                }
+            }
+        }
+        
+        #endregion
 
     }
 }

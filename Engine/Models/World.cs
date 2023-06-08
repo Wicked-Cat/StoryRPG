@@ -15,11 +15,11 @@ namespace Engine.Models
             _locations.Add(location);
         }
 
-        public Location LocationAt(int x, int y)
+        public Location LocationAt(int x, int y, int z)
         {
             foreach(Location loc  in _locations)
             {
-                if(loc.XCoordinate == x  && loc.YCoordinate == y)
+                if(loc.XCoordinate == x  && loc.YCoordinate == y && loc.ZCoordinate == z)
                     return loc;
             }
             return null;

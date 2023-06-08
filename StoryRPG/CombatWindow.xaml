@@ -8,6 +8,8 @@
         d:DataContext="{d:DesignInstance viewModels:GameSession}"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        
         Title="CombatWindow" Height="800" Width="800">
     <Grid>
         <Grid.RowDefinitions>
@@ -53,6 +55,8 @@
                HorizontalAlignment="Center"
                Content="{Binding CurrentEncounter.Monsters[3].Name}"/>
         <Label Grid.Row="1" Grid.Column="4" Content="{Binding CurrentEncounter.Monsters[3].CurrentHealth}"/>
+        
+        
         <!-- Player Boxes -->
         <Border Grid.Row="5" Grid.RowSpan="2" Grid.Column="0" BorderBrush="Gainsboro" BorderThickness="2"/>
         <Label Grid.Row="5" Grid.Column="0"

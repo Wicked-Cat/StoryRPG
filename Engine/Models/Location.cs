@@ -12,16 +12,18 @@ namespace Engine.Models
     {
         public int XCoordinate { get; set; }
         public int YCoordinate { get; set; }
+        public int ZCoordinate { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Region { get; set; }
         public string Province { get; set; }
         public string Country { get; set; }
         public List<EncounterPercent> EncountersHere { get; set; } = new List<EncounterPercent>();
-
+        public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
         public Location(
             int xCoordinate,
             int yCoordinate,
+            int zCoordinate,
             string name,
             string description,
             string region,
@@ -30,6 +32,7 @@ namespace Engine.Models
         {
             XCoordinate = xCoordinate;
             YCoordinate = yCoordinate;
+            ZCoordinate = zCoordinate;
             Name = name;
             Description = description;
             Region = region;

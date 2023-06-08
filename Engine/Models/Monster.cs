@@ -32,16 +32,10 @@ namespace Engine.Models
                 Strength, Dexterity, Endurance, Perception, Sensitivity, Willpower, Appearance, Presence, Empathy, 
                 EquippedWeapon);
 
-            foreach (ItemQuantity item in Inventory)
-            {
-                for (int i = 0; i < item.Quantity; i++)
-                {
-                    monster.AddItemToInventory(item.BaseItem);
-                }
-            }
-
             foreach (MonsterLoot item in _lootTable)
             {
+                monster.AddItemToLootTable(item.ID, item.Percentage, item.Quantity); //clone loot table
+
                 //for every item, determine how many will be added to inventory
                 for (int i = 0; i < item.Quantity; i++)
                 {

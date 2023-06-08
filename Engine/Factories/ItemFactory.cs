@@ -5,6 +5,8 @@ using System.Xml;
 using Engine.Actions;
 using Engine.Models;
 using Engine.Shared;
+using Microsoft.VisualBasic;
+using static Engine.Models.Item;
 
 namespace Engine.Factories
 {
@@ -12,7 +14,7 @@ namespace Engine.Factories
     {
         private const string GAME_DATA_FILENAME = ".\\GameData\\Items.xml";
         private static readonly List<Item> _gameItems = new List<Item>();
-
+        public static List<ItemProperties> AllProperties = Enum.GetValues(typeof(ItemProperties)).Cast<ItemProperties>().ToList();
         static ItemFactory()
         {
             if (File.Exists(GAME_DATA_FILENAME))
@@ -20,9 +22,7 @@ namespace Engine.Factories
                 XmlDocument data = new XmlDocument();
                 data.LoadXml(File.ReadAllText(GAME_DATA_FILENAME));
 
-                LoadItemsFromNodes(data.SelectNodes("/Items/Weapons/Weapon"));
-                LoadItemsFromNodes(data.SelectNodes("/Items/Consumables/Consumable"));
-                LoadItemsFromNodes(data.SelectNodes("/Items/MiscellaneousItems/Miscellaneous"));
+                LoadItemsFromNodes(data.SelectNodes("/Items/Item"));
             }
             else
             {
@@ -34,21 +34,59 @@ namespace Engine.Factories
             return _gameItems.FirstOrDefault(item => item.ID == itemID)?.Clone();
         }
 
-        private static void BuildMiscItem(int id, string name, string description, int price)
+        private static void LoadItemsFromNodes(XmlNodeList nodes)
         {
-            _gameItems.Add(new Item(Item.ItemCategory.Miscellaneous, id, name, description, price));
+            if (nodes == null)
+                return;
+
+            foreach(XmlNode node in nodes)
+            {
+                XmlNodeList properties = node.SelectNodes("Properties/Property");
+                List<ItemProperties> toBeAdded = new List<ItemProperties>();
+                foreach(XmlNode property in properties)
+                {
+                    toBeAdded.Add(GetProperty(property.AttributeAsString("Name")));
+                }
+
+                //fill in item constructor using node data
+                Item gameItem =
+                    new Item(node.AttributeAsInt("ID"),
+                    node.AttributeAsString("Name"),
+                    node.AttributeAsString($"Description"),
+                    node.AttributeAsInt("Value"),
+                    toBeAdded.Contains(ItemProperties.Weapon), //IsUnique
+                    false); //IsEquipped
+
+                //add properties
+                foreach(ItemProperties property in toBeAdded)
+                {
+                    gameItem.Properties.Add(property);
+                }
+
+                //build action
+                if (gameItem.Properties.Contains(ItemProperties.Weapon))
+                {
+                    gameItem.Action = new AttackWithWeapon(gameItem, node.AttributeAsInt("Damage"));
+                }
+                else if (gameItem.Properties.Contains(ItemProperties.Weapon))
+                {
+                    gameItem.Action = new Heal(gameItem, 0);
+                }
+
+                _gameItems.Add(gameItem);
+            }
         }
-
-        private static void BuildWeapon(int id, string name, string description, int price, int damage)
+        public static ItemProperties GetProperty(string aString)
         {
-            Item weapon = new Item(Item.ItemCategory.Weapon, id, name, description, price, true);
-            weapon.Action = new AttackWithWeapon(weapon, damage);
-            _gameItems.Add(weapon);
-        }
-
-        private static void BuildConsumable(int id, string name, string description, int price, int toHeal)
-        {
-
+            bool match = Enum.IsDefined (typeof(ItemProperties), aString);
+            if (match)
+            {
+                return AllProperties.FirstOrDefault(p => p.ToString().ToLower() == aString.ToLower());
+            }
+            else
+            {
+                throw new Exception($"No such property {aString} exists.");
+            }
         }
         public static string ItemName(int itemID)
         {
@@ -65,51 +103,12 @@ namespace Engine.Factories
         {
             return _gameItems.FirstOrDefault(m => m.ID == id).Clone();
         }
-        private static void LoadItemsFromNodes(XmlNodeList nodes)
+        public static bool IsItem(string aString)
         {
-            if (nodes == null)
-                return;
+            if(_gameItems.Any(i => i.Name.ToLower() == aString.ToLower()))
+                return true;
 
-            foreach(XmlNode node in nodes)
-            {
-                //node names must match item categories 
-                Item.ItemCategory itemCategory = DetermineItemCategory(node.Name);
-
-                //fill in item constructor using node data
-                Item gameItem =
-                    new Item(itemCategory,
-                    node.AttributeAsInt("ID"),
-                    node.AttributeAsString("Name"),
-                    node.AttributeAsString("Description"),
-                    node.AttributeAsInt("Price"),
-                    itemCategory == Item.ItemCategory.Weapon, //if category is weapon, IsUnique == true
-                    false);
-
-                if(itemCategory == Item.ItemCategory.Weapon)
-                {
-                    gameItem.Action =
-                        new AttackWithWeapon(gameItem,
-                        node.AttributeAsInt("Damage"));
-                }
-                else if(itemCategory == Item.ItemCategory.Consumable)
-                {
-
-                }
-                _gameItems.Add(gameItem);
-            }
-        }
-
-        private static Item.ItemCategory DetermineItemCategory(string itemType)
-        {
-            switch (itemType)
-            {
-                case "Weapon":
-                    return Item.ItemCategory.Weapon;
-                case "Consumable":
-                    return Item.ItemCategory.Consumable;
-                default:
-                    return Item.ItemCategory.Miscellaneous;
-            }
+            return false;
         }
     }
 }

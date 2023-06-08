@@ -1,31 +1,46 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Locations>
-	<Location X="0" Y="0" Name="Front Gate" Region="Enjjata" Province="Enjja" Country="Purrjata">
+	<Location X="0" Y="0" Z="0" Name="Front Gate" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[A large sandstone gate, crowds of people. This is the front gate of the capital city of Purrjata. 
 		To the east through the gate is the Dust District.]]></Description>
 	</Location>
 	
-	<Location X="1" Y="0" Name="Dust District" Region="Enjjata" Province="Enjja" Country="Purrjata">
+	<Location X="1" Y="0" Z="0" Name="Dust District" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The district of travelers, full of inns and traders.]]></Description>
+		<Merchants>
+			<Merchant ID="1"/>
+		</Merchants>
 	</Location>
 	
-	<Location X="0" Y="1" Name="Stick District" Region="Enjjata" Province="Enjja" Country="Purrjata">
+	<Location X="0" Y="1" Z="0" Name="Stick District" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The district of the stick people, beggars selling what little they can find.]]></Description>
 		<Encounters>
 			<Encounter ID="1" Percent="100"/>
 		</Encounters>
 	</Location>
-	<Location X="-1" Y="0" Name="Savannah" Region="Enjjata" Province="Enjja" Country="Purrjata">
+	<Location X="-1" Y="0" Z="0" Name="Savannah" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The barren savannah, full of wild animamls]]></Description>
 		<Encounters>
 			<Encounter ID="2" Percent="100"/>
 		</Encounters>
 	</Location>
-	<Location X="0" Y="-1" Name="Animal Stew" Region="Enjjata" Province="Enjja" Country="Purrjata">
+	<Location X="0" Y="-1" Z="0" Name="Animal Stew" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[steeew]]></Description>
 		<Encounters>
 			<Encounter ID="3" Percent="100"/>
 		</Encounters>
+	</Location>
+	<Location X="1" Y="-1" Z="0" Name="Temple District" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[Tempes]]></Description>
+	</Location>
+	<Location X="1" Y="0" Z="-1" Name="Sewer LEvel" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[lkdjflsf]]></Description>
+	</Location>
+	<Location X="1" Y="0" Z="2" Name="Literally Heaven" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[you dead lol]]></Description>
+	</Location>
+	<Location X="1" Y="0" Z="1" Name="Ladder to Heaven" Region="Enjjata" Province="Enjja" Country="Purrjata">
+		<Description><![CDATA[weeeeeeee]]></Description>
 	</Location>
 	
 </Locations>

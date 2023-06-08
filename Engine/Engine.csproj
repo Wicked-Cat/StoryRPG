@@ -17,6 +17,9 @@
     <None Update="GameData\Locations.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="GameData\Merchants.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="GameData\Monsters.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

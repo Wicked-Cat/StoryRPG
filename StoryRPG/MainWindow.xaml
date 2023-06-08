@@ -8,6 +8,7 @@
         d:DataContext="{d:DesignInstance viewModels:GameSession}"
         mc:Ignorable="d"
         FontSize="11pt"
+        WindowStartupLocation="CenterScreen"
         Title="StoryRPG" Height="768" Width="1024">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
@@ -43,75 +44,6 @@
                      KeyDown="OnEnterPressed"/>
         </Label>
 
-        <!-- Player Stats -->
-        <Grid Grid.Row="0" Grid.Column="0" Background="Beige">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Name:"/>
-            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Content="{Binding CurrentPlayer.Name}"/>
-            <Label Grid.Row="1" Grid.Column="0" Content="{Binding CurrentPlayer.Ancestry}" />
-            <Label Grid.Row="1" Grid.Column="1" Content="{Binding CurrentPlayer.CharClass}"/>
-            <Label Grid.Row="2" Grid.Column="0" Content="Strength"/>
-            <Label Grid.Row="2" Grid.Column="1" Content="{Binding CurrentPlayer.Strength}"/>
-            <Label Grid.Row="3" Grid.Column="0" Content="Dexterity"/>
-            <Label Grid.Row="3" Grid.Column="1" Content="{Binding CurrentPlayer.Dexterity}"/>
-            <Label Grid.Row="4" Grid.Column="0" Content="Endurance"/>
-            <Label Grid.Row="4" Grid.Column="1" Content="{Binding CurrentPlayer.Endurance}"/>
-            <Label Grid.Row="5" Grid.Column="0" Content="Perception"/>
-            <Label Grid.Row="5" Grid.Column="1" Content="{Binding CurrentPlayer.Perception}"/>
-            <Label Grid.Row="6" Grid.Column="0" Content="Sensitivity"/>
-            <Label Grid.Row="6" Grid.Column="1" Content="{Binding CurrentPlayer.Sensitivity}"/>
-            <Label Grid.Row="7" Grid.Column="0" Content="Willpower"/>
-            <Label Grid.Row="7" Grid.Column="1" Content="{Binding CurrentPlayer.Willpower}"/>
-            <Label Grid.Row="8" Grid.Column="0" Content="Appearance"/>
-            <Label Grid.Row="8" Grid.Column="1" Content="{Binding CurrentPlayer.Appearance}"/>
-            <Label Grid.Row="9" Grid.Column="0" Content="Presence"/>
-            <Label Grid.Row="9" Grid.Column="1" Content="{Binding CurrentPlayer.Presence}"/>
-            <Label Grid.Row="10" Grid.Column="0" Content="Empathy"/>
-            <Label Grid.Row="10" Grid.Column="1" Content="{Binding CurrentPlayer.Empathy}"/>
-            <Label Grid.Row="11" Grid.Column="0" Content="Weapon:"/>
-            <Label Grid.Row="11" Grid.Column="1" Content="{Binding CurrentPlayer.EquippedWeapon.Name}"/>
-            <Label Grid.Row="12" Grid.Column="0" Content="Health:"/>
-            <Label Grid.Row="12" Grid.Column="1" Content="{Binding CurrentPlayer.CurrentHealth}"/>
-            
-        </Grid>
-        
-        <!-- Inventory -->
-        <Grid Grid.Row="0" Grid.Column="2" Background="Black">
-            <DataGrid ItemsSource="{Binding CurrentPlayer.Inventory}"
-                      AutoGenerateColumns="False"
-                      HeadersVisibility="Column">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name"
-                                        Binding="{Binding BaseItem.Name, Mode=OneWay}"
-                                        Width="*"/>
-                    <DataGridTextColumn Header="Qty"
-                                        Binding="{Binding Quantity, Mode=OneWay}"
-                                        IsReadOnly="True"
-                                        Width="Auto"/>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-        
         <!-- Location -->
         <Border Grid.Row="2" Grid.Column="1" BorderBrush="Aqua" BorderThickness="2">
             <Grid>
@@ -141,6 +73,34 @@
                 <TextBlock Grid.Row="2" Grid.Column="1"/>
             </Grid>
         </Border>
+        
+        <!-- Exits -->
+        <Grid Grid.Row="2" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="North: "/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Visibility="{Binding HasNorthExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding NorthExit}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="East: "/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Visibility="{Binding HasEastExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding EastExit}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="South: "/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Visibility="{Binding HasSouthExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding SouthExit}"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="West: "/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Visibility="{Binding HasWestExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding WestExit}"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Up: "/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Visibility="{Binding HasUpExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding UpExit}"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Down: "/>
+            <TextBlock Grid.Row="5" Grid.Column="1" Visibility="{Binding HasDownExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding DownExit}"/>
+        </Grid>
 
     </Grid>
 </Window>

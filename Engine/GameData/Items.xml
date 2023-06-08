@@ -1,25 +1,125 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Items>
-	<Weapons>
-		<Weapon ID="1001" Name="Sharp Stick" Price="0" Description="Pointy" Damage="100"/>
-		<Weapon ID="1002" Name="Rat Claws" Price="0" Description="Rat claws" Damage="3"/>
-		<Weapon ID="1003" Name="Lion Claws" Price="0" Description="Lion claws" Damage="15"/>
-		<Weapon ID="1004" Name="Dog Jaws" Price="0" Description="Dog Jaws" Damage="7"/>
-	</Weapons>
-	<Consumables>
-		<Consumable ID="2001" Name="Bread" Price="10" Description="Cold hard bread"/>
-	</Consumables>
-	<MiscellaneousItems>
-		<Miscellaneous ID="9001" Name="Red Beetle" Price="2" Description="A ruby red beetle"/>
-		<Miscellaneous ID="9002" Name="Rat Claw" Price="1" Description="The claw of a large rat"/>
-		<Miscellaneous ID="9003" Name="Rat Bone" Price="1" Description="The bones of a large rat. Gross"/>
-		<Miscellaneous ID="9004" Name="Rat Skull" Price="1" Description="Why do you have this?"/>
-		<Miscellaneous ID="9005" Name="Rat Hide" Price="1" Description="Soft and warm"/>
-		<Miscellaneous ID="9006" Name="Rat Meat" Price="1" Description="Tastes like iguana"/>
-		<Miscellaneous ID="9007" Name="Lion Claw" Price="100" Description=""/>
-		<Miscellaneous ID="9008" Name="Lion Bone" Price="200" Description=""/>
-		<Miscellaneous ID="9009" Name="Lion Skull" Price="500" Description=""/>
-		<Miscellaneous ID="9010" Name="Lion Hide" Price="200" Description=""/>
-		<Miscellaneous ID="9011" Name="Lion Meat" Price="100" Description=""/>
-	</MiscellaneousItems>
+	<Item ID="1001" Name="Sharp Stick" Value="0" Description="Pointy" Damage="100">
+		<Properties>
+			<Property Name="Weapon"/>
+			<Property Name="Wood"/>
+		</Properties>
+	</Item>
+
+	<Item ID="1002" Name="Rat Claws" Value="0" Description="Rat claws" Damage="3">
+		<Properties>
+			<Property Name="Weapon"/>
+			<Property Name="NaturalWeapon"/>
+		</Properties>
+	</Item>
+
+	<Item ID="1003" Name="Lion Claws" Value="0" Description="Lion claws" Damage="15">
+		<Properties>
+			<Property Name="Weapon"/>
+			<Property Name="NaturalWeapon"/>
+		</Properties>
+	</Item>
+
+	<Item ID="1004" Name="Dog Jaws" Value="0" Description="Dog Jaws" Damage="7">
+		<Properties>
+			<Property Name="Weapon"/>
+			<Property Name="NaturalWeapon"/>
+		</Properties>
+	</Item>
+
+	<Item ID="2001" Name="Bread" Value="10" Description="Cold hard bread">
+		<Properties>
+			<Property Name="Consumable"/>
+			<Property Name="Food"/>
+			<Property Name="Wheat"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9001" Name="Red Beetle" Value="2" Description="A ruby red beetle">
+		<Properties>
+			<Property Name="Insect"/>
+			<Propery Name="Resource"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9002" Name="Rat Claw" Value="1" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Bone"/>
+			<Property Name="Rodent"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9003" Name="Rat Bone" Value="1" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Bone"/>
+			<Property Name="Rodent"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9004" Name="Rat Skull" Value="1" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Bone"/>
+			<Property Name="Rodent"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9005" Name="Rat Hide" Value="1" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Hide"/>
+			<Property Name="Rodent"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9006" Name="Rat Meat" Value="1" Description="Tastes like iguana">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Meat"/>
+			<Property Name="Rodent"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9007" Name="Lion Claw" Value="100" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Bone"/>
+			<Property Name="Feline"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9008" Name="Lion Bone" Value="200" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Bone"/>
+			<Property Name="Feline"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9009" Name="Lion Skull" Value="500" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Bone"/>
+			<Property Name="Feline"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9010" Name="Lion Hide" Value="200" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Hide"/>
+			<Property Name="Feline"/>
+		</Properties>
+	</Item>
+
+	<Item ID="9011" Name="Lion Meat" Value="100" Description="">
+		<Properties>
+			<Property Name="Resource"/>
+			<Property Name="Meat"/>
+			<Property Name="Feline"/>
+		</Properties>
+	</Item>
 </Items>

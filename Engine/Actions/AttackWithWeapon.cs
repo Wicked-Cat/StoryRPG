@@ -13,7 +13,7 @@ namespace Engine.Actions
             int damage ) 
             : base ( itemInUse)
         {
-            if (itemInUse.Category != Item.ItemCategory.Weapon)
+            if (!itemInUse.Properties.Contains(Item.ItemProperties.Weapon))
             {
                 throw new ArgumentException($"{itemInUse.Name} is not a weapon");
             }

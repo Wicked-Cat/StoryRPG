@@ -276,6 +276,13 @@ namespace Engine.Models
             Item item = Inventory.FirstOrDefault(i => i.BaseItem.Name.ToLower() == aString.ToLower())?.BaseItem ?? default;
             return item;
         }
+        public bool HasItem(string aString)
+        {
+            if (Inventory.Any(i => i.BaseItem.Name.ToLower() == aString.ToLower()))
+                return true;
+
+            return false;
+        }
         #endregion
         
         public void Attack(LivingEntity target)

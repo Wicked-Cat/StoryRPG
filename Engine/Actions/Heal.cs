@@ -8,7 +8,7 @@ namespace Engine.Actions
 
         public Heal(Item itemInUse, int healthToHeal) : base(itemInUse)
         {
-            if(itemInUse.Category != Item.ItemCategory.Consumable)
+            if(!itemInUse.Properties.Contains(Item.ItemProperties.Consumable))
             {
                 throw new ArgumentException($"{itemInUse.Name} is not consumable");
             }

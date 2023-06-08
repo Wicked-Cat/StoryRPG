@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Merchants>
+	<Merchant ID="1" Name="Kep" Markup="10" Ancestry="Human">
+		<Description><![CDATA[A carpet merchant]]></Description>
+		<SellList>
+			<Item ID="2001" Quantity="7" Percentage="100"/>
+			<Item ID="9001" Quantity="3" Percentage="100"/>
+			<Item ID="9002" Quantity="20" Percentage="30"/>
+		</SellList>
+		<PreferredItems>
+			<Item Name="Food"/>
+			<Item Name="Rodent"/>
+		</PreferredItems>
+		<DislikedItems>
+			<Item Name="Weapon"/>
+		</DislikedItems>
+	</Merchant>
+	
+</Merchants>

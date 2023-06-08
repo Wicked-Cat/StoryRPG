@@ -36,12 +36,14 @@ namespace Engine.Factories
                 Location location =
                     new Location(node.AttributeAsInt("X"),
                     node.AttributeAsInt("Y"),
+                    node.AttributeAsInt("Z"),
                     node.AttributeAsString("Name"),
                     node.SelectSingleNode("./Description")?.InnerText ?? "",
                     node.AttributeAsString("Region"),
                     node.AttributeAsString("Province"),
                     node.AttributeAsString("Country"));
                 AddEncounters(location, node.SelectNodes("./Encounters/Encounter"));
+                AddMerchants(location, node.SelectNodes("./Merchants/Merchant"));
                 world.AddLocation(location);
             }
         }
@@ -56,6 +58,17 @@ namespace Engine.Factories
             {
                 location.AddEncounter(encounterNode.AttributeAsInt("ID"),
                     encounterNode.AttributeAsInt("Percent"));
+            }
+        }
+        private static void AddMerchants(Location location, XmlNodeList merchantsHere)
+        {
+            if (merchantsHere == null)
+            {
+                return;
+            }
+            foreach (XmlNode node in merchantsHere)
+            {
+                location.MerchantsHere.Add(MerchantFactory.GetMerchantByID(node.AttributeAsInt("ID")));
             }
         }
     }
