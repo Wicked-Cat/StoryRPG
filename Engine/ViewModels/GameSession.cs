@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine.Models;
 using Engine.Factories;
 using StoryRPG;
@@ -24,6 +22,8 @@ namespace Engine.ViewModels
         private Location _currentLocation;
         private Encounter _currentEncounter;
         private Merchant _currentMerchant;
+        private Time _currentTime;
+        private string _writtenTime;
 
         #endregion
 
@@ -110,6 +110,16 @@ namespace Engine.ViewModels
             }
         }
         public Trade CurrentTrade { get; set; }
+        public Time CurrentTime { get; set; }
+        public string WrittenTime 
+        {
+            get { return _writtenTime; }
+            set 
+            {
+                _writtenTime = value; 
+                OnPropertyChanged(); 
+            }
+        }
 
         public bool HasNorthExit => 
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate + 1, CurrentLocation.ZCoordinate) != null;
@@ -153,14 +163,57 @@ namespace Engine.ViewModels
             CurrentWorld = WorldFactory.CreateWorld();
 
             CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
+
+            CurrentTime = new Time(0, 1, 0, 1, Time.Days.Fridas, Time.Seasons.Spring, Time.Years.Catfish);
+            CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
+            WrittenTime = CurrentTime.WriteTime();
+
         }
 
         #endregion
+
         public void RaiseMessage(string message)
         {
             OnMessageRaised?.Invoke(this, new GameMessageEventArgs(message));
             //if there is anything subscribed to OnMessageRaised, pass in itself and GameMessageEventArgs with the message
         }
+        #region Time Fuctions
+        public void PassTime(int minutePassed)
+        {
+                for (int i = 0; i < minutePassed; i++)
+                {
+                    CurrentTime.Minute++;
+
+                    if (CurrentTime.Minute > 60)
+                    {
+                        CurrentTime.Minute = 0;
+                        CurrentTime.Hour++;
+                        CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
+
+                        if (CurrentTime.Hour > 24)
+                        {
+                            CurrentTime.Hour = 0;
+                            CurrentTime.Day++;
+                            CurrentTime.DaysPassed++;
+                            CurrentTime.CurrentDay = CurrentTime.ProgressDay(CurrentTime.CurrentDay);
+
+                            if (CurrentTime.Day > 30)
+                            {
+                                CurrentTime.Day = 0;
+                                CurrentTime.CurrentSeason = CurrentTime.ProgressSeason(CurrentTime.CurrentSeason);
+                               
+                                if (CurrentTime.CurrentSeason == Time.Seasons.Spring)
+                                {
+                                      CurrentTime.CurrentYear = CurrentTime.ProgressYear(CurrentTime.CurrentYear);
+                                }
+                            }
+                        }
+                    }
+                }
+
+            WrittenTime = CurrentTime.WriteTime();
+        }
+        #endregion
 
         #region Movement Functions
         public void MoveNorth()
@@ -559,6 +612,9 @@ namespace Engine.ViewModels
                     break;
                 case "trade":
                     Trade(noun);
+                    break;
+                case "passtime":
+                    PassTime(Convert.ToInt32(noun));
                     break;
                 default:
                     RaiseMessage($"You cannot do that now");

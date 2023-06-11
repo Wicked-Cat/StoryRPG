@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Engine.EventArgs;
+using System.Windows.Threading;
 using Engine.Models;
 using Engine.ViewModels;
 
@@ -23,6 +24,7 @@ namespace StoryRPG
         TradeWindow tradeWindow;
 
         private bool IsCombatWindowOpen;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -33,6 +35,11 @@ namespace StoryRPG
             _gameSession.OnTradeInitiated += TradeWindowControl;
 
             DataContext = _gameSession; //built in propery for xaml f/iles
+
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(5);
+            timer.Tick += timerTick;
+            timer.Start();
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -59,7 +66,10 @@ namespace StoryRPG
             }
         }
 
-
+        public void timerTick(object sender, EventArgs e)
+        {
+            _gameSession.PassTime(10);
+        }
         #region Window Control Functions
 
         private void OpenInventoryScreen(object sender, EventArgs e)
