@@ -34,16 +34,12 @@ namespace Engine.Models
             DislikedItems.RemoveAll(p => p == property);
             DislikedItems.Add(property);
         }
-        public void RefreshInventory()
-        {
 
-        }
-        public Merchant Clone()
+        public void RefreshStock(Merchant merchant)
         {
-            Merchant merchant =
-                new Merchant(ID, Name, Ancestry, Description, Markup);
+            merchant.Inventory.Clear();
 
-            foreach (MerchantStock stock in _sellList)
+            foreach (MerchantStock stock in merchant._sellList.ToList())
             {
                 merchant.AddItemToSellList(stock.ID, stock.Percentage, stock.Quantity); //clone the sell list
 
@@ -54,17 +50,33 @@ namespace Engine.Models
                         merchant.AddItemToInventory(ItemFactory.CreateGameItem(stock.ID));
                     }
                 }
+
+            }
+        }
+      
+        public Merchant Clone()
+        {
+            Merchant merchant =
+                new Merchant(ID, Name, Ancestry, Description, Markup);
+            
+            foreach (MerchantStock stock in _sellList)
+            {
+                merchant.AddItemToSellList(stock.ID, stock.Percentage, stock.Quantity); //clone the sell list
             }
 
+            foreach (ItemQuantity item in Inventory)
+            {
+                for (int i = 0; i < item.Quantity; i++)
+                         merchant.AddItemToInventory(item.BaseItem);
+            }
+            
             foreach (Item.ItemProperties properties in PreferredItems)
             {
                 merchant.AddItemToPreferredItems(properties);
-  
             }
             foreach (Item.ItemProperties properties in DislikedItems)
             {
                 merchant.AddItemToDislikedItems(properties);
-
             }
 
             return merchant;

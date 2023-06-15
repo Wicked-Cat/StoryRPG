@@ -6,6 +6,7 @@ using Engine.Models;
 using Engine.Factories;
 using StoryRPG;
 using System.Collections.ObjectModel;
+using Microsoft.VisualBasic;
 
 namespace Engine.ViewModels
 {
@@ -177,6 +178,7 @@ namespace Engine.ViewModels
             OnMessageRaised?.Invoke(this, new GameMessageEventArgs(message));
             //if there is anything subscribed to OnMessageRaised, pass in itself and GameMessageEventArgs with the message
         }
+
         #region Time Fuctions
         public void PassTime(int minutePassed)
         {
@@ -196,6 +198,7 @@ namespace Engine.ViewModels
                             CurrentTime.Day++;
                             CurrentTime.DaysPassed++;
                             CurrentTime.CurrentDay = CurrentTime.ProgressDay(CurrentTime.CurrentDay);
+                           MerchantFactory.GenerateMerchants();
 
                             if (CurrentTime.Day > 30)
                             {
@@ -534,6 +537,24 @@ namespace Engine.ViewModels
                             RaiseMessage($"{tag.ToString()}");
                     }
                     break;
+                case "merchant":
+                    foreach (Merchant merchant in CurrentLocation.MerchantsHere)
+                    {
+                        RaiseMessage($"Sell list {merchant._sellList.Count}");
+                        foreach (MerchantStock item in merchant._sellList)
+                            RaiseMessage($"Sell Quantity {item.Quantity}");
+                        RaiseMessage($"IInventory {merchant.Inventory.Count}");
+                        foreach (ItemQuantity item in merchant.Inventory)
+                            RaiseMessage($"Inventory Quantity {item.Quantity}");
+
+                    }
+                    RaiseMessage($"Current sell list {CurrentMerchant._sellList.Count}");
+                    foreach (MerchantStock item in CurrentMerchant._sellList)
+                        RaiseMessage($"{ItemFactory.GetItem(item.ID).Name} Q: {item.Quantity}");
+                    RaiseMessage($"IInventory {CurrentMerchant.Inventory.Count}");
+                    foreach (ItemQuantity item in CurrentMerchant.Inventory)
+                        RaiseMessage($"Inventory {item.BaseItem.Name} q:{item.Quantity}");
+                    break;
                 default:
                     RaiseMessage($"{aString} is not a valid command");
                     break;
@@ -615,6 +636,18 @@ namespace Engine.ViewModels
                     break;
                 case "passtime":
                     PassTime(Convert.ToInt32(noun));
+                    break;
+                case "merchant":
+                    foreach (Merchant merchant in CurrentLocation.MerchantsHere)
+                    {
+                        RaiseMessage($"Sell list {merchant._sellList.Count}");
+                        foreach (MerchantStock item in merchant._sellList)
+                            RaiseMessage($"{ItemFactory.GetItem(item.ID).Name} Q: {item.Quantity}");
+                        RaiseMessage($"IInventory {merchant.Inventory.Count}");
+                        foreach (ItemQuantity item in merchant.Inventory)
+                            RaiseMessage($"Inventory {item.BaseItem.Name} q:{item.Quantity}");
+
+                    }
                     break;
                 default:
                     RaiseMessage($"You cannot do that now");
@@ -1015,8 +1048,10 @@ namespace Engine.ViewModels
                         CurrentTrade.RemoveItemFromSellList(item.BaseItem);
                         CurrentMerchant.AddItemToInventory(item.BaseItem);
                     }
-
                 }
+                //merchant in current location that shares a name with currentmerchant gets currentmerchant inventory
+                MerchantFactory.UpdateMerchant(CurrentMerchant);
+                CurrentMerchant = null;
             }
             else
             {

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Engine.Factories;
+using System.Xml.Linq;
 using Engine.Models;
 using Engine.Shared;
 
@@ -10,6 +12,7 @@ namespace Engine.Factories
     {
         private const string GAME_DATA_FILENAME = ".\\GameData\\Merchants.xml";
         private static readonly List<Merchant> _merchants = new List<Merchant>();
+        private static List<Merchant> GeneratedMerchants = new List<Merchant>(); 
 
         static MerchantFactory()
         {
@@ -51,16 +54,41 @@ namespace Engine.Factories
                     merchant.AddItemToDislikedItems(ItemFactory.GetProperty(childNode.AttributeAsString("Name")));
                 }
 
+
                 _merchants.Add(merchant);
+                GenerateMerchants();
+
             }
         }
         public static Merchant GetMerchantByID(int id)
         {
-            return _merchants.FirstOrDefault(m => m.ID == id).Clone();
+            return GeneratedMerchants.FirstOrDefault(m => m.ID == id).Clone();
         }
         public static Merchant GetMerchant(string aString)
         {
-            return _merchants.FirstOrDefault(m => m.Name.ToLower() == aString.ToLower()).Clone();
+            return GeneratedMerchants.FirstOrDefault(m => m.Name.ToLower() == aString.ToLower()).Clone();
+        }
+
+        public static void GenerateMerchants()
+        {
+            GeneratedMerchants.Clear();
+            foreach (Merchant baseMerchant in _merchants)
+            {
+                Merchant merchant = baseMerchant.Clone();
+                merchant.RefreshStock(merchant);
+                GeneratedMerchants.Add(merchant);
+            }
+        }
+
+        public static void UpdateMerchant(Merchant merchant)
+        {
+            foreach(Merchant gMerchant in GeneratedMerchants)
+            {
+                if(gMerchant.ID == merchant.ID)
+                {
+                    gMerchant.Inventory = merchant.Inventory;
+                }
+            }
         }
     }
 }

@@ -35,11 +35,7 @@ namespace StoryRPG
             _gameSession.OnTradeInitiated += TradeWindowControl;
 
             DataContext = _gameSession; //built in propery for xaml f/iles
-
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(5);
-            timer.Tick += timerTick;
-            timer.Start();
+            CreateTimer();
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -66,10 +62,21 @@ namespace StoryRPG
             }
         }
 
-        public void timerTick(object sender, EventArgs e)
+        #region Timer Functions
+        private void CreateTimer()
+        {
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(5);
+            timer.Tick += TimerTick;
+            timer.Start();
+        }
+        private void TimerTick(object sender, EventArgs e)
         {
             _gameSession.PassTime(10);
         }
+
+        #endregion
+
         #region Window Control Functions
 
         private void OpenInventoryScreen(object sender, EventArgs e)
@@ -126,8 +133,9 @@ namespace StoryRPG
                 }
             }
         }
-        
+
         #endregion
+
 
     }
 }

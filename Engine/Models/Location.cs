@@ -20,6 +20,8 @@ namespace Engine.Models
         public string Country { get; set; }
         public List<EncounterPercent> EncountersHere { get; set; } = new List<EncounterPercent>();
         public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
+        public enum Wall { North, South, East, West, Up, Down };
+        public List<Wall> WallsHere { get; set; } = new List<Wall>();
         public Location(
             int xCoordinate,
             int yCoordinate,
@@ -52,6 +54,11 @@ namespace Engine.Models
                 //if the monster is not already at this location, add it
                 EncountersHere.Add(new EncounterPercent(encounterID, chanceOfEncounter));
             }
+        }
+
+        public void AddWall()
+        {
+
         }
 
         public Encounter GetEncounter()

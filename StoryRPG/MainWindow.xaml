@@ -12,6 +12,7 @@
         Title="StoryRPG" Height="768" Width="1024">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
+        <TimeOfDayToColourConverter x:Key="TimeOfDayToColour"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
