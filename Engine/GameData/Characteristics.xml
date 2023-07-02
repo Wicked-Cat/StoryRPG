@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Characteristics>
+	<Characteristic Name="Strength" Description="" />
+	<Characteristic Name="Dexterity" Description=""/>
+	<Characteristic Name="Endurance" Description=""/>
+	<Characteristic Name="Perception" Description=""/>
+	<Characteristic Name="Intuition" Description=""/>
+	<Characteristic Name="Willpower" Description=""/>
+	<Characteristic Name="Appearance" Description=""/>
+	<Characteristic Name="Presence" Description=""/>
+	<Characteristic Name="Luck" Description=""/>
+</Characteristics>

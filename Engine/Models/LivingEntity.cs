@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine.Factories;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,22 +12,15 @@ namespace Engine.Models
     {
         #region Backing Variables
         private string _name;
-        private string _ancestry;
+        private Ancestry _ancestry;
         private string _charClass;
         private string _description;
         private int _experience;
         private int _cats;
-        private int _strength;
-        private int _dexterity;
-        private int _endurance;
-        private int _perception;
-        private int _sensitivity;
-        private int _willpower;
-        private int _appearance;
-        private int _presence;
-        private int _empathy;
-        private int _maximumHealth;
-        private int _currentHealth;
+        private double _maximumHealth;
+        private double _currentHealth;
+        private ObservableCollection<Skill> _skills;
+        private ObservableCollection<Characteristic> _characteristics;
         private ObservableCollection<ItemQuantity> _inventory;
         private Item _equippedWeapon;
         #endregion
@@ -41,10 +35,10 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public string Ancestry
+        public Ancestry CurrentAncestry
         {
             get { return _ancestry; }
-            private set
+            set
             {
                 _ancestry = value;
                 OnPropertyChanged();
@@ -86,88 +80,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public int Strength
-        {
-            get { return _strength; }
-            set
-            {
-                _strength = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Dexterity
-        {
-            get { return _dexterity; }
-            set
-            {
-                _dexterity = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Endurance
-        {
-            get { return _endurance; }
-            set
-            {
-                _endurance = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Perception
-        {
-            get { return _perception; }
-            set
-            {
-                _perception = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Sensitivity
-        {
-            get { return _sensitivity; }
-            set
-            {
-                _sensitivity = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Willpower
-        {
-            get { return _willpower; }
-            set
-            {
-                _willpower = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Appearance
-        {
-            get { return _appearance; }
-            set
-            {
-                _appearance = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Presence
-        {
-            get { return _presence; }
-            set
-            {
-                _presence = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Empathy
-        {
-            get { return _empathy; }
-            set
-            {
-                _empathy = value;
-                OnPropertyChanged();
-            }
-        }
-        public int MaximumHealth
+        public double MaximumHealth
         {
             get { return _maximumHealth; }
             set
@@ -176,7 +89,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public int CurrentHealth
+        public double CurrentHealth
         {
             get { return _currentHealth; }
             set
@@ -185,7 +98,26 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
+        public List<Tag> Tags = new List<Tag>();
+        public ObservableCollection<Skill> Skills
+        {
+            get { return _skills; }
+            set
+            {
+                _skills = value;
+                OnPropertyChanged();
+            }
 
+        }
+        public ObservableCollection<Characteristic> Characteristics
+        {
+            get { return _characteristics; }
+            set
+            {
+                _characteristics = value;
+                OnPropertyChanged();
+            }
+        }
         public bool IsDead => CurrentHealth <= 0;
 
         public event EventHandler<string> OnActionPerformed;
@@ -217,27 +149,19 @@ namespace Engine.Models
 
         #region Constructor 
         protected LivingEntity(
-            string name, string ancestry, string charClass, int maxHealth, int currentHealth, string description, int experience, int cats,
-            int strength, int dexterity, int endurance, int perception, int sensitivity, int willpower, int appearance, int presence, int empathy)
+            string name, string charClass, double maxHealth, double currentHealth, 
+            string description, int experience, int cats)
         {
             Name = name;
-            Ancestry = ancestry;
             CharClass = charClass;
             MaximumHealth = maxHealth;
             CurrentHealth = currentHealth;
             Description = description;
             Experience = experience;
             Cats = cats;
-            Strength = strength;
-            Dexterity = dexterity;
-            Endurance = endurance;
-            Perception = perception;
-            Sensitivity = sensitivity;
-            Willpower = willpower;
-            Appearance = appearance;
-            Presence = presence;
-            Empathy = empathy;
             Inventory = new ObservableCollection<ItemQuantity>();
+            Characteristics = new ObservableCollection<Characteristic>();
+            Skills = new ObservableCollection<Skill>();
         }
         #endregion
 
@@ -255,6 +179,7 @@ namespace Engine.Models
 
                 Inventory.First(i => i.BaseItem.ID == item.ID).Quantity++;
             }
+            NumberInventory();
         }
         public void RemoveItemFromInventory(Item item)
         {
@@ -270,11 +195,11 @@ namespace Engine.Models
                     itemToRemove.Quantity--;
                 }
             }
+            NumberInventory();
         }
         public Item GetItemFromInventory(string aString)
         {
-            Item item = Inventory.FirstOrDefault(i => i.BaseItem.Name.ToLower() == aString.ToLower())?.BaseItem ?? default;
-            return item;
+            return Inventory.FirstOrDefault(i => i.BaseItem.Name.ToLower() == aString.ToLower())?.BaseItem ?? default;
         }
         public bool HasItem(string aString)
         {
@@ -283,13 +208,53 @@ namespace Engine.Models
 
             return false;
         }
+        public void NumberInventory()
+        {
+            int i = 1;
+            foreach (ItemQuantity item in Inventory)
+            {
+                item.BaseItem.InventoryNumber = i;
+                i++;
+            }
+        }
         #endregion
-        
+
+        #region Skill and Characteristic Functions
+        public void AddExperienceToSkill(string aString, int num)
+        {
+            foreach(Skill skill in Skills)
+            {
+                if(skill.Name.ToLower() == aString.ToLower())
+                {
+                    skill.AddExperience(num);
+                }
+            }
+        }
+        public void AddExperienceToCharacteristic(string aString, int num)
+        {
+            foreach(Characteristic characteristic in Characteristics)
+            {
+                if(characteristic.Name.ToLower() == aString.ToLower())
+                {
+                    characteristic.AddExperience(num);
+                }
+            }
+        }
+        public void GainSkill(string aString)
+        {
+            Skill skill = SkillFactory._skills.FirstOrDefault(s => s.Name.ToLower() == aString.ToLower());
+            if (skill != null)
+                 Skills.Add(skill);
+        }
+
+
+        #endregion
+
         public void Attack(LivingEntity target)
         {
             EquippedWeapon.PerformAction(this, target);
         }
-        public void TakeDamage(int hitPointsOfDamage)
+        public void TakeDamage(double hitPointsOfDamage)
         {
             CurrentHealth -= hitPointsOfDamage;
             if (IsDead)
@@ -323,6 +288,14 @@ namespace Engine.Models
             Cats -= amountOfCats;
         }
 
+        #region Creation Functions
+        public void AddRacialSkillBonus(Skill skill, double modifier)
+        {
+            skill.LevelMultiplier = modifier;
+        }
+
+        #endregion
+
         #region Event Functions
         private void RaiseOnKilledEvent()
         {
@@ -332,6 +305,17 @@ namespace Engine.Models
         {
             OnActionPerformed?.Invoke(this, result);
         }
+        #endregion
+
+        #region Helper Functions
+        public bool CheckSubscribers()
+        {
+            if (OnActionPerformed == null)
+                return true;
+
+            return false;
+        }
+
         #endregion
     }
 }

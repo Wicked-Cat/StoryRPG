@@ -8,6 +8,7 @@ using Engine.EventArgs;
 using System.Windows.Threading;
 using Engine.Models;
 using Engine.ViewModels;
+using System.Windows.Media;
 
 namespace StoryRPG
 {
@@ -22,6 +23,7 @@ namespace StoryRPG
         CharacterWindow characterWindow;
         EquipmentWindow equipmentWindow;
         TradeWindow tradeWindow;
+        SkillWindow skillWindow;
 
         private bool IsCombatWindowOpen;
 
@@ -36,6 +38,7 @@ namespace StoryRPG
 
             DataContext = _gameSession; //built in propery for xaml f/iles
             CreateTimer();
+            TimeOfDayToColourConverter();
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -62,6 +65,31 @@ namespace StoryRPG
             }
         }
 
+        private void TimeOfDayToColourConverter()
+        {
+            switch (_gameSession.CurrentTime.CurrentTimeOfDay.ToString().ToLower()) 
+            {
+                case "day":
+                    GameMessages.Background = new SolidColorBrush(Colors.Beige);
+                    GameMessages.Foreground = new SolidColorBrush(Colors.Black);
+                    break;
+                case "dusk":
+                    GameMessages.Background = new SolidColorBrush(Colors.LightYellow);
+                    GameMessages.Foreground = new SolidColorBrush(Colors.Black);
+                    break;
+                case "night":
+                    GameMessages.Background = new SolidColorBrush(Colors.DarkBlue);
+                    GameMessages.Foreground = new SolidColorBrush(Colors.White);
+                    break;
+                case "dawn":
+                    GameMessages.Background = new SolidColorBrush(Colors.Plum);
+                    GameMessages.Foreground = new SolidColorBrush(Colors.Black);
+                    break;
+            }
+
+
+        }
+
         #region Timer Functions
         private void CreateTimer()
         {
@@ -73,6 +101,7 @@ namespace StoryRPG
         private void TimerTick(object sender, EventArgs e)
         {
             _gameSession.PassTime(10);
+            TimeOfDayToColourConverter();
         }
 
         #endregion
@@ -96,6 +125,11 @@ namespace StoryRPG
             characterWindow.Owner = this;
             characterWindow.DataContext = _gameSession;
             characterWindow.Show();
+
+            skillWindow = new SkillWindow();
+            skillWindow.Owner = this;
+            skillWindow.DataContext = _gameSession;
+            skillWindow.Show();
         }
         private void CombatWindowControl(object sender, OnEncounterEventArgs encounter)
         {

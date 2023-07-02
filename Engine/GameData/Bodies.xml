@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Bodies>
+	<Body Name="Humanoid" Description="">
+		<Parts>
+			<BodyPart Name="Head"
+		</Parts>
+	</Body>
+</Bodies>

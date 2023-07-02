@@ -20,8 +20,10 @@ namespace Engine.Models
         public string Country { get; set; }
         public List<EncounterPercent> EncountersHere { get; set; } = new List<EncounterPercent>();
         public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
-        public enum Wall { North, South, East, West, Up, Down };
-        public List<Wall> WallsHere { get; set; } = new List<Wall>();
+        public enum LandSeaSky { Land, Sea, Sky }
+        public enum Depth { Underground, Aboveground }
+        public enum Shelter { Interior, Exterior }
+        public enum Exits { ImpassableWall, Climbable, Pickable }
         public Location(
             int xCoordinate,
             int yCoordinate,

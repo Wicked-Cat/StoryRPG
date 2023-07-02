@@ -8,10 +8,10 @@ namespace Engine.Actions
 
         public Heal(Item itemInUse, int healthToHeal) : base(itemInUse)
         {
-            if(!itemInUse.Properties.Contains(Item.ItemProperties.Consumable))
-            {
+            int match = itemInUse.Tags.FindIndex(t => t.Name.ToLower() == "Weapon".ToLower());
+            if (match < 0)
                 throw new ArgumentException($"{itemInUse.Name} is not consumable");
-            }
+            
 
             _healthToHeal = healthToHeal;
         }

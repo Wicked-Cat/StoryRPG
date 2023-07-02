@@ -1,7 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Monsters>
 	<Monster ID="1" Name="Rat" Ancestry="Rodent" Class="Beast" Description="A large rat" MaximumHealth="10" Experience="10" Cats="0"
-			 STR="10" DEX="30" END="25" PER="50" SEN="10" WIL="10" APP="20" PRE="20" EMP="40" WeaponID="1002">
+			 WeaponID="1002">
+		<Characteristics>
+			<Characteristic Name="Strength" Level="5"/>
+			<Characteristic Name="Dexterity" Level="30"/>
+			<Characteristic Name="Endurance" Level="25"/>
+			<Characteristic Name="Perception" Level="50"/>
+			<Characteristic Name="Sensitivity" Level="10"/>
+			<Characteristic Name="Willpower" Level="10"/>
+			<Characteristic Name="Appearance" Level="10"/>
+			<Characteristic Name="Presence" Level="20"/>
+			<Characteristic Name="Empathy" Level="20"/>
+		</Characteristics>
+		<Skills>
+			<Skill Name="Lock Picker" Level="90"/>
+		</Skills>
 		<LootItems>
 			<LootItem ID="9002" Percentage="50" Quantity="10"/>
 			<LootItem ID="9003" Percentage="50" Quantity="7"/>
@@ -10,8 +24,20 @@
 			<LootItem ID="9006" Percentage="20" Quantity="3"/>
 		</LootItems>
 	</Monster>
-	<Monster ID="2" Name="Lioness" Ancestry="Lion" Class="Beast" Description="A fierce lioness" MaximumHealth="100" Experience="100" Cats="0"
-			 STR="50" DEX="60" END="50" PER="50" SEN="40" WIL="40" APP="40" PRE="70" EMP="40" WeaponID="1003">
+	
+	<Monster ID="2" Name="Lioness" Ancestry="Feline" Class="Beast" Description="A fierce lioness" MaximumHealth="100" Experience="100" Cats="0"
+			 WeaponID="1002">
+		<Characteristics>
+			<Characteristic Name="Strength" Level="50"/>
+			<Characteristic Name="Dexterity" Level="30"/>
+			<Characteristic Name="Endurance" Level="25"/>
+			<Characteristic Name="Perception" Level="50"/>
+			<Characteristic Name="Sensitivity" Level="10"/>
+			<Characteristic Name="Willpower" Level="10"/>
+			<Characteristic Name="Appearance" Level="10"/>
+			<Characteristic Name="Presence" Level="20"/>
+			<Characteristic Name="Empathy" Level="20"/>
+		</Characteristics>
 		<LootItems>
 			<LootItem ID="9007" Percentage="100" Quantity="10"/>
 			<LootItem ID="9008" Percentage="100" Quantity="7"/>
@@ -20,8 +46,20 @@
 			<LootItem ID="9011" Percentage="100" Quantity="3"/>
 		</LootItems>
 	</Monster>
-	<Monster ID="3" Name="Wild Dog" Ancestry="Dog" Class="Beast" Description="A wild dog" MaximumHealth="30" Experience="30" Cats="0"
-			 STR="10" DEX="30" END="25" PER="50" SEN="10" WIL="10" APP="20" PRE="20" EMP="40" WeaponID="1004">
+	
+	<Monster ID="3" Name="Wild Dog" Ancestry="Canine" Class="Beast" Description="A wild dog" MaximumHealth="30" Experience="30" Cats="0"
+			 WeaponID="1002">
+		<Characteristics>
+			<Characteristic Name="Strength" Level="20"/>
+			<Characteristic Name="Dexterity" Level="30"/>
+			<Characteristic Name="Endurance" Level="25"/>
+			<Characteristic Name="Perception" Level="50"/>
+			<Characteristic Name="Sensitivity" Level="10"/>
+			<Characteristic Name="Willpower" Level="10"/>
+			<Characteristic Name="Appearance" Level="10"/>
+			<Characteristic Name="Presence" Level="20"/>
+			<Characteristic Name="Empathy" Level="20"/>
+		</Characteristics>
 	</Monster>
 	
 </Monsters>

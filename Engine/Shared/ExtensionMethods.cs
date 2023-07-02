@@ -19,5 +19,10 @@ namespace Engine.Shared
             return attribute.Value;
         }
 
+        public static double AttributeAsDouble(this XmlNode node, string attributeName)
+        {
+            return Convert.ToDouble(node.AttributeAsString(attributeName));
+        }
+
     }
 }

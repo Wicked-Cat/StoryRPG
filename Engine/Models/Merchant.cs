@@ -6,13 +6,13 @@ namespace Engine.Models
     {
         public int ID { get; }
 
-        public readonly List<Item.ItemProperties> PreferredItems = new List<Item.ItemProperties>();
-        public readonly List<Item.ItemProperties> DislikedItems = new List<Item.ItemProperties>();
+        public readonly List<Tag> PreferredItems = new List<Tag>();
+        public readonly List<Tag> DislikedItems = new List<Tag>();
         public int Markup { get; set; }
 
         public readonly List<MerchantStock> _sellList = new List<MerchantStock>();
-        public Merchant(int id, string name, string ancestry, string description, int markup) : base(name, ancestry, "Merchant", 10, 10, description, 10, 0,
-            1, 1, 1, 1, 1, 1, 1, 1, 1)
+        public Merchant(int id, string name,  string description, int markup) : 
+            base(name, "Merchant", 10, 10, description, 10, 0)
         {
             ID = id;
             Markup = markup;
@@ -24,12 +24,12 @@ namespace Engine.Models
             _sellList.RemoveAll(ml => ml.ID == id);
             _sellList.Add(new MerchantStock(id, percentage, quantity));
         }
-        public void AddItemToPreferredItems(Item.ItemProperties property)
+        public void AddItemToPreferredItems(Tag property)
         {
             PreferredItems.RemoveAll(p => p == property);
             PreferredItems.Add(property);
         }
-        public void AddItemToDislikedItems(Item.ItemProperties property)
+        public void AddItemToDislikedItems(Tag property)
         {
             DislikedItems.RemoveAll(p => p == property);
             DislikedItems.Add(property);
@@ -50,14 +50,13 @@ namespace Engine.Models
                         merchant.AddItemToInventory(ItemFactory.CreateGameItem(stock.ID));
                     }
                 }
-
             }
         }
       
         public Merchant Clone()
         {
             Merchant merchant =
-                new Merchant(ID, Name, Ancestry, Description, Markup);
+                new Merchant(ID, Name, Description, Markup);
             
             foreach (MerchantStock stock in _sellList)
             {
@@ -70,13 +69,21 @@ namespace Engine.Models
                          merchant.AddItemToInventory(item.BaseItem);
             }
             
-            foreach (Item.ItemProperties properties in PreferredItems)
+            foreach (Tag properties in PreferredItems)
             {
                 merchant.AddItemToPreferredItems(properties);
             }
-            foreach (Item.ItemProperties properties in DislikedItems)
+            foreach (Tag properties in DislikedItems)
             {
                 merchant.AddItemToDislikedItems(properties);
+            }
+
+            merchant.CurrentAncestry = CurrentAncestry;
+
+            //add skills
+            foreach(Skill skill in SkillFactory._skills)
+            {
+                merchant.Skills.Add(skill);
             }
 
             return merchant;

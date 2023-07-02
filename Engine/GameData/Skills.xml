@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Skills>
+	<Skill  Name="Lock Picker" Category="Survival" Description="Ability to pick locks"/>
+	<Skill  Name="Climber" Category="Survival" Description="Ability to climb"/>
+	<Skill  Name="Runner" Category="Survival" Description=""/>
+	<Skill  Name="Swimmer" Category="Survival" Description=""/>
+	<Skill  Name="Trapper" Category="Survival" Description=""/>
+	<Skill  Name="Ambusher" Category="Survival" Description=""/>
+	<Skill  Name="Tracker" Category="Survival" Description=""/>
+	<Skill  Name="Animal Husband" Category="Survival" Description=""/>
+
+	<Skill  Name="Fighter" Category="Combat" Description=""/>
+	<Skill  Name="Swordsman" Category="Combat" Description=""/>
+	<Skill  Name="Axeman" Category="Combat" Description=""/>
+	<Skill  Name="Marksman" Category="Combat" Description=""/>
+	<Skill  Name="Knife User" Category="Combat" Description=""/>
+	<Skill  Name="Martial Artist" Category="Combat" Description=""/>
+	<Skill  Name="Natural Weapons User" Category="Combat" Description=""/>
+	<Skill  Name="Dodger" Category="Combat" Description=""/>
+	<Skill  Name="Grappler" Category="Combat" Description=""/>
+
+	<Skill  Name="Shapeshifter" Category="Mystic" Description=""/>
+	<Skill  Name="Necromancer" Category="Mystic" Description=""/>
+	<Skill  Name="Trickster" Category="Mystic" Description=""/>
+	<Skill  Name="Hexer" Category="Mystic" Description=""/>
+	<Skill  Name="Healer" Category="Mystic" Description=""/>
+	<Skill  Name="Warder" Category="Mystic" Description=""/>
+	<Skill  Name="Empath" Category="Mystic" Description=""/>
+	<Skill  Name="Summoner" Category="Mystic" Description=""/>
+
+	<Skill  Name="Bureaucrat" Category="Social" Description=""/>
+	<Skill  Name="Conversationalist" Category="Social" Description=""/>
+	<Skill  Name="Leader" Category="Social" Description=""/>
+	<Skill  Name="Liar" Category="Social" Description=""/>
+	<Skill  Name="Musician" Category="Social" Description=""/>
+	<Skill  Name="Judge of Intent" Category="Social" Description=""/>
+	<Skill  Name="Negotiator" Category="Social" Description=""/>
+	<Skill Name="Gambler" Category="Social" Description=""/>
+
+	<Skill  Name="Miner" Category="Crafting" Description=""/>
+	<Skill  Name="Woodcutter" Category="Crafting" Description=""/>
+	<Skill  Name="Farmer" Category="Crafting" Description=""/>
+	<Skill  Name="Fisher" Category="Crafting" Description=""/>
+	<Skill  Name="Butcher" Category="Crafting" Description=""/>
+	<Skill  Name="Bowyer" Category="Crafting" Description=""/>
+	<Skill  Name="Carpenter" Category="Crafting" Description=""/>
+	<Skill  Name="Blacksmith" Category="Crafting" Description=""/>
+	<Skill  Name="Weaponsmith" Category="Crafting" Description=""/>
+	<Skill  Name="Armoursmith" Category="Crafting" Description=""/>
+	<Skill  Name="Cook" Category="Crafting" Description=""/>
+	<Skill  Name="Brewer" Category="Crafting" Description=""/>
+	<Skill  Name="Alchemist" Category="Crafting" Description=""/>
+	<Skill  Name="Tailor" Category="Crafting" Description=""/>
+	<Skill  Name="Sculptor" Category="Crafting" Description=""/>
+	<Skill  Name="Carver" Category="Crafting" Description=""/>
+
+	<Skill  Name="Vampire" Category="Curse" Description=""/>
+	<Skill  Name="Werebeast" Category="Curse" Description=""/>
+	<Skill  Name="Lich" Category="Curse" Description=""/>
+</Skills>

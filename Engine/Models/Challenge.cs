@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace Engine.Models
 {
-    public class Property
+    internal class Challenge
     {
-
     }
 }

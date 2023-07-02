@@ -4,15 +4,10 @@ namespace Engine.Models
 {
     public class Item : BaseNotificationClass
     {
-        private int _value {  get; set; }
-        public enum ItemProperties
-        {
-            Weapon, NaturalWeapon, Consumable, Miscellaneous, Resource, Food,
-            Wood, Bone, Meat, Hide, Wheat,
-            Rodent, Feline, Insect
-        }
+        private int _value;
+        private int inventoryNumber;
 
-        public List<ItemProperties> Properties = new List<ItemProperties>();
+        public List<Tag> Tags = new List<Tag>();
         public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
@@ -25,6 +20,15 @@ namespace Engine.Models
         public bool IsUnique { get; set; }
         public bool IsEquipped { get; set; }
         public IAction Action { get; set; }
+        public int InventoryNumber
+        {
+            get { return inventoryNumber; }
+            set 
+            { 
+                inventoryNumber = value; 
+                OnPropertyChanged();
+            }
+        }
 
         public Item(
             int id, string name, string description, int actualValue, bool isUnique, bool isEquipped = false, IAction action = null)
@@ -37,9 +41,9 @@ namespace Engine.Models
             IsEquipped = isEquipped;
             Action = action;
         }
-        public void AddProperty(ItemProperties property)
+        public void AddTags(Tag tag)
         {
-                Properties.Add(property);
+                Tags.Add(tag);
         }
         public void PerformAction(LivingEntity actor, LivingEntity target)
         {
@@ -50,9 +54,9 @@ namespace Engine.Models
         {
             Item item = new Item(ID, Name, Description, ActualValue, IsUnique, IsEquipped, Action);
 
-            foreach (ItemProperties properties in Properties)
+            foreach (Tag tag in Tags)
             {
-                item.Properties.Add(properties);
+                item.Tags.Add(tag);
             }
 
             return item;

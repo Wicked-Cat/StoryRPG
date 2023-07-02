@@ -13,7 +13,8 @@ namespace Engine.Actions
             int damage ) 
             : base ( itemInUse)
         {
-            if (!itemInUse.Properties.Contains(Item.ItemProperties.Weapon))
+            int match = itemInUse.Tags.FindIndex(t => t.Name.ToLower() == "Weapon".ToLower()); //it returns -1 if not found
+            if (match < 0)
             {
                 throw new ArgumentException($"{itemInUse.Name} is not a weapon");
             }
@@ -28,7 +29,8 @@ namespace Engine.Actions
 
         public void Execute(LivingEntity actor, LivingEntity target)
         {
-            int damage = _damage;
+            double strength = actor.Characteristics.FirstOrDefault(s => s.Name.ToLower() == "Strength".ToLower()).EffectiveLevel;
+            double damage = (_damage + strength);
             string actorName = (actor is Player) ? "You" : $"The {actor.Name.ToLower()}";
             string targetName = (target is Player) ? "you" : $"the {target.Name.ToLower()}";
             if (damage == 0)

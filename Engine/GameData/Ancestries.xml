@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Ancestries>
+	<Ancestry Id="1" Name="Malu" Description="">
+		<Multipliers>
+			<CharacteristicMultiplier Name="Strength" Value="0.9"/>
+			<CharacteristicMultipllier Name="Dexterity" Value="1.2"/>
+			<SkillMultiplier Name="Lock Picker" Value="3"/>
+		</Multipliers>
+		<Tags>
+			<Tag Name="Humanoid"/>
+		</Tags>
+	</Ancestry>
+	
+	<Ancestry Id="2" Name="Human" Description="">
+		<Multipliers>
+			<CharacteristicMultiplier Name="Endurance" Value="1.2"/>
+		</Multipliers>
+	<Tags>
+		<Tag Name="Humanoid"/>
+		<Tag Name="Omnivore"/>
+	</Tags>
+	</Ancestry>
+	
+	<Ancestry Id="3" Name="Rodent" Description=""/>
+
+	<Ancestry Id="4" Name="Feline" Description="">
+		<Multipliers>
+			<CharacteristicMultiplier Name="Strength" Value="1.5"/>
+			<CharacteristicMultiplier Name="Dexterity" Value="1.5"/>
+		</Multipliers>
+	</Ancestry>
+	
+	<Ancestry Id="5" Name="Canine" Description=""/>
+	
+</Ancestries>

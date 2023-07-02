@@ -5,6 +5,7 @@ using Engine.Factories;
 using System.Xml.Linq;
 using Engine.Models;
 using Engine.Shared;
+using System.Threading;
 
 namespace Engine.Factories
 {
@@ -35,7 +36,6 @@ namespace Engine.Factories
                 Merchant merchant =
                     new Merchant(node.AttributeAsInt("ID"),
                     node.AttributeAsString("Name"),
-                    node.AttributeAsString("Ancestry"),
                     node.SelectSingleNode("./Description")?.InnerText ?? "",
                     node.AttributeAsInt("Markup"));
 
@@ -47,13 +47,14 @@ namespace Engine.Factories
                 }
                 foreach (XmlNode childNode in node.SelectNodes("./PreferredItems/Item"))
                 {
-                    merchant.AddItemToPreferredItems(ItemFactory.GetProperty(childNode.AttributeAsString("Name")));
+                    merchant.AddItemToPreferredItems(ItemFactory.GetTag(childNode.AttributeAsString("Name")));
                 }
                 foreach (XmlNode childNode in node.SelectNodes("./DislikedItems/Item"))
                 {
-                    merchant.AddItemToDislikedItems(ItemFactory.GetProperty(childNode.AttributeAsString("Name")));
+                    merchant.AddItemToDislikedItems(ItemFactory.GetTag(childNode.AttributeAsString("Name")));
                 }
 
+                merchant.CurrentAncestry = AncestryFactory.GetAncestry(node.AttributeAsString("Ancestry"));
 
                 _merchants.Add(merchant);
                 GenerateMerchants();

@@ -14,7 +14,6 @@ namespace Engine.Factories
     {
         private const string GAME_DATA_FILENAME = ".\\GameData\\Items.xml";
         private static readonly List<Item> _gameItems = new List<Item>();
-        public static List<ItemProperties> AllProperties = Enum.GetValues(typeof(ItemProperties)).Cast<ItemProperties>().ToList();
         static ItemFactory()
         {
             if (File.Exists(GAME_DATA_FILENAME))
@@ -42,10 +41,10 @@ namespace Engine.Factories
             foreach(XmlNode node in nodes)
             {
                 XmlNodeList properties = node.SelectNodes("Properties/Property");
-                List<ItemProperties> toBeAdded = new List<ItemProperties>();
+                List<Tag> toBeAdded = new List<Tag>();
                 foreach(XmlNode property in properties)
                 {
-                    toBeAdded.Add(GetProperty(property.AttributeAsString("Name")));
+                    toBeAdded.Add(GetTag(property.AttributeAsString("Name")));
                 }
 
                 //fill in item constructor using node data
@@ -54,21 +53,21 @@ namespace Engine.Factories
                     node.AttributeAsString("Name"),
                     node.AttributeAsString($"Description"),
                     node.AttributeAsInt("Value"),
-                    toBeAdded.Contains(ItemProperties.Weapon), //IsUnique
+                    toBeAdded.Contains(GetTag("Weapon")), //IsUnique
                     false); //IsEquipped
 
                 //add properties
-                foreach(ItemProperties property in toBeAdded)
+                foreach(Tag property in toBeAdded)
                 {
-                    gameItem.Properties.Add(property);
+                    gameItem.Tags.Add(property);
                 }
 
                 //build action
-                if (gameItem.Properties.Contains(ItemProperties.Weapon))
+                if (gameItem.Tags.Contains(GetTag("Weapon")))
                 {
                     gameItem.Action = new AttackWithWeapon(gameItem, node.AttributeAsInt("Damage"));
                 }
-                else if (gameItem.Properties.Contains(ItemProperties.Weapon))
+                else if (gameItem.Tags.Contains(GetTag("Weapon")))
                 {
                     gameItem.Action = new Heal(gameItem, 0);
                 }
@@ -76,17 +75,11 @@ namespace Engine.Factories
                 _gameItems.Add(gameItem);
             }
         }
-        public static ItemProperties GetProperty(string aString)
+        public static Tag GetTag(string aString)
         {
-            bool match = Enum.IsDefined (typeof(ItemProperties), aString);
-            if (match)
-            {
-                return AllProperties.FirstOrDefault(p => p.ToString().ToLower() == aString.ToLower());
-            }
-            else
-            {
-                throw new Exception($"No such property {aString} exists.");
-            }
+          
+            return TagFactory._tags.FirstOrDefault(t => t.Name.ToLower() == aString.ToLower());
+
         }
         public static string ItemName(int itemID)
         {

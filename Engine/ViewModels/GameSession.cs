@@ -7,6 +7,8 @@ using Engine.Factories;
 using StoryRPG;
 using System.Collections.ObjectModel;
 using Microsoft.VisualBasic;
+using System.Threading;
+using System.Xml.Linq;
 
 namespace Engine.ViewModels
 {
@@ -75,14 +77,6 @@ namespace Engine.ViewModels
             get { return _currentEncounter; }
             set
             {
-                if ( _currentEncounter != null)
-                {
-                    foreach (Monster monster in CurrentEncounter.Monsters)
-                    {
-                        monster.OnActionPerformed -= OnMonsterAction;
-                        monster.OnKilled -= OnMonsterKilled;
-                    }
-                }
                 _currentEncounter = value;
                 if ( _currentEncounter != null)
                 {
@@ -90,8 +84,11 @@ namespace Engine.ViewModels
                     RaiseMessage($"You encounter a {CurrentEncounter.Name}");
                     foreach(Monster monster in CurrentEncounter.Monsters)
                     {
-                        monster.OnActionPerformed += OnMonsterAction;
-                        monster.OnKilled += OnMonsterKilled;
+                        if (monster.CheckSubscribers())
+                        {
+                            monster.OnActionPerformed += OnMonsterAction;
+                            //monster.OnKilled += OnMonsterKilled;
+                        }
                     }
                 }
                 EncounterWatch();
@@ -154,10 +151,39 @@ namespace Engine.ViewModels
         #region Constructor
         public GameSession()
         {
-            CurrentPlayer = new Player("Laughing Zebra", "Human", "Druid", 100, 100, "A Human", 0, 10, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+            CurrentPlayer = new Player("Laughing Zebra", "Druid", 100, 100, "A Human", 0, 10);
+            CurrentPlayer.CurrentAncestry = AncestryFactory.GetAncestry("Human");
+            foreach (Tag tag in AncestryFactory.GetAncestry("Human").Tags.ToList())
+                CurrentPlayer.CurrentAncestry.Tags.Add(tag);
+
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(2001));
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(9001));
-            
+            CurrentPlayer.NumberInventory();
+
+            foreach (Skill skill in SkillFactory._skills)
+            {
+                if (skill.Category != Skill.Categories.Curse)
+                {
+                    CurrentPlayer.Skills.Add(skill.Clone());
+                }
+            }
+            foreach (Characteristic attribute in CharacteristicFactory._characteristics)
+                CurrentPlayer.Characteristics.Add(attribute.Clone());
+
+
+            foreach (Multiplier multiplier in CurrentPlayer.CurrentAncestry.Multipliers)
+            {
+                switch (multiplier.MultiplierType)
+                {
+                    case Multiplier.Type.Skill:
+                        CurrentPlayer.Skills.FirstOrDefault(s => s.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
+                        break;
+                    case Multiplier.Type.Characteristic:
+                        CurrentPlayer.Characteristics.FirstOrDefault(c => c.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
+                        break;
+                }
+            }
+
             CurrentPlayer.EquippedWeapon = (ItemFactory.CreateGameItem(1001));
 
             CurrentTrade = new Trade(new ObservableCollection<ItemQuantity>(), new ObservableCollection<ItemQuantity>());
@@ -299,7 +325,7 @@ namespace Engine.ViewModels
         }
         private void OnMonsterKilled(object sender, System.EventArgs eventArgs)
         {
-           
+            RaiseMessage("deaad");
             /*
             RaiseMessage("");
             RaiseMessage($"You defeated the {CurrentMonster.Name}!");
@@ -438,6 +464,27 @@ namespace Engine.ViewModels
                 case "flee":
                     Flee();
                     break;
+                case "ancestry":
+                    if (CurrentEncounter != null)
+                        foreach (Monster monster in CurrentEncounter.Monsters)
+                        {
+                            RaiseMessage($"{monster.CurrentAncestry.Name}");
+                            foreach (Tag tag in monster.Tags)
+                            {
+                                RaiseMessage($"{tag.Name}");
+                            }
+                            foreach(Characteristic characteristic in monster.Characteristics)
+                            {
+                                RaiseMessage($"{characteristic.Name} : EL{characteristic.EffectiveLevel} : M{characteristic.LevelMultiplier}");
+                            }
+                        }
+                    break;
+                case "encounter":
+                    if (CurrentEncounter != null)
+                        RaiseMessage("true");
+                    else
+                        RaiseMessage("false");
+                    break;
                 default:
                     RaiseMessage($"You cannot do that now");
                     break;
@@ -530,11 +577,11 @@ namespace Engine.ViewModels
                     if (CurrentMerchant != null)
                     {
                         RaiseMessage("Preferred");
-                        foreach (Item.ItemProperties tag in CurrentMerchant.PreferredItems)
-                            RaiseMessage($"{tag.ToString()}");
+                        foreach (Tag tag in CurrentMerchant.PreferredItems)
+                            RaiseMessage($"{tag.Name}");
                         RaiseMessage("Disliked");
-                        foreach (Item.ItemProperties tag in CurrentMerchant.DislikedItems)
-                            RaiseMessage($"{tag.ToString()}");
+                        foreach (Tag tag in CurrentMerchant.DislikedItems)
+                            RaiseMessage($"{tag.Name}");
                     }
                     break;
                 case "merchant":
@@ -566,6 +613,9 @@ namespace Engine.ViewModels
                 return;
             string verb = "";
             string noun = "";
+            string splitNoun = "";
+            string tempNum = "";
+            int num = 1;
 
             if (aString.IndexOf(" ") > 0)
             {
@@ -576,6 +626,22 @@ namespace Engine.ViewModels
             else
             {
                 verb = aString.ToLower();
+            }
+
+            if (noun.IndexOf(" ") > 0) //split to be acted on into two sections and determine if a number is involved
+            {
+                string[] temp = noun.Split(new char[] { ' ' }, 2);
+                tempNum = temp[0].ToLower();
+                splitNoun = temp[1].ToLower();
+                bool parse = int.TryParse(tempNum, out num); //try to convert tempNum to int, it it doesn't convert, num = 1
+                if (!parse)
+                {
+                    num = 1; //if number doesn't parse, noun remains the same
+                }
+                else
+                {
+                    noun = splitNoun.ToLower(); //if the number has parsed, noun becomes splitNoun
+                }
             }
 
             switch (verb)
@@ -634,19 +700,22 @@ namespace Engine.ViewModels
                 case "trade":
                     Trade(noun);
                     break;
-                case "passtime":
+                case "wait":
                     PassTime(Convert.ToInt32(noun));
                     break;
-                case "merchant":
-                    foreach (Merchant merchant in CurrentLocation.MerchantsHere)
+                case "increaseskill":
+                    CurrentPlayer.AddExperienceToSkill(noun, num);
+                        break;
+                case "increasechar":
+                    CurrentPlayer.AddExperienceToCharacteristic(noun, num);
+                    break;
+                case "monsterchar":
+                    foreach(Monster monster in MonsterFactory._monsters)
                     {
-                        RaiseMessage($"Sell list {merchant._sellList.Count}");
-                        foreach (MerchantStock item in merchant._sellList)
-                            RaiseMessage($"{ItemFactory.GetItem(item.ID).Name} Q: {item.Quantity}");
-                        RaiseMessage($"IInventory {merchant.Inventory.Count}");
-                        foreach (ItemQuantity item in merchant.Inventory)
-                            RaiseMessage($"Inventory {item.BaseItem.Name} q:{item.Quantity}");
-
+                        foreach(Characteristic characteristic in monster.Characteristics)
+                        {
+                            RaiseMessage($"{characteristic.Name} : {characteristic.BaseLevel} : {characteristic.EffectiveLevel}");
+                        }
                     }
                     break;
                 default:
@@ -658,23 +727,52 @@ namespace Engine.ViewModels
 
         public void Examine(string aString)
         {
-            int itemID = ItemFactory.ItemID(aString);
-            Item item = ItemFactory.GetItem(itemID);
+            Item item = CurrentPlayer.FindNumberedItem(aString);
+            bool IsItem = false;
+            bool IsMonster = false;
 
-            if (item != null)
+            if(item != default)
             {
-                string tags = "";
-                foreach (Item.ItemProperties properties in item.Properties)
-                {
-                    tags += $", {properties.ToString()}";
-                }
-
-                 RaiseMessage($"{item.Description}, TV: {item.Value}\n Tags: {tags}");
-                RaiseMessage("");
+                IsItem = CurrentPlayer.HasItem(item.Name);
             }
-            else
+            if(CurrentEncounter != null)
+                 IsMonster = CurrentEncounter.Monsters.Any(m => m.Name.ToLower() == aString.ToLower());
+
+            if (IsItem)
             {
-                RaiseMessage($"{aString} is not a valid item");
+                if (item != default)
+                {
+                    string tags = "";
+                    foreach (Tag tag in item.Tags)
+                    {
+                        tags += $" {tag.Name}";
+                    }
+
+                    RaiseMessage($"{item.Description}, TV: {item.ActualValue}\n Tags: {tags}");
+                    RaiseMessage("");
+                }
+                else
+                {
+                    RaiseMessage($"{aString} is not a valid item");
+                }
+            }
+            else if (IsMonster)
+            {
+                Monster monster = CurrentEncounter.Monsters.FirstOrDefault(m => m.Name.ToLower() == aString.ToLower());
+                if(monster != default)
+                {
+                    RaiseMessage($"{monster.Description}");
+                    RaiseMessage("Tags:");
+                    foreach (Tag tag in monster.Tags)
+                    {
+                        RaiseMessage($"{tag.Name}");
+                    }
+                    RaiseMessage("Stats:");
+                    foreach(Characteristic characteristic in monster.Characteristics)
+                    {
+                        RaiseMessage($"{characteristic.Name} BL{characteristic.BaseLevel} : EL {characteristic.EffectiveLevel}");
+                    }
+                }
             }
         }
         public void Pickup(string aString)
@@ -690,7 +788,7 @@ namespace Engine.ViewModels
         }
         public void Drop(string aString)
         {
-            Item item = CurrentPlayer.GetItemFromInventory(aString);
+            Item item = CurrentPlayer.FindNumberedItem(aString);
             if (item != default)
             {
                 RaiseMessage($"You drop the {item.Name}.");
@@ -700,7 +798,6 @@ namespace Engine.ViewModels
             {
                 RaiseMessage($"You do not have any {aString}.");
             }
-
         }
         public void MoveTo(string aString)
         {
@@ -738,36 +835,36 @@ namespace Engine.ViewModels
         }
         public void Equip(string aString)
         {
-            foreach(ItemQuantity item in CurrentPlayer.Inventory.ToList())
+            Item item = CurrentPlayer.FindNumberedItem(aString);
+
+            if (item != default)
             {
-                if(item.BaseItem.Name.ToLower() == aString.ToLower())
+                int match = item.Tags.FindIndex(t => t.Name.ToLower() == "Weapon".ToLower());
+                if (match >= 0)
                 {
-                    if (item.BaseItem.Properties.Contains(Item.ItemProperties.Weapon))
+                    if (CurrentPlayer.EquippedWeapon != null)
                     {
-                        if (CurrentPlayer.EquippedWeapon != null)
-                        {
-                            CurrentPlayer.RemoveItemFromInventory(item.BaseItem);
-                            CurrentPlayer.AddItemToInventory(CurrentPlayer.EquippedWeapon);
+                        CurrentPlayer.RemoveItemFromInventory(item);
+                        CurrentPlayer.AddItemToInventory(CurrentPlayer.EquippedWeapon);
 
-                            CurrentPlayer.EquippedWeapon = item.BaseItem;
-                            return;
-                        }
-                        else
-                        {
-                            CurrentPlayer.RemoveItemFromInventory(item.BaseItem);
-
-                            CurrentPlayer.EquippedWeapon = item.BaseItem;
-                            return;
-                        }
+                        CurrentPlayer.EquippedWeapon = item;
                     }
                     else
                     {
-                        RaiseMessage($"{aString} is not a weapon.");
-                        return;
+                        CurrentPlayer.RemoveItemFromInventory(item);
+
+                        CurrentPlayer.EquippedWeapon = item;
                     }
                 }
+                else
+                {
+                    RaiseMessage($"{item.Name} is not a weapon.");
+                }
             }
-            RaiseMessage($"You do not have a {aString}.");
+            else
+            {
+                RaiseMessage($"You do not have a {aString}");
+            }
         }
         public void Unequip(string aString)
         {
@@ -830,17 +927,23 @@ namespace Engine.ViewModels
                 return;
             }
 
-            foreach (Monster monster in CurrentEncounter.Monsters)
+            if (CurrentEncounter != null)
             {
-                if (!monster.IsDead)
+                foreach (Monster monster in CurrentEncounter.Monsters)
                 {
-                    monster.Attack(CurrentPlayer);
+                    if (!monster.IsDead)
+                    {
+                        monster.Attack(CurrentPlayer);
+                    }
                 }
             }
-            if (AreAllMonstersDead)
+            if (CurrentEncounter != null)
             {
-                OnEncounterEnd();
-                CurrentEncounter = null;
+                if (AreAllMonstersDead)
+                {
+                    OnEncounterEnd();
+                    CurrentEncounter = null;
+                }
             }
 
         }
@@ -1105,8 +1208,8 @@ namespace Engine.ViewModels
 
                 foreach(ItemQuantity item in CurrentPlayer.Inventory)
                 {
-                    bool PreferredMatch = item.BaseItem.Properties.Any(i => CurrentMerchant.PreferredItems.Any(p => p == i));
-                    bool DislikedMatch = item.BaseItem.Properties.Any(i => CurrentMerchant.DislikedItems.Any(d => d == i));
+                    bool PreferredMatch = item.BaseItem.Tags.Any(i => CurrentMerchant.PreferredItems.Any(p => p == i));
+                    bool DislikedMatch = item.BaseItem.Tags.Any(i => CurrentMerchant.DislikedItems.Any(d => d == i));
 
                     if (PreferredMatch)
                     {

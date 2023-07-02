@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Tags>
+	<Tag Name="Iron" Type="Metal">
+		<TagProperties>
+			<TagProperty Name="Strength" Type="Characteristic" Flat="10" Modifier="1"/>
+		</TagProperties>
+	</Tag>
+	<Tag Name="Wood" Type="None"/>
+	<Tag Name="Oak" Type="Wood"/>
+	<Tag Name="Weapon" Type="None"/>
+	<Tag Name="NaturalWeapon" Type="None"/>
+	<Tag Name="Consumable" Type="None"/>
+	<Tag Name="Food" Type="None"/>
+	<Tag Name="Wheat" Type="Grain"/>
+	<Tag Name="Resource" Type="None"/>
+	<Tag Name="Insect" Type="None"/>
+	<Tag Name="Bone" Type="Bone"/>
+	<Tag Name="Meat" Type="Meat"/>
+	<Tag Name="Hide" Type="Hide"/>
+	<Tag Name="Rodent" Type="None"/>
+	<Tag Name="Feline" Type="None"/>
+</Tags>

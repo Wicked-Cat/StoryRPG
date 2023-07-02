@@ -15,44 +15,18 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Name:"/>
-            <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Content="{Binding CurrentPlayer.Name}"/>
-            <Label Grid.Row="1" Grid.Column="0" Content="{Binding CurrentPlayer.Ancestry}" />
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Content="{Binding CurrentPlayer.Name}"/>
+            <Label Grid.Row="1" Grid.Column="0" Content="{Binding CurrentPlayer.CurrentAncestry.Name}" />
             <Label Grid.Row="1" Grid.Column="1" Content="{Binding CurrentPlayer.CharClass}"/>
-            <Label Grid.Row="2" Grid.Column="0" Content="Strength"/>
-            <Label Grid.Row="2" Grid.Column="1" Content="{Binding CurrentPlayer.Strength}"/>
-            <Label Grid.Row="3" Grid.Column="0" Content="Dexterity"/>
-            <Label Grid.Row="3" Grid.Column="1" Content="{Binding CurrentPlayer.Dexterity}"/>
-            <Label Grid.Row="4" Grid.Column="0" Content="Endurance"/>
-            <Label Grid.Row="4" Grid.Column="1" Content="{Binding CurrentPlayer.Endurance}"/>
-            <Label Grid.Row="5" Grid.Column="0" Content="Perception"/>
-            <Label Grid.Row="5" Grid.Column="1" Content="{Binding CurrentPlayer.Perception}"/>
-            <Label Grid.Row="6" Grid.Column="0" Content="Sensitivity"/>
-            <Label Grid.Row="6" Grid.Column="1" Content="{Binding CurrentPlayer.Sensitivity}"/>
-            <Label Grid.Row="7" Grid.Column="0" Content="Willpower"/>
-            <Label Grid.Row="7" Grid.Column="1" Content="{Binding CurrentPlayer.Willpower}"/>
-            <Label Grid.Row="8" Grid.Column="0" Content="Appearance"/>
-            <Label Grid.Row="8" Grid.Column="1" Content="{Binding CurrentPlayer.Appearance}"/>
-            <Label Grid.Row="9" Grid.Column="0" Content="Presence"/>
-            <Label Grid.Row="9" Grid.Column="1" Content="{Binding CurrentPlayer.Presence}"/>
-            <Label Grid.Row="10" Grid.Column="0" Content="Health:"/>
-            <Label Grid.Row="10" Grid.Column="1" Content="{Binding CurrentPlayer.CurrentHealth}"/>
+
+            <Grid x:Name="CharacteristicList" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+                <ListBox Margin="10" ItemsSource="{Binding CurrentPlayer.Characteristics}"/>
+            </Grid>
 
         </Grid>
     </Grid>

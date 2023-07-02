@@ -7,13 +7,9 @@ namespace Engine.Models
     {
         public readonly List<MonsterLoot> _lootTable = new List<MonsterLoot>();
         public int ID { get; }
-        public Monster(int id, string name, string ancestry, string charClass, int maxHealth, int currentHealth, string description, int experience, int cats,
-            int strength, int dexterity, int endurance, int perception, int sensitivity, int willpower, int appearance, 
-            int presence, int empathy, Item equippedWeapon)
-            : base(name, ancestry, charClass, maxHealth, currentHealth, description, experience, cats,
-            strength, dexterity, endurance, perception,
-            sensitivity, willpower, appearance, presence,
-            empathy)
+        public Monster(int id, string name, string charClass, double maxHealth, double currentHealth, string description, int experience, int cats, 
+            Item equippedWeapon)
+            : base(name, charClass, maxHealth, currentHealth, description, experience, cats)
         {
             ID = id;
             EquippedWeapon = equippedWeapon;
@@ -28,8 +24,7 @@ namespace Engine.Models
 
         public Monster Clone()
         {
-            Monster monster = new Monster(ID, Name, Ancestry, CharClass, MaximumHealth, CurrentHealth, Description, Experience, Cats,
-                Strength, Dexterity, Endurance, Perception, Sensitivity, Willpower, Appearance, Presence, Empathy, 
+            Monster monster = new Monster(ID, Name, CharClass, MaximumHealth, CurrentHealth, Description, Experience, Cats,
                 EquippedWeapon);
 
             foreach (MonsterLoot item in _lootTable)
@@ -44,6 +39,35 @@ namespace Engine.Models
                         monster.AddItemToInventory(ItemFactory.CreateGameItem(item.ID));
                     }
                 }
+            }
+
+            monster.CurrentAncestry = CurrentAncestry;
+
+            foreach(Skill skill in Skills)
+            {
+                monster.Skills.Add(skill);
+            }
+            foreach(Characteristic characteristic in Characteristics)
+            {
+                monster.Characteristics.Add(characteristic);
+
+            }
+
+            foreach (Multiplier multiplier in CurrentAncestry.Multipliers)
+            {
+                switch (multiplier.MultiplierType)
+                {
+                    case Multiplier.Type.Skill:
+                        Skills.FirstOrDefault(s => s.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
+                        break;
+                    case Multiplier.Type.Characteristic:
+                        Characteristics.FirstOrDefault(c => c.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
+                        break;
+                }
+            }
+            foreach(Characteristic characteristic in Characteristics)
+            {
+                monster.Characteristics.FirstOrDefault(c => c.Name.ToLower() == characteristic.Name.ToLower()).BaseLevel = characteristic.BaseLevel;
             }
 
             return monster;

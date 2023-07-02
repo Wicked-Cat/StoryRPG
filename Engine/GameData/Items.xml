@@ -7,7 +7,7 @@
 		</Properties>
 	</Item>
 
-	<Item ID="1002" Name="Rat Claws" Value="0" Description="Rat claws" Damage="3">
+	<Item ID="1002" Name="Claws" Value="0" Description="claws" Damage="10">
 		<Properties>
 			<Property Name="Weapon"/>
 			<Property Name="NaturalWeapon"/>
@@ -25,6 +25,13 @@
 		<Properties>
 			<Property Name="Weapon"/>
 			<Property Name="NaturalWeapon"/>
+		</Properties>
+	</Item>
+
+	<Item ID="1005" Name="Master Sword" Value="1000" Description="Extra Pointy" Damage="100">
+		<Properties>
+			<Property Name="Weapon"/>
+			<Property Name="Iron"/>
 		</Properties>
 	</Item>
 

@@ -12,7 +12,6 @@
         Title="StoryRPG" Height="768" Width="1024">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>
-        <TimeOfDayToColourConverter x:Key="TimeOfDayToColour"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -34,7 +33,7 @@
 
         <!-- Game Messages -->
         <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="2">
-            <RichTextBox x:Name="GameMessages" Background="Beige" VerticalScrollBarVisibility="Auto">
+            <RichTextBox x:Name="GameMessages" VerticalScrollBarVisibility="Auto">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
                         <Setter Property="Margin" Value="0"/>
