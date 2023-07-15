@@ -7,9 +7,9 @@ namespace Engine.Models
     {
         public readonly List<MonsterLoot> _lootTable = new List<MonsterLoot>();
         public int ID { get; }
-        public Monster(int id, string name, string charClass, double maxHealth, double currentHealth, string description, int experience, int cats, 
+        public Monster(int id, string name, string charClass, double maxHealth, double currentHealth, string description, int experience, 
             Item equippedWeapon)
-            : base(name, charClass, maxHealth, currentHealth, description, experience, cats)
+            : base(name, charClass, maxHealth, currentHealth, description, experience)
         {
             ID = id;
             EquippedWeapon = equippedWeapon;
@@ -24,7 +24,7 @@ namespace Engine.Models
 
         public Monster Clone()
         {
-            Monster monster = new Monster(ID, Name, CharClass, MaximumHealth, CurrentHealth, Description, Experience, Cats,
+            Monster monster = new Monster(ID, Name, CharClass, MaximumHealth, CurrentHealth, Description, Experience,
                 EquippedWeapon);
 
             foreach (MonsterLoot item in _lootTable)
@@ -68,6 +68,16 @@ namespace Engine.Models
             foreach(Characteristic characteristic in Characteristics)
             {
                 monster.Characteristics.FirstOrDefault(c => c.Name.ToLower() == characteristic.Name.ToLower()).BaseLevel = characteristic.BaseLevel;
+            }
+
+            monster.CurrentBody = CurrentBody;
+            foreach(BodyPart part in CurrentBody.Parts)
+            {
+                foreach(BodyPart childPart in part.SubParts)
+                {
+                    part.SubParts.Add(childPart);
+                }
+                monster.CurrentBody.Parts.Add(part);
             }
 
             return monster;

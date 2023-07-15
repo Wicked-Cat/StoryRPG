@@ -12,7 +12,7 @@ namespace Engine.Models
 
         public readonly List<MerchantStock> _sellList = new List<MerchantStock>();
         public Merchant(int id, string name,  string description, int markup) : 
-            base(name, "Merchant", 10, 10, description, 10, 0)
+            base(name, "Merchant", 10, 10, description, 0)
         {
             ID = id;
             Markup = markup;

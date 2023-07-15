@@ -13,9 +13,9 @@ namespace Engine.Models
 
     public class Player : LivingEntity
     {
-
-        public Player(string name, string charClass, int maxHealth, int currentHealth, string description, int experience, int cats) 
-            : base(name, charClass, maxHealth, currentHealth, description, experience, cats)
+        public double GlobalExperienceModifier { get; set; }
+        public Player(string name, string charClass, int maxHealth, int currentHealth, string description, int experience) 
+            : base(name, charClass, maxHealth, currentHealth, description, experience)
         {
 
         }

@@ -17,6 +17,22 @@ namespace Engine.Models
             Id = id;
             Name = name;
             Description = description;
+            Parts = new List<BodyPart>();
+        }
+
+        public Body Clone()
+        {
+            Body body = new Body(Id, Name, Description);
+
+            foreach(BodyPart part in Parts)
+            {
+                foreach(BodyPart subPart in part.SubParts)
+                {
+                    part.SubParts.Add(subPart);
+                }
+                body.Parts.Add(part);
+            }
+            return body;
         }
     }
 }

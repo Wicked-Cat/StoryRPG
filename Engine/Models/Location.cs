@@ -23,7 +23,7 @@ namespace Engine.Models
         public enum LandSeaSky { Land, Sea, Sky }
         public enum Depth { Underground, Aboveground }
         public enum Shelter { Interior, Exterior }
-        public enum Exits { ImpassableWall, Climbable, Pickable }
+        public enum Exits { Impassable, Passable, Climbable, Pickable }
         public Location(
             int xCoordinate,
             int yCoordinate,
@@ -56,11 +56,6 @@ namespace Engine.Models
                 //if the monster is not already at this location, add it
                 EncountersHere.Add(new EncounterPercent(encounterID, chanceOfEncounter));
             }
-        }
-
-        public void AddWall()
-        {
-
         }
 
         public Encounter GetEncounter()

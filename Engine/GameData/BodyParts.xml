@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<BodyParts>
-	<BodyPart Name="Head" MaxHealth="60" Coverage="60" 
-			  Description=""/>
-	<BodyPart Name="Face" MaxHealth="40" Coverage="60" Parent="Head"
-			  Description=""/>
-	<BodyPart Name="Right Eye" MaxHealth="30" Coverage="20" Parent="Face"
-			  Description=""/>
-</BodyParts>

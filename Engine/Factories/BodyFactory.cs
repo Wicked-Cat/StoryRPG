@@ -9,7 +9,7 @@ using System.Xml;
 
 namespace Engine.Factories
 {
-    /*
+    
     public static class BodyFactory
     {
         private const string GAME_DATA_FILENAME = ".\\GameData\\Bodies.xml";
@@ -39,14 +39,47 @@ namespace Engine.Factories
             foreach (XmlNode node in nodes)
             {
                 Body body =
-                    new Body(node.AttributeAsString("Name"),
-                    node.AttributeAsString("Description"));
+                    new Body(node.AttributeAsInt("ID"),
+                        node.AttributeAsString("Name"),
+                        node.AttributeAsString("Description"));
+                XmlNodeList bodyParts = node.SelectNodes("/Parts/BodyPart").ToList();
 
+                if(bodyParts != null)
+                {
+                    foreach (XmlNode childNode in bodyParts)
+                    {
+                        BodyPart newPart = new BodyPart(childNode.AttributeAsString("Name"),
+                        childNode.AttributeAsInt("Health"),
+                        childNode.AttributeAsInt("Coverage"));
 
+                        XmlNodeList subParts = node.SelectNodes("./SubParts/SubPart"); //idk how to do this bit
+                        if(subParts != null)
+                        {
+                            foreach(XmlNode childNode2 in subParts)
+                            {
+                                newPart.SubParts.Add(new BodyPart(childNode2.AttributeAsString("Name"),
+                            childNode2.AttributeAsInt("Health"),
+                            childNode2.AttributeAsInt("Coverage")));
+                            }
+                        }
+                        body.Parts.Add(newPart);
+
+                    }
+                }
 
                 _bodies.Add(body);
             }
         }
+
+        public static Body GetBody(string aString)
+        {
+            return _bodies.FirstOrDefault(b => b.Name.ToLower() == aString.ToLower()).Clone();
+        }
+
+        public static Body GetBodyById(int id)
+        {
+            return _bodies.FirstOrDefault(b => b.Id == id).Clone();
+        }
     }
-    */
+    
 }

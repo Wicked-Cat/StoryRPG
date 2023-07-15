@@ -44,8 +44,8 @@ namespace Engine.Factories
                             encounter.AddMonsterToList(monster.AttributeAsInt("ID"));
                         }
                     }
-                    _encounters.Add(encounter);
-                }
+                _encounters.Add(encounter);
+            }
             }
 
             public static Encounter GetEncounter(int id)

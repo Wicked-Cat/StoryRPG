@@ -16,13 +16,13 @@ namespace Engine.Models
         private string _charClass;
         private string _description;
         private int _experience;
-        private int _cats;
         private double _maximumHealth;
         private double _currentHealth;
         private ObservableCollection<Skill> _skills;
         private ObservableCollection<Characteristic> _characteristics;
         private ObservableCollection<ItemQuantity> _inventory;
         private Item _equippedWeapon;
+        private Body _body;
         #endregion
 
         #region Public Variables
@@ -68,15 +68,6 @@ namespace Engine.Models
             set
             {
                 _experience = value;
-                OnPropertyChanged();
-            }
-        }
-        public int Cats
-        {
-            get { return _cats; }
-            set
-            {
-                _cats = value;
                 OnPropertyChanged();
             }
         }
@@ -145,12 +136,21 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
+        public Body CurrentBody
+        {
+            get { return _body; }
+            set
+            {
+                _body = value;
+                OnPropertyChanged();
+            }
+        }
         #endregion
 
         #region Constructor 
         protected LivingEntity(
             string name, string charClass, double maxHealth, double currentHealth, 
-            string description, int experience, int cats)
+            string description, int experience)
         {
             Name = name;
             CharClass = charClass;
@@ -158,7 +158,6 @@ namespace Engine.Models
             CurrentHealth = currentHealth;
             Description = description;
             Experience = experience;
-            Cats = cats;
             Inventory = new ObservableCollection<ItemQuantity>();
             Characteristics = new ObservableCollection<Characteristic>();
             Skills = new ObservableCollection<Skill>();
@@ -274,18 +273,6 @@ namespace Engine.Models
         public void FullHeal()
         {
             CurrentHealth = MaximumHealth;
-        }
-        public void ReceiveGold(int amountOfCats)
-        {
-            Cats += amountOfCats;
-        }
-        public void SpendGold(int amountOfCats)
-        {
-            if (amountOfCats > Cats)
-            {
-                throw new ArgumentOutOfRangeException($"{Name} only has {Cats} gold, and cannot spend {amountOfCats} gold");
-            }
-            Cats -= amountOfCats;
         }
 
         #region Creation Functions

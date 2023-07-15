@@ -43,7 +43,6 @@ namespace Engine.Factories
                                 node.AttributeAsInt("MaximumHealth"), //current health
                                 node.AttributeAsString("Description"),
                                 node.AttributeAsInt("Experience"),
-                                node.AttributeAsInt("Cats"),
                                 ItemFactory.CreateGameItem(node.AttributeAsInt("WeaponID")));
 
                 XmlNodeList lootItems = node.SelectNodes("LootItems/LootItem");
@@ -58,6 +57,7 @@ namespace Engine.Factories
                 }
 
                 monster.CurrentAncestry =  AncestryFactory.GetAncestry(node.AttributeAsString("Ancestry"));
+                monster.CurrentBody = BodyFactory.GetBodyById(node.AttributeAsInt("Body"));
 
                 foreach (Skill skill in SkillFactory._skills)
                 {

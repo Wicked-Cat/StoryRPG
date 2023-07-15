@@ -151,7 +151,7 @@ namespace Engine.ViewModels
         #region Constructor
         public GameSession()
         {
-            CurrentPlayer = new Player("Laughing Zebra", "Druid", 100, 100, "A Human", 0, 10);
+            CurrentPlayer = new Player("Laughing Zebra", "Druid", 100, 100, "A Human", 10);
             CurrentPlayer.CurrentAncestry = AncestryFactory.GetAncestry("Human");
             foreach (Tag tag in AncestryFactory.GetAncestry("Human").Tags.ToList())
                 CurrentPlayer.CurrentAncestry.Tags.Add(tag);
@@ -363,12 +363,6 @@ namespace Engine.ViewModels
                     RaiseMessage($"You recieve {totalXp} experience.");
                     CurrentPlayer.AddExperience(totalXp);
 
-                    int totalCats = CurrentEncounter.Monsters.Sum(e => e.Cats);
-                    if (totalCats > 0)
-                    {
-                        RaiseMessage($"You recieve {totalCats} cats.");
-                        CurrentPlayer.ReceiveGold(totalCats);
-                    }
         }
         private void GetEncounterAtLocation()
         {
@@ -771,6 +765,15 @@ namespace Engine.ViewModels
                     foreach(Characteristic characteristic in monster.Characteristics)
                     {
                         RaiseMessage($"{characteristic.Name} BL{characteristic.BaseLevel} : EL {characteristic.EffectiveLevel}");
+                    }
+                    RaiseMessage($"Body: {monster.CurrentBody.Name}");
+                    foreach(BodyPart part in monster.CurrentBody.Parts)
+                    {
+                        RaiseMessage($"{part.Name}:");
+                        foreach(BodyPart childPart in part.SubParts)
+                        {
+                            RaiseMessage($"    {childPart.Name}");
+                        }
                     }
                 }
             }

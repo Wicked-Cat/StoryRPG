@@ -1,8 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Bodies>
-	<Body Name="Humanoid" Description="">
+	<Body ID="1" Name="Human" Description="Average Humanoid">
 		<Parts>
-			<BodyPart Name="Head"
+			<BodyPart Name="Head" Health="40" Coverage="15">
+				<SubParts>
+					<SubPart Name="Right Eye" Health="15" Coverage="5"/>
+					<SubPart Name="Left Eye" Health="15" Coverage="5"/>
+					<SubPart Name="Mouth" Health="25" Coverage="10"/>
+				</SubParts>
+			</BodyPart>
+			
+			<BodyPart Name="Chest" Health="100" Coverage="60">
+				<SubParts>
+					<SubPart Name="Heart" Health="20" Coverage="5"/>
+					<SubPart Name="Right Lung" Health="20" Coverage="5"/>
+					<SubPart Name="Left Lung" Health="20" Coverage="5"/>
+				</SubParts>
+			</BodyPart>
+			
+			<BodyPart Name="Gut" Health="60" Coverage="40">
+				<SubParts>
+					<SubPart Name="Intestines" Health="40" Coverage="30"/>
+				</SubParts>
+			</BodyPart>
+			
 		</Parts>
 	</Body>
 </Bodies>
