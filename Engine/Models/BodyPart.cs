@@ -9,13 +9,13 @@ namespace Engine.Models
     public class BodyPart
     {
         public string Name { get; set; }
-        public int MaximumHealth { get; set; }
-        public int CurrentHealth { get; set; }
-        public int Coverage { get; set; }
+        public double MaximumHealth { get; set; }
+        public double CurrentHealth { get; set; }
+        public double Coverage { get; set; }
         public List<BodyPart> SubParts { get; set; }
         public List<Wound> Wounds { get; set; }
 
-        public BodyPart(string name, int maximumHealth, int coverage)
+        public BodyPart(string name, double maximumHealth, double coverage)
         {
             Name = name;
             MaximumHealth = maximumHealth;

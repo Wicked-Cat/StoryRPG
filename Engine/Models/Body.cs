@@ -19,19 +19,22 @@ namespace Engine.Models
             Description = description;
             Parts = new List<BodyPart>();
         }
+        public BodyPart DetermineRandomTarget()
+        {
+            double maxCount = Parts.Count();
+            int rand = RandomNumberGenerator.NumberBetween(1, Convert.ToInt32(maxCount));
 
+            return Parts[rand - 1];
+        }
         public Body Clone()
         {
             Body body = new Body(Id, Name, Description);
-
-            foreach(BodyPart part in Parts)
+            
+            foreach (BodyPart part in Parts)
             {
-                foreach(BodyPart subPart in part.SubParts)
-                {
-                    part.SubParts.Add(subPart);
-                }
                 body.Parts.Add(part);
             }
+
             return body;
         }
     }

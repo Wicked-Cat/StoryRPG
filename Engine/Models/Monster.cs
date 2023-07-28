@@ -70,15 +70,7 @@ namespace Engine.Models
                 monster.Characteristics.FirstOrDefault(c => c.Name.ToLower() == characteristic.Name.ToLower()).BaseLevel = characteristic.BaseLevel;
             }
 
-            monster.CurrentBody = CurrentBody;
-            foreach(BodyPart part in CurrentBody.Parts)
-            {
-                foreach(BodyPart childPart in part.SubParts)
-                {
-                    part.SubParts.Add(childPart);
-                }
-                monster.CurrentBody.Parts.Add(part);
-            }
+            monster.CurrentBody = CurrentBody.Clone();
 
             return monster;
         }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Items>
-	<Item ID="1001" Name="Sharp Stick" Value="0" Description="Pointy" Damage="100">
+	<Item ID="1001" Name="Sharp Stick" Value="0" Description="Pointy" Damage="10">
 		<Properties>
 			<Property Name="Weapon"/>
 			<Property Name="Wood"/>
@@ -34,6 +34,12 @@
 			<Property Name="Iron"/>
 		</Properties>
 	</Item>
+	<Item ID="1006" Name="No Damage" Value="0" Description="Test" Damage="0">
+		<Properties>
+			<Property Name="Weapon"/>
+		</Properties>
+	</Item>
+		 
 
 	<Item ID="2001" Name="Bread" Value="10" Description="Cold hard bread">
 		<Properties>

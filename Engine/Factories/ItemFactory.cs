@@ -92,9 +92,13 @@ namespace Engine.Factories
         {
             return _gameItems.FirstOrDefault(i => i.Name.ToLower() == itemName.ToLower())?.ID ?? default;
         }
-        public static Item GetItem(int id)
+        public static Item GetItemByID(int id)
         {
             return _gameItems.FirstOrDefault(m => m.ID == id).Clone();
+        }
+        public static Item GetItem(string aString)
+        {
+            return _gameItems.FirstOrDefault(i => i.Name.ToLower() == aString.ToLower()).Clone();
         }
         public static bool IsItem(string aString)
         {

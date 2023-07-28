@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Engine.Factories
 {
@@ -42,27 +43,32 @@ namespace Engine.Factories
                     new Body(node.AttributeAsInt("ID"),
                         node.AttributeAsString("Name"),
                         node.AttributeAsString("Description"));
-                XmlNodeList bodyParts = node.SelectNodes("/Parts/BodyPart").ToList();
 
-                if(bodyParts != null)
+                //XmlNodeList list = node.SelectNodes("/Parts/BodyPart");
+                if(node.SelectNodes("Parts/BodyPart") is XmlNodeList bodyParts)
                 {
-                    foreach (XmlNode childNode in bodyParts)
+                    var xmlNodesBodyParts = bodyParts.Cast<XmlNode>().ToList();
+                    foreach (XmlNode childNode in xmlNodesBodyParts)
                     {
                         BodyPart newPart = new BodyPart(childNode.AttributeAsString("Name"),
-                        childNode.AttributeAsInt("Health"),
-                        childNode.AttributeAsInt("Coverage"));
+                        childNode.AttributeAsDouble("Health"),
+                        childNode.AttributeAsDouble("Coverage"));
 
-                        XmlNodeList subParts = node.SelectNodes("./SubParts/SubPart"); //idk how to do this bit
-                        if(subParts != null)
-                        {
-                            foreach(XmlNode childNode2 in subParts)
-                            {
-                                newPart.SubParts.Add(new BodyPart(childNode2.AttributeAsString("Name"),
-                            childNode2.AttributeAsInt("Health"),
-                            childNode2.AttributeAsInt("Coverage")));
-                            }
-                        }
                         body.Parts.Add(newPart);
+
+                    }
+                }
+
+
+                if(node.SelectNodes("Parts/BodyPart/SubParts/SubPart") is XmlNodeList subParts)
+                {
+                    var xmlNodesSubParts = subParts.Cast<XmlNode>().ToList();
+                    foreach (XmlNode childNode in xmlNodesSubParts)
+                    {
+                            body.Parts.First(p => p.Name.ToLower() == childNode.AttributeAsString("Parent").ToLower()).SubParts.
+                            Add(new BodyPart(childNode.AttributeAsString("Name"),
+                            childNode.AttributeAsDouble("Health"),
+                            childNode.AttributeAsDouble("Coverage")));
 
                     }
                 }
@@ -73,12 +79,12 @@ namespace Engine.Factories
 
         public static Body GetBody(string aString)
         {
-            return _bodies.FirstOrDefault(b => b.Name.ToLower() == aString.ToLower()).Clone();
+            return _bodies.FirstOrDefault(b => b.Name.ToLower() == aString.ToLower())?.Clone();
         }
 
         public static Body GetBodyById(int id)
         {
-            return _bodies.FirstOrDefault(b => b.Id == id).Clone();
+            return _bodies.FirstOrDefault(b => b.Id == id)?.Clone();
         }
     }
     

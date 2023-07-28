@@ -3,12 +3,18 @@
 	<Location X="0" Y="0" Z="0" Name="Front Gate" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[A large sandstone gate, crowds of people. This is the front gate of the capital city of Purrjata. 
 		To the east through the gate is the Dust District.]]></Description>
+		<Items>
+			<Item ID="1001" Quantity="3" Percent="100" Respawns="true"/>
+			<Item ID="2001" Quantity="10" Percent="50" Respawns="true"/>
+			<Item ID="1005" Quantity="1" Percent="100" Respawns="false"/>
+		</Items>
 	</Location>
 	
 	<Location X="1" Y="0" Z="0" Name="Dust District" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The district of travelers, full of inns and traders.]]></Description>
 		<Merchants>
-			<Merchant ID="1"/>
+			<Merchant ID="1" Percent="100"/>
+			<Merchant ID="2" Percent="50"/>
 		</Merchants>
 	</Location>
 	
@@ -21,7 +27,8 @@
 	<Location X="-1" Y="0" Z="0" Name="Savannah" Region="Enjjata" Province="Enjja" Country="Purrjata">
 		<Description><![CDATA[The barren savannah, full of wild animamls]]></Description>
 		<Encounters>
-			<Encounter ID="2" Percent="100"/>
+			<Encounter ID="2" Percent="50"/>
+			<Encounter ID="1" Percent="50"/>
 		</Encounters>
 	</Location>
 	<Location X="0" Y="-1" Z="0" Name="Animal Stew" Region="Enjjata" Province="Enjja" Country="Purrjata">

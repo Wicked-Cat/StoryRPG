@@ -15,5 +15,21 @@
 			<Item Name="Weapon"/>
 		</DislikedItems>
 	</Merchant>
+
+	<Merchant ID="2" Name="Secret" Markup="30" Ancestry="Human">
+		<Description><![CDATA[A secritive skeleton man]]></Description>
+		<SellList>
+			<Item ID="9009" Quantity="999" Percentage="100"/>
+			<Item ID="9004" Quantity="999" Percentage="100"/>
+			<Item ID="1005" Quantity="3" Percentage="100"/>
+		</SellList>
+		<PreferredItems>
+			<Item Name="Weapon"/>
+		</PreferredItems>
+		<DislikedItems>
+			<Item Name="Food"/>
+		</DislikedItems>
+	</Merchant>
+	
 	
 </Merchants>

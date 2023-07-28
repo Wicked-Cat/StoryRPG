@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Monsters>
 	<Monster ID="1" Name="Rat" Ancestry="Rodent" Class="Beast" Description="A large rat" MaximumHealth="10" 
-			 Experience="10" WeaponID="1002" Body="1">
+			 Experience="10" WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="5"/>
 			<Characteristic Name="Dexterity" Level="30"/>

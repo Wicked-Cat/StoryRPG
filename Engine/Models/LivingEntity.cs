@@ -109,7 +109,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public bool IsDead => CurrentHealth <= 0;
+        public bool IsDead => CurrentBody.Parts.Any(p => p.CurrentHealth <= 0);
 
         public event EventHandler<string> OnActionPerformed;
         public event EventHandler OnKilled;
@@ -253,9 +253,9 @@ namespace Engine.Models
         {
             EquippedWeapon.PerformAction(this, target);
         }
-        public void TakeDamage(double hitPointsOfDamage)
+        public void TakeDamage(double hitPointsOfDamage, BodyPart targetPart)
         {
-            CurrentHealth -= hitPointsOfDamage;
+            targetPart.CurrentHealth -= hitPointsOfDamage;
             if (IsDead)
             {
                 CurrentHealth = 0;
@@ -272,7 +272,10 @@ namespace Engine.Models
         }
         public void FullHeal()
         {
-            CurrentHealth = MaximumHealth;
+            foreach(BodyPart part in CurrentBody.Parts)
+            {
+                part.CurrentHealth = part.MaximumHealth;
+            }
         }
 
         #region Creation Functions
@@ -292,17 +295,6 @@ namespace Engine.Models
         {
             OnActionPerformed?.Invoke(this, result);
         }
-        #endregion
-
-        #region Helper Functions
-        public bool CheckSubscribers()
-        {
-            if (OnActionPerformed == null)
-                return true;
-
-            return false;
-        }
-
         #endregion
     }
 }

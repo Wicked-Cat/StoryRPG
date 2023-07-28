@@ -4,26 +4,146 @@
 		<Parts>
 			<BodyPart Name="Head" Health="40" Coverage="15">
 				<SubParts>
-					<SubPart Name="Right Eye" Health="15" Coverage="5"/>
-					<SubPart Name="Left Eye" Health="15" Coverage="5"/>
-					<SubPart Name="Mouth" Health="25" Coverage="10"/>
+					<SubPart Name="Right Eye" Health="15" Coverage="5" Parent="Head"/>
+					<SubPart Name="Left Eye" Health="15" Coverage="5" Parent="Head"/>
+					<SubPart Name="Mouth" Health="25" Coverage="10" Parent="Head"/>
+					<SubPart Name="Right Ear" Health="15" Coverage="10" Parent="Head"/>
+					<SubPart Name="Left Ear" Health="15" Coverage="10" Parent="Head"/>
 				</SubParts>
 			</BodyPart>
 			
 			<BodyPart Name="Chest" Health="100" Coverage="60">
 				<SubParts>
-					<SubPart Name="Heart" Health="20" Coverage="5"/>
-					<SubPart Name="Right Lung" Health="20" Coverage="5"/>
-					<SubPart Name="Left Lung" Health="20" Coverage="5"/>
+					<SubPart Name="Heart" Health="20" Coverage="5" Parent="Chest"/>
+					<SubPart Name="Right Lung" Health="20" Coverage="5" Parent="Chest"/>
+					<SubPart Name="Left Lung" Health="20" Coverage="5" Parent="Chest"/>
 				</SubParts>
 			</BodyPart>
 			
 			<BodyPart Name="Gut" Health="60" Coverage="40">
 				<SubParts>
-					<SubPart Name="Intestines" Health="40" Coverage="30"/>
+					<SubPart Name="Intestines" Health="40" Coverage="30" Parent="Gut"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Left Arm" Health="40" Coverage="30">
+				<SubParts>
+					<SubPart Name="Left Hand" Health="30" Coverage="20" Parent="Left Arm"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Right Arm" Health="40" Coverage="30">
+				<SubParts>
+					<SubPart Name="Right Hand" Health="30" Coverage="20" Parent="Right Arm"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Left Leg" Health="40" Coverage="30">
+				<SubParts>
+					<SubPart Name="Left Foot" Health="30" Coverage="20" Parent="Left Leg"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Right Leg" Health="40" Coverage="30">
+				<SubParts>
+					<SubPart Name="Right Foot" Health="30" Coverage="20" Parent="Right Leg"/>
 				</SubParts>
 			</BodyPart>
 			
 		</Parts>
 	</Body>
+<!--_________________________________________________________________________________________________________________________________-->
+	<Body ID="2" Name="Immortal" Description="God Mode">
+		<Parts>
+			<BodyPart Name="Head" Health="999999" Coverage="15">
+				<SubParts>
+					<SubPart Name="Right Eye" Health="999999" Coverage="5" Parent="Head"/>
+					<SubPart Name="Left Eye" Health="999999" Coverage="5" Parent="Head"/>
+					<SubPart Name="Mouth" Health="999999" Coverage="10" Parent="Head"/>
+				</SubParts>
+			</BodyPart>
+
+			<BodyPart Name="Chest" Health="999999" Coverage="60">
+				<SubParts>
+					<SubPart Name="Heart" Health="999999" Coverage="5" Parent="Chest"/>
+					<SubPart Name="Right Lung" Health="999999" Coverage="5" Parent="Chest"/>
+					<SubPart Name="Left Lung" Health="999999" Coverage="5" Parent="Chest"/>
+				</SubParts>
+			</BodyPart>
+
+			<BodyPart Name="Gut" Health="999999" Coverage="40">
+				<SubParts>
+					<SubPart Name="Intestines" Health="999999" Coverage="30" Parent="Gut"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Left Arm" Health="999999" Coverage="30">
+				<SubParts>
+					<SubPart Name="Left Hand" Health="999999" Coverage="20" Parent="Left Arm"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Right Arm" Health="999999" Coverage="30">
+				<SubParts>
+					<SubPart Name="Right Hand" Health="999999" Coverage="20" Parent="Right Arm"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Left Leg" Health="999999" Coverage="30">
+				<SubParts>
+					<SubPart Name="Left Foot" Health="999999" Coverage="20" Parent="Left Leg"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Right Leg" Health="999999" Coverage="30">
+				<SubParts>
+					<SubPart Name="Right Foot" Health="999999" Coverage="20" Parent="Right Leg"/>
+				</SubParts>
+			</BodyPart>
+		</Parts>
+	</Body>
+
+	<!--_________________________________________________________________________________________________________________________________-->
+	<Body ID="3" Name="Rat" Description="Ratty">
+		<Parts>
+			<BodyPart Name="Head" Health="40" Coverage="15">
+				<SubParts>
+					<SubPart Name="Right Eye" Health="5" Coverage="5" Parent="Head"/>
+					<SubPart Name="Left Eye" Health="5" Coverage="5" Parent="Head"/>
+					<SubPart Name="Mouth" Health="5" Coverage="10" Parent="Head"/>
+					<SubPart Name="Right Ear" Health="5" Coverage="10" Parent="Head"/>
+					<SubPart Name="Left Ear" Health="5" Coverage="10" Parent="Head"/>
+				</SubParts>
+			</BodyPart>
+
+			<BodyPart Name="Chest" Health="20" Coverage="60">
+				<SubParts>
+					<SubPart Name="Heart" Health="5" Coverage="5" Parent="Chest"/>
+					<SubPart Name="Right Lung" Health="5" Coverage="5" Parent="Chest"/>
+					<SubPart Name="Left Lung" Health="5" Coverage="5" Parent="Chest"/>
+				</SubParts>
+			</BodyPart>
+
+			<BodyPart Name="Gut" Health="15" Coverage="40">
+				<SubParts>
+					<SubPart Name="Intestines" Health="5" Coverage="30" Parent="Gut"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Front Left Leg" Health="10" Coverage="30">
+				<SubParts>
+					<SubPart Name="Front Left Paw" Health="5" Coverage="20" Parent="Front Left Leg"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Front Right Leg" Health="10" Coverage="30">
+				<SubParts>
+					<SubPart Name="Front Right Paw" Health="5" Coverage="20" Parent="Front Right Leg"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Rear Left Leg" Health="10" Coverage="30">
+				<SubParts>
+					<SubPart Name="Rear Left Paw" Health="5" Coverage="20" Parent="Rear Left Leg"/>
+				</SubParts>
+			</BodyPart>
+			<BodyPart Name="Rear Right Leg" Health="10" Coverage="30">
+				<SubParts>
+					<SubPart Name="Rear Right Paw" Health="5" Coverage="20" Parent="Rear Right Leg"/>
+				</SubParts>
+			</BodyPart>
+
+		</Parts>
+	</Body>
+	
+	
 </Bodies>

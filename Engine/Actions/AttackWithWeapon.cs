@@ -33,14 +33,21 @@ namespace Engine.Actions
             double damage = (_damage + strength);
             string actorName = (actor is Player) ? "You" : $"The {actor.Name.ToLower()}";
             string targetName = (target is Player) ? "you" : $"the {target.Name.ToLower()}";
+            BodyPart targetPart = target.CurrentBody.DetermineRandomTarget();
+
             if (damage == 0)
             {
                 ReportResult($"{actorName} missed {targetName}.");
             }
             else
             {
-                ReportResult($"{actorName} hit {targetName} with {_itemInUse.Name} for {damage} point{(damage > 1 ? "s" : "")}.");
-                target.TakeDamage(damage);
+                ReportResult($"{actorName} hit {targetName} with {_itemInUse.Name} in the {targetPart.Name} for {damage} point{(damage > 1 ? "s" : "")}.");
+                target.TakeDamage(damage, targetPart);
+
+                if (target.IsDead)
+                {
+                    ReportResult($"{target.Name} has died");
+                }
             }
         }
 

@@ -11,7 +11,7 @@ namespace Engine.Factories
         internal static World CreateWorld()
         {
             World world = new World();
-            if(File.Exists(GAME_DATA_FILENAME))
+            if (File.Exists(GAME_DATA_FILENAME))
             {
                 XmlDocument data = new XmlDocument();
                 data.LoadXml(File.ReadAllText(GAME_DATA_FILENAME));
@@ -44,6 +44,7 @@ namespace Engine.Factories
                     node.AttributeAsString("Country"));
                 AddEncounters(location, node.SelectNodes("./Encounters/Encounter"));
                 AddMerchants(location, node.SelectNodes("./Merchants/Merchant"));
+                AddItems(location, node.SelectNodes("./Items/Item"));
                 world.AddLocation(location);
             }
         }
@@ -68,7 +69,23 @@ namespace Engine.Factories
             }
             foreach (XmlNode node in merchantsHere)
             {
-                location.MerchantsHere.Add(MerchantFactory.GetMerchantByID(node.AttributeAsInt("ID")));
+                location.AddMerchant(node.AttributeAsInt("ID"),
+                    node.AttributeAsInt("Percent"));
+            }
+        }
+        private static void AddItems(Location location, XmlNodeList itemsHere)
+        {
+            if (itemsHere == null)
+            {
+                return;
+            }
+            foreach(XmlNode node in itemsHere)
+            {
+                location.AddItems(node.AttributeAsInt("ID"),
+                    node.AttributeAsInt("Percent"),
+                    node.AttributeAsInt("Quantity"),
+                    node.AttributeAsString("Respawns"));
+
             }
         }
     }

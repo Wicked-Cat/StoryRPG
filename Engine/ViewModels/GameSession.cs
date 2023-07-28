@@ -69,7 +69,10 @@ namespace Engine.ViewModels
                 OnPropertyChanged(nameof(WestExit));
                 OnPropertyChanged(nameof(UpExit));
                 OnPropertyChanged(nameof(DownExit));
-                GetEncounterAtLocation();
+                RaiseMessage($"{CurrentLocation.Description}");
+                foreach(Encounter encounter in CurrentLocation.EncountersHere)
+                     RaiseMessage($"{encounter.Name}");
+
             }
         }
         public Encounter CurrentEncounter
@@ -77,19 +80,27 @@ namespace Engine.ViewModels
             get { return _currentEncounter; }
             set
             {
+                if (_currentEncounter != null)
+                {
+                    foreach (Monster monster in CurrentEncounter.Monsters)
+                    {
+                        monster.OnActionPerformed -= OnMonsterAction;
+                    }
+                }
                 _currentEncounter = value;
                 if ( _currentEncounter != null)
                 {
                     RaiseMessage("");
                     RaiseMessage($"You encounter a {CurrentEncounter.Name}");
-                    foreach(Monster monster in CurrentEncounter.Monsters)
+                    CurrentEncounter.Monsters[0].OnActionPerformed += OnMonsterAction;
+                    /*foreach(Monster monster in CurrentEncounter.Monsters)
                     {
                         if (monster.CheckSubscribers())
                         {
                             monster.OnActionPerformed += OnMonsterAction;
                             //monster.OnKilled += OnMonsterKilled;
                         }
-                    }
+                    }*/
                 }
                 EncounterWatch();
                 OnPropertyChanged();
@@ -151,6 +162,7 @@ namespace Engine.ViewModels
         #region Constructor
         public GameSession()
         {
+            #region Construct Player
             CurrentPlayer = new Player("Laughing Zebra", "Druid", 100, 100, "A Human", 10);
             CurrentPlayer.CurrentAncestry = AncestryFactory.GetAncestry("Human");
             foreach (Tag tag in AncestryFactory.GetAncestry("Human").Tags.ToList())
@@ -183,12 +195,14 @@ namespace Engine.ViewModels
                         break;
                 }
             }
-
+            CurrentPlayer.CurrentBody = BodyFactory.GetBody("Immortal").Clone();
             CurrentPlayer.EquippedWeapon = (ItemFactory.CreateGameItem(1001));
+            #endregion 
 
             CurrentTrade = new Trade(new ObservableCollection<ItemQuantity>(), new ObservableCollection<ItemQuantity>());
-            CurrentWorld = WorldFactory.CreateWorld();
 
+            CurrentWorld = WorldFactory.CreateWorld();
+            CurrentWorld.RefreshLocations();
             CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
 
             CurrentTime = new Time(0, 1, 0, 1, Time.Days.Fridas, Time.Seasons.Spring, Time.Years.Catfish);
@@ -224,9 +238,11 @@ namespace Engine.ViewModels
                             CurrentTime.Day++;
                             CurrentTime.DaysPassed++;
                             CurrentTime.CurrentDay = CurrentTime.ProgressDay(CurrentTime.CurrentDay);
-                           MerchantFactory.GenerateMerchants();
+                            MerchantFactory.GenerateMerchants();
+                            CurrentWorld.RefreshLocations();
+                            CurrentLocation.EncountersText = CurrentLocation.WriteEncounterText();
 
-                            if (CurrentTime.Day > 30)
+                        if (CurrentTime.Day > 30)
                             {
                                 CurrentTime.Day = 0;
                                 CurrentTime.CurrentSeason = CurrentTime.ProgressSeason(CurrentTime.CurrentSeason);
@@ -349,6 +365,7 @@ namespace Engine.ViewModels
         {
             foreach (Monster monster in CurrentEncounter.Monsters)
             {
+
                 RaiseMessage("");
                 foreach (ItemQuantity item in monster.Inventory)
                 {
@@ -359,9 +376,7 @@ namespace Engine.ViewModels
                     }
                 }
             }
-                    int totalXp = CurrentEncounter.Monsters.Sum(e => e.Experience);
-                    RaiseMessage($"You recieve {totalXp} experience.");
-                    CurrentPlayer.AddExperience(totalXp);
+            CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
 
         }
         private void GetEncounterAtLocation()
@@ -591,7 +606,7 @@ namespace Engine.ViewModels
                     }
                     RaiseMessage($"Current sell list {CurrentMerchant._sellList.Count}");
                     foreach (MerchantStock item in CurrentMerchant._sellList)
-                        RaiseMessage($"{ItemFactory.GetItem(item.ID).Name} Q: {item.Quantity}");
+                        RaiseMessage($"{ItemFactory.GetItemByID(item.ID).Name} Q: {item.Quantity}");
                     RaiseMessage($"IInventory {CurrentMerchant.Inventory.Count}");
                     foreach (ItemQuantity item in CurrentMerchant.Inventory)
                         RaiseMessage($"Inventory {item.BaseItem.Name} q:{item.Quantity}");
@@ -662,6 +677,24 @@ namespace Engine.ViewModels
                 case "go":
                     MoveTo(noun);
                     break;
+                case "n":
+                    MoveTo("north");
+                    break;
+                case "s":
+                    MoveTo("south");
+                    break;
+                case "e":
+                    MoveTo("east");
+                    break;
+                case "w":
+                    MoveTo("west");
+                    break;
+                case "u":
+                    MoveTo("up");
+                    break;
+                case "d":
+                    MoveTo("down");
+                    break;
                 case "save":
                     //SaveGame.Save();
                     break;
@@ -703,13 +736,26 @@ namespace Engine.ViewModels
                 case "increasechar":
                     CurrentPlayer.AddExperienceToCharacteristic(noun, num);
                     break;
-                case "monsterchar":
-                    foreach(Monster monster in MonsterFactory._monsters)
+                case "spawn":
+                    Spawn(noun);
+                    break;
+                case "self":
+                    foreach(BodyPart part in CurrentPlayer.CurrentBody.Parts)
                     {
-                        foreach(Characteristic characteristic in monster.Characteristics)
+                        RaiseMessage($"{part.Name} {part.CurrentHealth}/{part.MaximumHealth}");
+                        foreach(BodyPart subPart in part.SubParts)
                         {
-                            RaiseMessage($"{characteristic.Name} : {characteristic.BaseLevel} : {characteristic.EffectiveLevel}");
+                            RaiseMessage($"     {subPart.Name} {subPart.CurrentHealth}/{subPart.MaximumHealth}");
                         }
+                    }
+                    break;
+                case "encounter":
+                    GetEncounterAtLocation();
+                    break;
+                case "items":
+                   foreach(LocationItems item in CurrentLocation.AllItemsHere)
+                    {
+                        RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected } Respawns?{item.Respawns}");
                     }
                     break;
                 default:
@@ -778,7 +824,7 @@ namespace Engine.ViewModels
                 }
             }
         }
-        public void Pickup(string aString)
+        public void Spawn(string aString)
         {
             int itemID = ItemFactory.ItemID(aString);
             if (itemID != default)
@@ -787,7 +833,26 @@ namespace Engine.ViewModels
                 CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(itemID));
             }
             else
-                RaiseMessage($"{aString} is not here.");
+                RaiseMessage($"{aString} does not exist");
+        }
+        public void Pickup(string aString)
+        {
+            Item item = ItemFactory.GetItem(aString);
+            if (item != null) //if item exists
+            {
+                if(CurrentLocation.ItemsHere.Exists(i => i.BaseItem.Name == item.Name)) //if item is in the location
+                {
+                    RaiseMessage($"You take the {item.Name}.");
+                    CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(ItemFactory.ItemID(item.Name)));
+                    CurrentLocation.RemoveItemFromLocation(item);
+                }
+                else
+                {
+                    RaiseMessage($"{aString} is not here");
+                }
+            }
+            else
+                RaiseMessage($"{aString} does not exist");
         }
         public void Drop(string aString)
         {
@@ -796,6 +861,7 @@ namespace Engine.ViewModels
             {
                 RaiseMessage($"You drop the {item.Name}.");
                 CurrentPlayer.RemoveItemFromInventory(item);
+                CurrentLocation.AddItemToLocation(item);
             }
             else
             {
@@ -934,7 +1000,7 @@ namespace Engine.ViewModels
             {
                 foreach (Monster monster in CurrentEncounter.Monsters)
                 {
-                    if (!monster.IsDead)
+                    if (!monster.IsDead && !CurrentPlayer.IsDead)
                     {
                         monster.Attack(CurrentPlayer);
                     }
@@ -953,6 +1019,7 @@ namespace Engine.ViewModels
         public void Flee()
         {
             RaiseMessage($"You flee from the {CurrentEncounter.Name}");
+            CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
             CurrentEncounter = null;
         }
 
@@ -1236,6 +1303,7 @@ namespace Engine.ViewModels
         }
 
         #endregion
+
 
     }
 }
