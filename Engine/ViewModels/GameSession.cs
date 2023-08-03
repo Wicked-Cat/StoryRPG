@@ -6,14 +6,13 @@ using Engine.Models;
 using Engine.Factories;
 using StoryRPG;
 using System.Collections.ObjectModel;
-using Microsoft.VisualBasic;
-using System.Threading;
-using System.Xml.Linq;
+using Engine.Service;
 
 namespace Engine.ViewModels
 {
     public class GameSession : BaseNotificationClass
     {
+        private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
         public event EventHandler<GameMessageEventArgs> OnMessageRaised;
         public event EventHandler<OnEncounterEventArgs> OnEncounterEngaged;
         public event EventHandler OnInventoryOpened;
@@ -40,13 +39,13 @@ namespace Engine.ViewModels
                 if (_currentPlayer != null)
                 {
                     _currentPlayer.OnActionPerformed -= OnPlayerAction;
-                    _currentPlayer.OnKilled -= OnCurrentPlayerKilled;
+                    _currentPlayer.OnKilled -= OnPlayerKilled;
                 }
                 _currentPlayer = value;
                 if (_currentPlayer != null)
                 {
                     _currentPlayer.OnActionPerformed += OnPlayerAction;
-                    _currentPlayer.OnKilled += OnCurrentPlayerKilled;
+                    _currentPlayer.OnKilled += OnPlayerKilled;
                 }
             }
         }
@@ -69,9 +68,9 @@ namespace Engine.ViewModels
                 OnPropertyChanged(nameof(WestExit));
                 OnPropertyChanged(nameof(UpExit));
                 OnPropertyChanged(nameof(DownExit));
-                RaiseMessage($"{CurrentLocation.Description}");
+                _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
                 foreach(Encounter encounter in CurrentLocation.EncountersHere)
-                     RaiseMessage($"{encounter.Name}");
+                     _messageBroker.RaiseMessage($"{encounter.Name}");
 
             }
         }
@@ -90,8 +89,8 @@ namespace Engine.ViewModels
                 _currentEncounter = value;
                 if ( _currentEncounter != null)
                 {
-                    RaiseMessage("");
-                    RaiseMessage($"You encounter a {CurrentEncounter.Name}");
+                    _messageBroker.RaiseMessage("");
+                    _messageBroker.RaiseMessage($"You encounter a {CurrentEncounter.Name}");
                     CurrentEncounter.Monsters[0].OnActionPerformed += OnMonsterAction;
                     /*foreach(Monster monster in CurrentEncounter.Monsters)
                     {
@@ -213,11 +212,11 @@ namespace Engine.ViewModels
 
         #endregion
 
-        public void RaiseMessage(string message)
+        /*public void RaiseMessage(string message)
         {
             OnMessageRaised?.Invoke(this, new GameMessageEventArgs(message));
             //if there is anything subscribed to OnMessageRaised, pass in itself and GameMessageEventArgs with the message
-        }
+        }*/
 
         #region Time Fuctions
         public void PassTime(int minutePassed)
@@ -269,7 +268,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no exit that way");
+                _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
         public void MoveSouth()
@@ -280,7 +279,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no exit that way");
+                _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
         public void MoveEast()
@@ -291,7 +290,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no exit that way");
+                _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
         public void MoveWest()
@@ -302,7 +301,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no exit that way");
+                _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
         public void MoveUp()
@@ -313,7 +312,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no exit that way");
+                _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
         public void MoveDown()
@@ -324,7 +323,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no exit that way");
+                _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
         #endregion
@@ -337,11 +336,11 @@ namespace Engine.ViewModels
         }
         public void OnMonsterAction(object sender, string result)
         {
-            RaiseMessage(result);
+            _messageBroker.RaiseMessage(result);
         }
         private void OnMonsterKilled(object sender, System.EventArgs eventArgs)
         {
-            RaiseMessage("deaad");
+            _messageBroker.RaiseMessage("deaad");
             /*
             RaiseMessage("");
             RaiseMessage($"You defeated the {CurrentMonster.Name}!");
@@ -366,10 +365,10 @@ namespace Engine.ViewModels
             foreach (Monster monster in CurrentEncounter.Monsters)
             {
 
-                RaiseMessage("");
+                _messageBroker.RaiseMessage("");
                 foreach (ItemQuantity item in monster.Inventory)
                 {
-                    RaiseMessage($"You recieve {item.Quantity} {item.BaseItem.Name}.");
+                    _messageBroker.RaiseMessage($"You recieve {item.Quantity} {item.BaseItem.Name}.");
                     for (int i = 0; i < item.Quantity; i++)
                     {
                         CurrentPlayer.AddItemToInventory(item.BaseItem);
@@ -387,21 +386,21 @@ namespace Engine.ViewModels
         #endregion
 
         #region Player Functions
-        private void OnCurrentPlayerKilled(object sender, System.EventArgs eventArgs)
+        private void OnPlayerKilled(object sender, System.EventArgs eventArgs)
         {
-            RaiseMessage("");
-            RaiseMessage("You have been killed.");
+            _messageBroker.RaiseMessage("");
+            _messageBroker.RaiseMessage("You have been killed.");
             CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
             CurrentPlayer.FullHeal();
         }
         public void OnPlayerAction(object sender, string result)
         {
-            RaiseMessage(result);
+            _messageBroker.RaiseMessage(result);
         }
         public void WindowToSession(string aString)
         {
-            RaiseMessage("");
-            RaiseMessage(aString);
+            _messageBroker.RaiseMessage("");
+            _messageBroker.RaiseMessage(aString);
             if (CurrentMerchant != null)
                 DoInTrade(aString);
             else if (CurrentEncounter != null)
@@ -477,25 +476,25 @@ namespace Engine.ViewModels
                     if (CurrentEncounter != null)
                         foreach (Monster monster in CurrentEncounter.Monsters)
                         {
-                            RaiseMessage($"{monster.CurrentAncestry.Name}");
+                            _messageBroker.RaiseMessage($"{monster.CurrentAncestry.Name}");
                             foreach (Tag tag in monster.Tags)
                             {
-                                RaiseMessage($"{tag.Name}");
+                                _messageBroker.RaiseMessage($"{tag.Name}");
                             }
                             foreach(Characteristic characteristic in monster.Characteristics)
                             {
-                                RaiseMessage($"{characteristic.Name} : EL{characteristic.EffectiveLevel} : M{characteristic.LevelMultiplier}");
+                                _messageBroker.RaiseMessage($"{characteristic.Name} : EL{characteristic.EffectiveLevel} : M{characteristic.LevelMultiplier}");
                             }
                         }
                     break;
                 case "encounter":
                     if (CurrentEncounter != null)
-                        RaiseMessage("true");
+                        _messageBroker.RaiseMessage("true");
                     else
-                        RaiseMessage("false");
+                        _messageBroker.RaiseMessage("false");
                     break;
                 default:
-                    RaiseMessage($"You cannot do that now");
+                    _messageBroker.RaiseMessage($"You cannot do that now");
                     break;
             }
         }
@@ -585,34 +584,34 @@ namespace Engine.ViewModels
                 case "tags":
                     if (CurrentMerchant != null)
                     {
-                        RaiseMessage("Preferred");
+                        _messageBroker.RaiseMessage("Preferred");
                         foreach (Tag tag in CurrentMerchant.PreferredItems)
-                            RaiseMessage($"{tag.Name}");
-                        RaiseMessage("Disliked");
+                            _messageBroker.RaiseMessage($"{tag.Name}");
+                        _messageBroker.RaiseMessage("Disliked");
                         foreach (Tag tag in CurrentMerchant.DislikedItems)
-                            RaiseMessage($"{tag.Name}");
+                            _messageBroker.RaiseMessage($"{tag.Name}");
                     }
                     break;
                 case "merchant":
                     foreach (Merchant merchant in CurrentLocation.MerchantsHere)
                     {
-                        RaiseMessage($"Sell list {merchant._sellList.Count}");
+                        _messageBroker.RaiseMessage($"Sell list {merchant._sellList.Count}");
                         foreach (MerchantStock item in merchant._sellList)
-                            RaiseMessage($"Sell Quantity {item.Quantity}");
-                        RaiseMessage($"IInventory {merchant.Inventory.Count}");
+                            _messageBroker.RaiseMessage($"Sell Quantity {item.Quantity}");
+                        _messageBroker.RaiseMessage($"IInventory {merchant.Inventory.Count}");
                         foreach (ItemQuantity item in merchant.Inventory)
-                            RaiseMessage($"Inventory Quantity {item.Quantity}");
+                            _messageBroker.RaiseMessage($"Inventory Quantity {item.Quantity}");
 
                     }
-                    RaiseMessage($"Current sell list {CurrentMerchant._sellList.Count}");
+                    _messageBroker.RaiseMessage($"Current sell list {CurrentMerchant._sellList.Count}");
                     foreach (MerchantStock item in CurrentMerchant._sellList)
-                        RaiseMessage($"{ItemFactory.GetItemByID(item.ID).Name} Q: {item.Quantity}");
-                    RaiseMessage($"IInventory {CurrentMerchant.Inventory.Count}");
+                        _messageBroker.RaiseMessage($"{ItemFactory.GetItemByID(item.ID).Name} Q: {item.Quantity}");
+                    _messageBroker.RaiseMessage($"IInventory {CurrentMerchant.Inventory.Count}");
                     foreach (ItemQuantity item in CurrentMerchant.Inventory)
-                        RaiseMessage($"Inventory {item.BaseItem.Name} q:{item.Quantity}");
+                        _messageBroker.RaiseMessage($"Inventory {item.BaseItem.Name} q:{item.Quantity}");
                     break;
                 default:
-                    RaiseMessage($"{aString} is not a valid command");
+                    _messageBroker.RaiseMessage($"{aString} is not a valid command");
                     break;
             }
         }
@@ -742,10 +741,10 @@ namespace Engine.ViewModels
                 case "self":
                     foreach(BodyPart part in CurrentPlayer.CurrentBody.Parts)
                     {
-                        RaiseMessage($"{part.Name} {part.CurrentHealth}/{part.MaximumHealth}");
+                        _messageBroker.RaiseMessage($"{part.Name} {part.CurrentHealth}/{part.MaximumHealth}");
                         foreach(BodyPart subPart in part.SubParts)
                         {
-                            RaiseMessage($"     {subPart.Name} {subPart.CurrentHealth}/{subPart.MaximumHealth}");
+                            _messageBroker.RaiseMessage($"     {subPart.Name} {subPart.CurrentHealth}/{subPart.MaximumHealth}");
                         }
                     }
                     break;
@@ -755,11 +754,11 @@ namespace Engine.ViewModels
                 case "items":
                    foreach(LocationItems item in CurrentLocation.AllItemsHere)
                     {
-                        RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected } Respawns?{item.Respawns}");
+                        _messageBroker.RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected } Respawns?{item.Respawns}");
                     }
                     break;
                 default:
-                    RaiseMessage($"You cannot do that now");
+                    _messageBroker.RaiseMessage($"You cannot do that now");
                     break;
             }
         }
@@ -788,12 +787,12 @@ namespace Engine.ViewModels
                         tags += $" {tag.Name}";
                     }
 
-                    RaiseMessage($"{item.Description}, TV: {item.ActualValue}\n Tags: {tags}");
-                    RaiseMessage("");
+                    _messageBroker.RaiseMessage($"{item.Description}, TV: {item.ActualValue}\n Tags: {tags}");
+                    _messageBroker.RaiseMessage("");
                 }
                 else
                 {
-                    RaiseMessage($"{aString} is not a valid item");
+                    _messageBroker.RaiseMessage($"{aString} is not a valid item");
                 }
             }
             else if (IsMonster)
@@ -801,24 +800,24 @@ namespace Engine.ViewModels
                 Monster monster = CurrentEncounter.Monsters.FirstOrDefault(m => m.Name.ToLower() == aString.ToLower());
                 if(monster != default)
                 {
-                    RaiseMessage($"{monster.Description}");
-                    RaiseMessage("Tags:");
+                    _messageBroker.RaiseMessage($"{monster.Description}");
+                    _messageBroker.RaiseMessage("Tags:");
                     foreach (Tag tag in monster.Tags)
                     {
-                        RaiseMessage($"{tag.Name}");
+                        _messageBroker.RaiseMessage($"{tag.Name}");
                     }
-                    RaiseMessage("Stats:");
+                    _messageBroker.RaiseMessage("Stats:");
                     foreach(Characteristic characteristic in monster.Characteristics)
                     {
-                        RaiseMessage($"{characteristic.Name} BL{characteristic.BaseLevel} : EL {characteristic.EffectiveLevel}");
+                        _messageBroker.RaiseMessage($"{characteristic.Name} BL{characteristic.BaseLevel} : EL {characteristic.EffectiveLevel}");
                     }
-                    RaiseMessage($"Body: {monster.CurrentBody.Name}");
+                    _messageBroker.RaiseMessage($"Body: {monster.CurrentBody.Name}");
                     foreach(BodyPart part in monster.CurrentBody.Parts)
                     {
-                        RaiseMessage($"{part.Name}:");
+                        _messageBroker.RaiseMessage($"{part.Name}:");
                         foreach(BodyPart childPart in part.SubParts)
                         {
-                            RaiseMessage($"    {childPart.Name}");
+                            _messageBroker.RaiseMessage($"    {childPart.Name}");
                         }
                     }
                 }
@@ -829,11 +828,11 @@ namespace Engine.ViewModels
             int itemID = ItemFactory.ItemID(aString);
             if (itemID != default)
             {
-                RaiseMessage($"You take the {ItemFactory.ItemName(itemID)}.");
+                _messageBroker.RaiseMessage($"You take the {ItemFactory.ItemName(itemID)}.");
                 CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(itemID));
             }
             else
-                RaiseMessage($"{aString} does not exist");
+                _messageBroker.RaiseMessage($"{aString} does not exist");
         }
         public void Pickup(string aString)
         {
@@ -842,30 +841,30 @@ namespace Engine.ViewModels
             {
                 if(CurrentLocation.ItemsHere.Exists(i => i.BaseItem.Name == item.Name)) //if item is in the location
                 {
-                    RaiseMessage($"You take the {item.Name}.");
+                    _messageBroker.RaiseMessage($"You take the {item.Name}.");
                     CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(ItemFactory.ItemID(item.Name)));
                     CurrentLocation.RemoveItemFromLocation(item);
                 }
                 else
                 {
-                    RaiseMessage($"{aString} is not here");
+                    _messageBroker.RaiseMessage($"{aString} is not here");
                 }
             }
             else
-                RaiseMessage($"{aString} does not exist");
+                _messageBroker.RaiseMessage($"{aString} does not exist");
         }
         public void Drop(string aString)
         {
             Item item = CurrentPlayer.FindNumberedItem(aString);
             if (item != default)
             {
-                RaiseMessage($"You drop the {item.Name}.");
+                _messageBroker.RaiseMessage($"You drop the {item.Name}.");
                 CurrentPlayer.RemoveItemFromInventory(item);
                 CurrentLocation.AddItemToLocation(item);
             }
             else
             {
-                RaiseMessage($"You do not have any {aString}.");
+                _messageBroker.RaiseMessage($"You do not have any {aString}.");
             }
         }
         public void MoveTo(string aString)
@@ -927,12 +926,12 @@ namespace Engine.ViewModels
                 }
                 else
                 {
-                    RaiseMessage($"{item.Name} is not a weapon.");
+                    _messageBroker.RaiseMessage($"{item.Name} is not a weapon.");
                 }
             }
             else
             {
-                RaiseMessage($"You do not have a {aString}");
+                _messageBroker.RaiseMessage($"You do not have a {aString}");
             }
         }
         public void Unequip(string aString)
@@ -947,12 +946,12 @@ namespace Engine.ViewModels
                 }
                 else
                 {
-                    RaiseMessage($"{aString} is not equipped.");
+                    _messageBroker.RaiseMessage($"{aString} is not equipped.");
                 }
             }
             else
             {
-                RaiseMessage("There is nothing to unequip");
+                _messageBroker.RaiseMessage("There is nothing to unequip");
             }
         }
 
@@ -974,25 +973,25 @@ namespace Engine.ViewModels
         {
             if (CurrentEncounter == null)
             {
-                RaiseMessage("There is nothing to attack");
+                _messageBroker.RaiseMessage("There is nothing to attack");
                 return;
             }
             if (CurrentPlayer.EquippedWeapon == null)
             {
-                RaiseMessage("You need a weapon equipped to attack");
+                _messageBroker.RaiseMessage("You need a weapon equipped to attack");
                 return;
             }
 
             Monster target = DetermineTarget(noun);
             if (target != null)
             {
-                RaiseMessage("");
+                _messageBroker.RaiseMessage("");
                 CurrentPlayer.Attack(target);
-                RaiseMessage("");
+                _messageBroker.RaiseMessage("");
             }
             else
             {
-                RaiseMessage($"{noun} is not a valid target");
+                _messageBroker.RaiseMessage($"{noun} is not a valid target");
                 return;
             }
 
@@ -1018,7 +1017,7 @@ namespace Engine.ViewModels
         }
         public void Flee()
         {
-            RaiseMessage($"You flee from the {CurrentEncounter.Name}");
+            _messageBroker.RaiseMessage($"You flee from the {CurrentEncounter.Name}");
             CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
             CurrentEncounter = null;
         }
@@ -1038,7 +1037,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage($"Merchant {aString} is not here");
+                _messageBroker.RaiseMessage($"Merchant {aString} is not here");
             }
             
         }
@@ -1063,17 +1062,17 @@ namespace Engine.ViewModels
                     }
                     else
                     {
-                        RaiseMessage($"{CurrentMerchant.Name} does not have {aString}");
+                        _messageBroker.RaiseMessage($"{CurrentMerchant.Name} does not have {aString}");
                     }
                 }
                 else
                 {
-                    RaiseMessage($"Item {aString} does not exist");
+                    _messageBroker.RaiseMessage($"Item {aString} does not exist");
                 }
             }
             else
             {
-                RaiseMessage("You are not trading with a merchant");
+                _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
         public void Sell(string aString, int num)
@@ -1098,17 +1097,17 @@ namespace Engine.ViewModels
                     }
                     else
                     {
-                        RaiseMessage($"you do not have {aString}");
+                        _messageBroker.RaiseMessage($"you do not have {aString}");
                     }
                 }
                 else
                 {
-                    RaiseMessage($"Item {aString} does not exist");
+                    _messageBroker.RaiseMessage($"Item {aString} does not exist");
                 }
             }
             else
             {
-                RaiseMessage("You are not trading with a merchant");
+                _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
         public void RemoveBuy(string aString, int num)
@@ -1132,17 +1131,17 @@ namespace Engine.ViewModels
                     }
                     else
                     {
-                        RaiseMessage($"{CurrentMerchant.Name} does not have {aString}");
+                        _messageBroker.RaiseMessage($"{CurrentMerchant.Name} does not have {aString}");
                     }
                 }
                 else
                 {
-                    RaiseMessage($"Item {aString} does not exist");
+                    _messageBroker.RaiseMessage($"Item {aString} does not exist");
                 }
             }
             else
             {
-                RaiseMessage("You are not trading with a merchant");
+                _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
         public void RemoveSell(string aString, int num) 
@@ -1166,17 +1165,17 @@ namespace Engine.ViewModels
                     }
                     else
                     {
-                        RaiseMessage($"you have not offered {aString}");
+                        _messageBroker.RaiseMessage($"you have not offered {aString}");
                     }
                 }
                 else
                 {
-                    RaiseMessage($"Item {aString} does not exist");
+                    _messageBroker.RaiseMessage($"Item {aString} does not exist");
                 }
             }
             else
             {
-                RaiseMessage("You are not trading with a merchant");
+                _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
         public void ClearTrade()
@@ -1228,7 +1227,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("The merchant does not accept your offer");
+                _messageBroker.RaiseMessage("The merchant does not accept your offer");
             }
         }
         public void CancelTrade()
@@ -1257,7 +1256,7 @@ namespace Engine.ViewModels
             }
             else
             {
-                RaiseMessage("There is no trade.");
+                _messageBroker.RaiseMessage("There is no trade.");
             }
             CurrentMerchant = null;
         }

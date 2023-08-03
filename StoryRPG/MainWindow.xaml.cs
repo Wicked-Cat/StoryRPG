@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using Engine.Models;
 using Engine.ViewModels;
 using System.Windows.Media;
+using Engine.Service;
 
 namespace StoryRPG
 {
@@ -27,10 +28,12 @@ namespace StoryRPG
 
         private bool IsCombatWindowOpen;
 
+        private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
+
         public MainWindow()
         {
             InitializeComponent();
-            _gameSession.OnMessageRaised += OnGameMessageRaised;
+            _messageBroker.OnMessageRaised += OnGameMessageRaised;
             _gameSession.OnEncounterEngaged += CombatWindowControl;
             _gameSession.OnInventoryOpened += OpenInventoryScreen;
             _gameSession.OnCharacterOpened += OpenCharacterScreen;

@@ -38,8 +38,6 @@ namespace Engine.Models
             {
                 return GetItemFromInventory(aString);
             }
-
-            return default;
         }
 
     }

@@ -21,7 +21,7 @@ namespace Engine.Actions
             string actorName = (actor is Player) ? "You" : $"The {actor.Name.ToLower()}.";
             string targetName = (actor is Player) ? "yourself" : "themself";
 
-            ReportResult($"{actorName} heal {targetName} for {_healthToHeal} point{(_healthToHeal > 1 ? "s" : "")}");
+            _messageBroker.RaiseMessage($"{actorName} heal {targetName} for {_healthToHeal} point{(_healthToHeal > 1 ? "s" : "")}");
             target.Heal(_healthToHeal);
         }
     }

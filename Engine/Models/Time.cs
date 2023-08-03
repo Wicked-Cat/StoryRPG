@@ -55,25 +55,18 @@
             {
                 case Days.Mondas:
                     return Days.Turdas;
-                    break;
                 case Days.Turdas:
                     return Days.Wendas;
-                    break;
                 case Days.Wendas:
                     return Days.Tirdas;
-                    break;
                 case Days.Tirdas:
                     return Days.Fridas;
-                    break;
                 case Days.Fridas:
                     return Days.Sardas;
-                    break;
                 case Days.Sardas:
                     return Days.Sundas;
-                    break;
                 case Days.Sundas:
                     return Days.Mondas;
-                    break;
             }
 
             return Days.Mondas;
@@ -84,16 +77,12 @@
             {
                 case Seasons.Spring:
                     return Seasons.Summer;
-                    break;
                 case Seasons.Summer:
                     return Seasons.Fall;
-                    break;
                 case Seasons.Fall:
                     return Seasons.Winter;
-                    break;
                 case Seasons.Winter:
                     return Seasons.Spring;
-                    break;
             }
 
             return Seasons.Summer;
@@ -104,13 +93,10 @@
             {
                 case Years.MoonsTears:
                     return Years.BoarsTusks;
-                    break;
                 case Years.BoarsTusks:
                     return Years.Catfish;
-                    break;
                 case Years.Catfish:
                     return Years.MoonsTears;
-                    break;
             }
 
             return Years.Catfish;

@@ -54,22 +54,16 @@ namespace Engine.Factories
             {
                 case "survival":
                     return Skill.Categories.Survival;
-                    break;
                 case "combat":
                     return Skill.Categories.Combat;
-                    break;
                 case "mystic":
                     return Skill.Categories.Mystic;
-                    break;
                 case "social":
                     return Skill.Categories.Social;
-                    break;
                 case "crafting":
                     return Skill.Categories.Crafting;
-                    break;
                 case "curse":
                     return Skill.Categories.Curse;
-                    break;
             }
 
             return Skill.Categories.Survival;

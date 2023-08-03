@@ -11,18 +11,18 @@ namespace Engine.Models
     public abstract class LivingEntity : BaseNotificationClass
     {
         #region Backing Variables
-        private string _name;
-        private Ancestry _ancestry;
-        private string _charClass;
-        private string _description;
+        private string? _name;
+        private Ancestry? _ancestry;
+        private string? _charClass;
+        private string? _description;
         private int _experience;
         private double _maximumHealth;
         private double _currentHealth;
-        private ObservableCollection<Skill> _skills;
-        private ObservableCollection<Characteristic> _characteristics;
-        private ObservableCollection<ItemQuantity> _inventory;
-        private Item _equippedWeapon;
-        private Body _body;
+        private ObservableCollection<Skill>? _skills;
+        private ObservableCollection<Characteristic>? _characteristics;
+        private ObservableCollection<ItemQuantity>? _inventory;
+        private Item? _equippedWeapon;
+        private Body? _body;
         #endregion
 
         #region Public Variables
@@ -35,7 +35,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public Ancestry CurrentAncestry
+        public Ancestry? CurrentAncestry
         {
             get { return _ancestry; }
             set
@@ -111,8 +111,8 @@ namespace Engine.Models
         }
         public bool IsDead => CurrentBody.Parts.Any(p => p.CurrentHealth <= 0);
 
-        public event EventHandler<string> OnActionPerformed;
-        public event EventHandler OnKilled;
+        public event EventHandler<string>? OnActionPerformed;
+        public event EventHandler? OnKilled;
 
         public ObservableCollection<ItemQuantity> Inventory
         {
@@ -123,7 +123,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public Item EquippedWeapon
+        public Item? EquippedWeapon
         {
             get { return _equippedWeapon; }
             set

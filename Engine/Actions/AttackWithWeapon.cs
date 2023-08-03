@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using Engine.Models;
+using Engine.Service;
 
 namespace Engine.Actions
 {
@@ -37,16 +38,16 @@ namespace Engine.Actions
 
             if (damage == 0)
             {
-                ReportResult($"{actorName} missed {targetName}.");
+                _messageBroker.RaiseMessage($"{actorName} missed {targetName}.");
             }
             else
             {
-                ReportResult($"{actorName} hit {targetName} with {_itemInUse.Name} in the {targetPart.Name} for {damage} point{(damage > 1 ? "s" : "")}.");
+                _messageBroker.RaiseMessage($"{actorName} hit {targetName} with {_itemInUse.Name} in the {targetPart.Name} for {damage} point{(damage > 1 ? "s" : "")}.");
                 target.TakeDamage(damage, targetPart);
 
                 if (target.IsDead)
                 {
-                    ReportResult($"{target.Name} has died");
+                    _messageBroker.RaiseMessage($"{target.Name} has died");
                 }
             }
         }
