@@ -68,7 +68,7 @@ namespace StoryRPG
             }
         }
 
-        private void TimeOfDayToColourConverter()
+        public void TimeOfDayToColourConverter()
         {
             switch (_gameSession.CurrentTime.CurrentTimeOfDay.ToString().ToLower()) 
             {
@@ -97,13 +97,13 @@ namespace StoryRPG
         private void CreateTimer()
         {
             DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(5);
+            timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += TimerTick;
             timer.Start();
         }
         private void TimerTick(object sender, EventArgs e)
         {
-            _gameSession.PassTime(10);
+            //_gameSession.PassTime(10);
             TimeOfDayToColourConverter();
         }
 

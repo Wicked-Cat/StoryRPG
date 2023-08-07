@@ -8,6 +8,8 @@ namespace Engine.Models
 {
     public class Obstacle
     {
+        public object Check { get; set; }
+
         public int Difficulty { get; set; }
         public enum Types { Skill, Characteristic, Item}
         public Types Type { get; set; }
@@ -15,14 +17,9 @@ namespace Engine.Models
         public Characteristic RequiredCharacteristic { get; set; }
         public Item RequiredItem { get; set; }
 
-        public Obstacle(int difficulty, Types type, Skill requiredSkill,
-            Characteristic requiredCharacteristic, Item requiredItem)
+        public Obstacle(object check)
         {
-            Difficulty = difficulty;
-            Type = type;
-            RequiredSkill = requiredSkill;
-            RequiredCharacteristic = requiredCharacteristic;
-            RequiredItem = requiredItem;
+            Check = check;
         }
     }
 }

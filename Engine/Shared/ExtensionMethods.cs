@@ -23,6 +23,10 @@ namespace Engine.Shared
         {
             return Convert.ToDouble(node.AttributeAsString(attributeName));
         }
+        public static bool AttributeAsBool(this XmlNode node, string attributeName)
+        {
+            return Convert.ToBoolean(node.AttributeAsString(attributeName));
+        }
 
     }
 }

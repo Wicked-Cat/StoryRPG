@@ -22,15 +22,13 @@ namespace Engine.Models
         public int ZCoordinate { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Region { get; set; }
-        public string Province { get; set; }
-        public string Country { get; set; }
         public List<Encounter> EncountersHere { get; set; } = new List<Encounter>();
         public List<EncounterPercent> AllEncountersHere { get; set; } = new List<EncounterPercent>();
         public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
         public List<MerchantPercent> AllMerchantsHere { get; set; } = new List<MerchantPercent>();
         public List<ItemQuantity> ItemsHere { get; set; } = new List<ItemQuantity>();
         public List<LocationItems> AllItemsHere { get; set; } = new List<LocationItems>();
+        public Challenge ChallengeHere { get; set; }
         public string EncountersText
         {
             get { return WriteEncounterText(); }
@@ -51,7 +49,6 @@ namespace Engine.Models
         public enum LandSeaSky { Land, Sea, Sky }
         public enum Depth { Underground, Aboveground }
         public enum Shelter { Interior, Exterior }
-        public enum Exits { Impassable, Passable, Climbable, Pickable }
         #endregion
 
         public Location(
@@ -59,19 +56,13 @@ namespace Engine.Models
             int yCoordinate,
             int zCoordinate,
             string name,
-            string description,
-            string region,
-            string province,
-            string country) 
+            string description) 
         {
             XCoordinate = xCoordinate;
             YCoordinate = yCoordinate;
             ZCoordinate = zCoordinate;
             Name = name;
             Description = description;
-            Region = region;
-            Province = province;
-            Country = country;
         }
 
         #region Creation Functions
@@ -99,7 +90,7 @@ namespace Engine.Models
                 AllMerchantsHere.Add(new MerchantPercent(merchantID, chanceOfEncounter));
             }
         }
-        public void AddItems(int itemID, int percent, int quantity, string respawns)
+        public void AddItems(int itemID, int percent, int quantity, bool respawns)
         {
 
             if(AllItemsHere.Exists(i => i.ID == itemID))
@@ -108,7 +99,7 @@ namespace Engine.Models
             }
             else
             {
-                    AllItemsHere.Add(new LocationItems(itemID, percent, quantity, Convert.ToBoolean(respawns)));
+                    AllItemsHere.Add(new LocationItems(itemID, percent, quantity, respawns));
 
             }
         }
@@ -141,12 +132,16 @@ namespace Engine.Models
             }
             ItemsText = WriteItemText();
         }
-        public Encounter GetEncounter()
+        public Encounter GetEncounter(string aString)
         {
-            if (!EncountersHere.Any())
-                return null;
+            if (EncountersHere.Any(e => e.Name.ToLower() == aString.ToLower()))
+                return EncountersHere.First(e => e.Name.ToLower() == aString.ToLower());
             else
-                return EncountersHere.Last();
+            {
+                return null;
+            }
+
+            return null;
             /*
             foreach (EncounterPercent encounter in EncountersHere)
             {

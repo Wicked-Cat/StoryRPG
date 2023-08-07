@@ -38,13 +38,12 @@ namespace Engine.Factories
                     node.AttributeAsInt("Y"),
                     node.AttributeAsInt("Z"),
                     node.AttributeAsString("Name"),
-                    node.SelectSingleNode("./Description")?.InnerText ?? "",
-                    node.AttributeAsString("Region"),
-                    node.AttributeAsString("Province"),
-                    node.AttributeAsString("Country"));
+                    node.SelectSingleNode("./Description")?.InnerText ?? "");
                 AddEncounters(location, node.SelectNodes("./Encounters/Encounter"));
                 AddMerchants(location, node.SelectNodes("./Merchants/Merchant"));
                 AddItems(location, node.SelectNodes("./Items/Item"));
+                AddChallenge(location, node.SelectNodes("./Challenge"));
+                AddObstacles(location.ChallengeHere, node.SelectNodes("./Challenge/Obstacles/Obstacle"));
                 world.AddLocation(location);
             }
         }
@@ -84,9 +83,66 @@ namespace Engine.Factories
                 location.AddItems(node.AttributeAsInt("ID"),
                     node.AttributeAsInt("Percent"),
                     node.AttributeAsInt("Quantity"),
-                    node.AttributeAsString("Respawns"));
+                    node.AttributeAsBool("Respawns"));
 
             }
+        }
+        private static void AddChallenge(Location location, XmlNodeList challengeHere)
+        {
+            if (challengeHere == null)
+                return;
+
+            foreach (XmlNode node in challengeHere)
+            {
+                location.ChallengeHere = new Challenge(node.AttributeAsString("Name"),
+                    node.AttributeAsString("Description"),
+                    node.AttributeAsBool("Resets"),
+                    (node.AttributeAsBool("Resets") == true ? node.AttributeAsInt("DaysUntilReset") : 0));
+
+                /*
+                XmlNodeList obstacleNodes = node.SelectNodes("./Obstacles/Obstacle");
+                foreach(XmlNode oNode in obstacleNodes)
+                {
+                    location.ChallengeHere.Obstacles.Add(new Obstacle(DetermineObstacleType(node.AttributeAsString("Check"))));
+                } */
+            }
+
+        }
+
+        private static void AddObstacles(Challenge challenge, XmlNodeList obstacles)
+        {
+            foreach(XmlNode node in obstacles)
+            {
+                challenge.Obstacles.Add(new Obstacle(DetermineObstacleType(node.AttributeAsString("Check"))));
+            }
+        }
+
+        private static object DetermineObstacleType(string aString)
+        {
+            bool parse = int.TryParse(aString, out int num);
+
+            if (parse)
+            {
+                Item item = ItemFactory.CreateGameItem(num);
+                if (item != null)
+                    return item;
+            }
+            else
+            {
+                if(CharacteristicFactory._characteristics.Any(c => c.Name.ToLower() == aString.ToLower()))
+                {
+                    return CharacteristicFactory._characteristics.First(c => c.Name.ToLower() == aString.ToLower());
+                }
+                else if(SkillFactory._skills.Any(s => s.Name.ToLower() == aString.ToLower()))
+                {
+                    return SkillFactory._skills.First(s => s.Name.ToLower() == aString.ToLower());
+                }
+                else
+                {
+                    throw new Exception($"No check with the name {aString}");
+                }
+            }
+            return null;
         }
     }
 }

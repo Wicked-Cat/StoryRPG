@@ -92,14 +92,6 @@ namespace Engine.ViewModels
                     _messageBroker.RaiseMessage("");
                     _messageBroker.RaiseMessage($"You encounter a {CurrentEncounter.Name}");
                     CurrentEncounter.Monsters[0].OnActionPerformed += OnMonsterAction;
-                    /*foreach(Monster monster in CurrentEncounter.Monsters)
-                    {
-                        if (monster.CheckSubscribers())
-                        {
-                            monster.OnActionPerformed += OnMonsterAction;
-                            //monster.OnKilled += OnMonsterKilled;
-                        }
-                    }*/
                 }
                 EncounterWatch();
                 OnPropertyChanged();
@@ -378,9 +370,9 @@ namespace Engine.ViewModels
             CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
 
         }
-        private void GetEncounterAtLocation()
+        private void GetEncounterAtLocation(string aString)
         {
-            CurrentEncounter = CurrentLocation.GetEncounter();
+            CurrentEncounter = CurrentLocation.GetEncounter(aString);
         }
 
         #endregion
@@ -388,6 +380,7 @@ namespace Engine.ViewModels
         #region Player Functions
         private void OnPlayerKilled(object sender, System.EventArgs eventArgs)
         {
+            PassTime(900);
             _messageBroker.RaiseMessage("");
             _messageBroker.RaiseMessage("You have been killed.");
             CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
@@ -748,13 +741,23 @@ namespace Engine.ViewModels
                         }
                     }
                     break;
-                case "encounter":
-                    GetEncounterAtLocation();
+                case "attack":
+                    GetEncounterAtLocation(noun);
                     break;
                 case "items":
                    foreach(LocationItems item in CurrentLocation.AllItemsHere)
                     {
                         _messageBroker.RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected } Respawns?{item.Respawns}");
+                    }
+                    break;
+                case "challenge":
+                    if (CurrentLocation.ChallengeHere != null)
+                    {
+                        _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Name}");
+                        foreach(Object obstacle  in CurrentLocation.ChallengeHere.Obstacles)
+                        {
+                            _messageBroker.RaiseMessage("ob");
+                        }
                     }
                     break;
                 default:
@@ -869,6 +872,7 @@ namespace Engine.ViewModels
         }
         public void MoveTo(string aString)
         {
+            PassTime(20);
             switch (aString.ToLower())
             {
                 case "north":
@@ -971,6 +975,7 @@ namespace Engine.ViewModels
         }
         public void Attack(string noun)
         {
+            PassTime(1);
             if (CurrentEncounter == null)
             {
                 _messageBroker.RaiseMessage("There is nothing to attack");
@@ -983,7 +988,7 @@ namespace Engine.ViewModels
             }
 
             Monster target = DetermineTarget(noun);
-            if (target != null)
+            if (target != null && !target.IsDead)
             {
                 _messageBroker.RaiseMessage("");
                 CurrentPlayer.Attack(target);
@@ -1303,6 +1308,32 @@ namespace Engine.ViewModels
 
         #endregion
 
+        private static object DetermineObstacleType(object aObject)
+        {
+            bool parse = int.TryParse(aObject.ToString(), out int num);
 
+            if (parse)
+            {
+                Item item = ItemFactory.CreateGameItem(num);
+                if (item != null)
+                    return item;
+            }
+            else
+            {
+                if (CharacteristicFactory._characteristics.Any(c => c.Name.ToLower() == aObject.ToString().ToLower()))
+                {
+                    return aObject as Characteristic;
+                }
+                else if (SkillFactory._skills.Any(s => s.Name.ToLower() == aObject.ToString().ToLower()))
+                {
+                    return aObject as Skill;
+                }
+                else
+                {
+                    throw new Exception($"No check with the name {aObject}");
+                }
+            }
+            return null;
+        }
     }
 }

@@ -39,7 +39,12 @@
 			<Property Name="Weapon"/>
 		</Properties>
 	</Item>
-		 
+
+	<Item ID="4001" Name="Gross Key" Value="0" Description="Covered in something gross">
+		<Properties>
+			<Property Name="Iron"/>
+		</Properties>
+	</Item>
 
 	<Item ID="2001" Name="Bread" Value="10" Description="Cold hard bread">
 		<Properties>

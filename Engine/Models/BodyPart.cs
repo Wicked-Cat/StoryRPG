@@ -24,5 +24,15 @@ namespace Engine.Models
             SubParts = new List<BodyPart>();
             Wounds = new List<Wound>();
         }
+
+        public BodyPart Clone()
+        {
+            BodyPart part = new BodyPart(Name, MaximumHealth, Coverage);
+            part.CurrentHealth = MaximumHealth;
+            part.SubParts = new List<BodyPart>();
+            part.Wounds = new List<Wound>();
+
+            return part;
+        }
     }
 }

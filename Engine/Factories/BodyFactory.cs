@@ -59,7 +59,6 @@ namespace Engine.Factories
                     }
                 }
 
-
                 if(node.SelectNodes("Parts/BodyPart/SubParts/SubPart") is XmlNodeList subParts)
                 {
                     var xmlNodesSubParts = subParts.Cast<XmlNode>().ToList();

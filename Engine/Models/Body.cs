@@ -32,7 +32,7 @@ namespace Engine.Models
             
             foreach (BodyPart part in Parts)
             {
-                body.Parts.Add(part);
+                body.Parts.Add(part.Clone());
             }
 
             return body;
