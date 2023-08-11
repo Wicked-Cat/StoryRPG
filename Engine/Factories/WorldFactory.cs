@@ -113,7 +113,9 @@ namespace Engine.Factories
         {
             foreach(XmlNode node in obstacles)
             {
-                challenge.Obstacles.Add(new Obstacle(DetermineObstacleType(node.AttributeAsString("Check"))));
+                challenge.Obstacles.Add(new Obstacle(DetermineObstacleType(node.AttributeAsString("Check")), 
+                    node.AttributeAsString("Description"),
+                    node.AttributeAsInt("CheckValue")));
             }
         }
 

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Engine.Factories;
+using Engine.Service;
 
 namespace Engine.Models
 {
@@ -158,6 +159,7 @@ namespace Engine.Models
             //if there was a problem, return the last encounter in the list
             return EncounterFactory.GetEncounter(EncountersHere.Last().EncounterID);*/
         }
+       
 
         #region Text Functions
         public string WriteEncounterText()

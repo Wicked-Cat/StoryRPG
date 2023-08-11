@@ -18,6 +18,7 @@ namespace Engine.ViewModels
         public event EventHandler OnInventoryOpened;
         public event EventHandler OnCharacterOpened;
         public event EventHandler<OnTradeEventArgs> OnTradeInitiated;
+        public event EventHandler<OnChallengeEventArgs> OnChallengeInitiated;
 
         #region Private Variables
         private Player _currentPlayer;
@@ -49,6 +50,7 @@ namespace Engine.ViewModels
                 }
             }
         }
+        public Location PreviousLocation { get; set; }
         public Location CurrentLocation
         {
             get { return _currentLocation; }
@@ -71,6 +73,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
                 foreach(Encounter encounter in CurrentLocation.EncountersHere)
                      _messageBroker.RaiseMessage($"{encounter.Name}");
+                ChallengeWatch();
 
             }
         }
@@ -111,6 +114,7 @@ namespace Engine.ViewModels
         }
         public Trade CurrentTrade { get; set; }
         public Time CurrentTime { get; set; }
+        public Challenge CurrentChallenge { get; set; }
         public string WrittenTime 
         {
             get { return _writtenTime; }
@@ -148,6 +152,7 @@ namespace Engine.ViewModels
             HasDownExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate - 1).Name : "";
         public bool HasEncounter => CurrentEncounter != null;
         public bool AreAllMonstersDead => CurrentEncounter.Monsters.All(m => m.IsDead == true);
+        public bool HasChallenge => CurrentLocation.ChallengeHere != null;
         #endregion
 
         #region Constructor
@@ -204,11 +209,19 @@ namespace Engine.ViewModels
 
         #endregion
 
-        /*public void RaiseMessage(string message)
+        public void WindowToSession(string aString)
         {
-            OnMessageRaised?.Invoke(this, new GameMessageEventArgs(message));
-            //if there is anything subscribed to OnMessageRaised, pass in itself and GameMessageEventArgs with the message
-        }*/
+            _messageBroker.RaiseMessage("");
+            _messageBroker.RaiseMessage(aString);
+            if (CurrentMerchant != null)
+                DoInTrade(aString);
+            else if (CurrentEncounter != null)
+                DoInCombat(aString);
+            else if (CurrentLocation.ChallengeHere != null)
+                DoInChallenge(aString);
+            else
+                Do(aString);
+        }
 
         #region Time Fuctions
         public void PassTime(int minutePassed)
@@ -354,9 +367,13 @@ namespace Engine.ViewModels
         }
         private void OnEncounterEnd()
         {
-            foreach (Monster monster in CurrentEncounter.Monsters)
-            {
+            Encounter tempEncounter = CurrentEncounter;
 
+
+            CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
+            EncounterWatch();
+            foreach (Monster monster in tempEncounter.Monsters)
+            {
                 _messageBroker.RaiseMessage("");
                 foreach (ItemQuantity item in monster.Inventory)
                 {
@@ -367,15 +384,54 @@ namespace Engine.ViewModels
                     }
                 }
             }
-            CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
+            //CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
 
         }
         private void GetEncounterAtLocation(string aString)
         {
             CurrentEncounter = CurrentLocation.GetEncounter(aString);
         }
-
         #endregion
+
+        public void ChallengeWatch()
+        {
+            int i;
+            if (CurrentLocation.ChallengeHere != null)
+            {
+                for (i = 1; i <= CurrentLocation.ChallengeHere.Obstacles.Count(); i++)
+                {
+                    CurrentLocation.ChallengeHere.Obstacles[i - 1].SelectionNumber = i;
+                }
+
+                foreach (Obstacle obstacle in CurrentLocation.ChallengeHere.Obstacles)
+                    _messageBroker.RaiseMessage($"{obstacle.SelectionNumber}. {obstacle.Description}");
+                _messageBroker.RaiseMessage($"{i}. Leave");
+
+                OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
+                if(CurrentLocation.ChallengeHere != null)
+                {
+                    foreach (Obstacle obstacle in CurrentLocation.ChallengeHere.Obstacles)
+                       _messageBroker.RaiseMessage($"{obstacle.SelectionNumber}. {obstacle.Description}");
+                       _messageBroker.RaiseMessage($"{i}. Leave");
+                }
+            }
+            else
+            {
+                OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
+            }
+        }
+        public void OnChallengeSucess()
+        {
+            if (CurrentChallenge.ChallengeCompleted)
+            {
+                
+            }
+        }
+        public void OnChallengeExit()
+        {
+            CurrentLocation = PreviousLocation;
+            ChallengeWatch();
+        }
 
         #region Player Functions
         private void OnPlayerKilled(object sender, System.EventArgs eventArgs)
@@ -390,17 +446,7 @@ namespace Engine.ViewModels
         {
             _messageBroker.RaiseMessage(result);
         }
-        public void WindowToSession(string aString)
-        {
-            _messageBroker.RaiseMessage("");
-            _messageBroker.RaiseMessage(aString);
-            if (CurrentMerchant != null)
-                DoInTrade(aString);
-            else if (CurrentEncounter != null)
-                DoInCombat(aString);
-            else
-                Do(aString);
-        }
+      
         #endregion
 
         #region Player Action Functions
@@ -608,6 +654,84 @@ namespace Engine.ViewModels
                     break;
             }
         }
+        public void DoInChallenge(string aString)
+        {
+            if (aString == "")
+                return;
+            string verb = "";
+            string noun = "";
+
+            if (aString.IndexOf(" ") > 0)
+            {
+                string[] temp = aString.Split(new char[] { ' ' }, 2);
+                verb = temp[0].ToLower();
+                noun = temp[1].ToLower();
+            }
+            else
+            {
+                verb = aString.ToLower();
+            }
+
+            bool parse = int.TryParse(verb, out int num);
+            int maxnum = CurrentLocation.ChallengeHere.Obstacles.Count() + 1;
+
+            if (parse)
+            {
+                if(num < maxnum)
+                {
+                    //function to do challange ehre
+                }
+                else
+                {
+                    OnChallengeExit();
+                }
+            }
+            else
+            {
+                switch (verb)
+                {
+                    case "?":
+                    case "help":
+                        //WriteCommands();
+                        break;
+                    case "examine":
+                        Examine(noun);
+                        break;
+                    case "eat":
+                        //Eat(noun);
+                        break;
+                    case "drink":
+                        // Drink(noun);
+                        break;
+                    case "bag":
+                    case "inventory":
+                        Inventory();
+                        break;
+                    case "character":
+                    case "char":
+                        Character();
+                        break;
+                    case "use":
+                        //Use(noun);
+                        break;
+                    case "drop":
+                        Drop(noun);
+                        break;
+                    case "quit":
+                        Program.GameState = Program.GameStates.Quit;
+                        break;
+                    case "fullheal":
+                        CurrentPlayer.FullHeal();
+                        break;
+                    case "equip":
+                        Equip(noun);
+                        break;
+                    case "unequip":
+                        Unequip(noun);
+                        break;
+                }
+            }
+        }
         public void Do(string aString)
         {
             if (aString == "")
@@ -724,7 +848,7 @@ namespace Engine.ViewModels
                     break;
                 case "increaseskill":
                     CurrentPlayer.AddExperienceToSkill(noun, num);
-                        break;
+                    break;
                 case "increasechar":
                     CurrentPlayer.AddExperienceToCharacteristic(noun, num);
                     break;
@@ -732,10 +856,10 @@ namespace Engine.ViewModels
                     Spawn(noun);
                     break;
                 case "self":
-                    foreach(BodyPart part in CurrentPlayer.CurrentBody.Parts)
+                    foreach (BodyPart part in CurrentPlayer.CurrentBody.Parts)
                     {
                         _messageBroker.RaiseMessage($"{part.Name} {part.CurrentHealth}/{part.MaximumHealth}");
-                        foreach(BodyPart subPart in part.SubParts)
+                        foreach (BodyPart subPart in part.SubParts)
                         {
                             _messageBroker.RaiseMessage($"     {subPart.Name} {subPart.CurrentHealth}/{subPart.MaximumHealth}");
                         }
@@ -745,18 +869,23 @@ namespace Engine.ViewModels
                     GetEncounterAtLocation(noun);
                     break;
                 case "items":
-                   foreach(LocationItems item in CurrentLocation.AllItemsHere)
+                    foreach (LocationItems item in CurrentLocation.AllItemsHere)
                     {
-                        _messageBroker.RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected } Respawns?{item.Respawns}");
+                        _messageBroker.RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected} Respawns?{item.Respawns}");
                     }
                     break;
                 case "challenge":
                     if (CurrentLocation.ChallengeHere != null)
                     {
                         _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Name}");
-                        foreach(Object obstacle  in CurrentLocation.ChallengeHere.Obstacles)
+                        foreach (var obstacle in CurrentLocation.ChallengeHere.Obstacles)
                         {
-                            _messageBroker.RaiseMessage("ob");
+                            if (obstacle.Check is Item)
+                                _messageBroker.RaiseMessage($"{(obstacle.Check as Item).Name} {obstacle.CheckValue}");
+                            if (obstacle.Check is Skill)
+                                _messageBroker.RaiseMessage($"{(obstacle.Check as Skill).Name} {obstacle.CheckValue}");
+                            if (obstacle.Check is Characteristic)
+                                _messageBroker.RaiseMessage($"{(obstacle.Check as Characteristic).Name} {obstacle.CheckValue}");
                         }
                     }
                     break;
@@ -872,6 +1001,7 @@ namespace Engine.ViewModels
         }
         public void MoveTo(string aString)
         {
+            PreviousLocation = CurrentLocation;
             PassTime(20);
             switch (aString.ToLower())
             {
@@ -1308,32 +1438,7 @@ namespace Engine.ViewModels
 
         #endregion
 
-        private static object DetermineObstacleType(object aObject)
-        {
-            bool parse = int.TryParse(aObject.ToString(), out int num);
 
-            if (parse)
-            {
-                Item item = ItemFactory.CreateGameItem(num);
-                if (item != null)
-                    return item;
-            }
-            else
-            {
-                if (CharacteristicFactory._characteristics.Any(c => c.Name.ToLower() == aObject.ToString().ToLower()))
-                {
-                    return aObject as Characteristic;
-                }
-                else if (SkillFactory._skills.Any(s => s.Name.ToLower() == aObject.ToString().ToLower()))
-                {
-                    return aObject as Skill;
-                }
-                else
-                {
-                    throw new Exception($"No check with the name {aObject}");
-                }
-            }
-            return null;
-        }
+       
     }
 }

@@ -25,8 +25,10 @@ namespace StoryRPG
         EquipmentWindow equipmentWindow;
         TradeWindow tradeWindow;
         SkillWindow skillWindow;
+        ChallengeWindow challengeWindow;
 
         private bool IsCombatWindowOpen;
+        private bool IsChallengeWindowOpen;
 
         private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
 
@@ -38,24 +40,36 @@ namespace StoryRPG
             _gameSession.OnInventoryOpened += OpenInventoryScreen;
             _gameSession.OnCharacterOpened += OpenCharacterScreen;
             _gameSession.OnTradeInitiated += TradeWindowControl;
+            _gameSession.OnChallengeInitiated += ChallengeWindowControl;
 
             DataContext = _gameSession; //built in propery for xaml f/iles
             CreateTimer();
             TimeOfDayToColourConverter();
+
+            combatWindow = new CombatWindow();
+            combatWindow.DataContext = _gameSession;
+            tradeWindow = new TradeWindow();
+            tradeWindow.DataContext = _gameSession;
+            challengeWindow = new ChallengeWindow();
+            challengeWindow.DataContext = _gameSession;
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
             if (IsCombatWindowOpen)
             {
-                GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
-                GameMessages.ScrollToEnd();
                 combatWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 combatWindow.GameMessages.ScrollToEnd();
+            }
+            else if (IsChallengeWindowOpen)
+            {
+                challengeWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
+                challengeWindow.GameMessages.ScrollToEnd();
             }
             else
             {
                 GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 GameMessages.ScrollToEnd();
+                combatWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
             }
         }
         private void OnEnterPressed(object sender, KeyEventArgs e)
@@ -138,11 +152,12 @@ namespace StoryRPG
         {
             if (encounter.Encounter != null && _gameSession.AreAllMonstersDead == false)
             {
+                combatWindow.GameMessages.Document.Blocks.Clear();
                 IsCombatWindowOpen = true;
-                combatWindow = new CombatWindow();
-                combatWindow.Owner = this;
-                combatWindow.DataContext = _gameSession;
-                combatWindow.ShowDialog();
+               // combatWindow = new CombatWindow();
+               combatWindow.Owner = this;
+               combatWindow.DataContext = _gameSession;
+               combatWindow.ShowDialog();
             }
             else
             {
@@ -157,9 +172,9 @@ namespace StoryRPG
         {
             if (_gameSession.CurrentMerchant != null)
             {
-                tradeWindow = new TradeWindow();
+                //tradeWindow = new TradeWindow();
                 tradeWindow.Owner = this;
-                tradeWindow.DataContext = _gameSession;
+                //tradeWindow.DataContext = _gameSession;
                 tradeWindow.ShowDialog();
             }
             else
@@ -167,6 +182,29 @@ namespace StoryRPG
                 if (tradeWindow != null)
                 {
                     tradeWindow.Close();
+                }
+            }
+        }
+        private void ChallengeWindowControl(object sender, EventArgs e)
+        {
+            if(_gameSession.CurrentLocation.ChallengeHere != null)
+            {
+                if (_gameSession.CurrentLocation.ChallengeHere.ChallengeCompleted == false)
+                {
+                    challengeWindow.GameMessages.Document.Blocks.Clear();
+                    IsChallengeWindowOpen = true;
+                   // challengeWindow = new ChallengeWindow();
+                    challengeWindow.Owner = this;
+                   // challengeWindow.DataContext = _gameSession;
+                    challengeWindow.ShowDialog();
+                }
+            }
+            else
+            {
+                if(challengeWindow != null)
+                {
+                    IsChallengeWindowOpen=false;
+                    challengeWindow.Close();
                 }
             }
         }

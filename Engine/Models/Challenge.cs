@@ -13,16 +13,24 @@ namespace Engine.Models
         public List<Obstacle> Obstacles { get; set; }
         public bool Resets { get; set; }
         public int DaysUntilReset { get; set; }
-        public bool Passed { get; set; }
+        public bool ChallengeCompleted => Obstacles.Any(o => o.Passed == true);
 
         public Challenge(string name, string description, bool resets,
-            int daysUntilReset = 0, bool passed = false)
+            int daysUntilReset = 0)
         {
             Name = name;
             Description = description;
             Obstacles = new List<Obstacle>();
             Resets = resets;
             DaysUntilReset = daysUntilReset;
+        }
+
+        public void ResetChallenge()
+        {
+            foreach (var obstacle in Obstacles)
+            {
+                obstacle.Passed = false;
+            }
         }
     }
 }

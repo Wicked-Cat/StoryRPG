@@ -9,17 +9,16 @@ namespace Engine.Models
     public class Obstacle
     {
         public object Check { get; set; }
+        public string Description { get; set; }
+        public int CheckValue { get; set; }
+        public bool Passed { get; set; }
+        public int SelectionNumber { get; set; }
 
-        public int Difficulty { get; set; }
-        public enum Types { Skill, Characteristic, Item}
-        public Types Type { get; set; }
-        public Skill RequiredSkill { get; set; }
-        public Characteristic RequiredCharacteristic { get; set; }
-        public Item RequiredItem { get; set; }
-
-        public Obstacle(object check)
+        public Obstacle(object check, string description, int checkValue)
         {
             Check = check;
+            CheckValue = checkValue;
+            Description = description;
         }
     }
 }

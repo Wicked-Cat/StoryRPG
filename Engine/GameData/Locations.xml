@@ -49,7 +49,7 @@
 		<Challenge Name="Blocked sewer grate" Resets="false"
 				   Description="A locked grate. You can use a key, pick the lock, break the door, be smol">
 			<Obstacles>
-				<Obstacle Check="4001" Description="Use key"/>
+				<Obstacle Check="4001" CheckValue="1" Description="Use key"/>
 				<Obstacle Check="Lock Picker" CheckValue="10" Description="Pick the lock"/>
 				<Obstacle Check="Strength" CheckValue="30" Description="Bust down the door"/>
 			</Obstacles>
