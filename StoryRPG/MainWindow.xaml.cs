@@ -41,6 +41,7 @@ namespace StoryRPG
             _gameSession.OnCharacterOpened += OpenCharacterScreen;
             _gameSession.OnTradeInitiated += TradeWindowControl;
             _gameSession.OnChallengeInitiated += ChallengeWindowControl;
+            _gameSession.OnQuit += QuitGame;
 
             DataContext = _gameSession; //built in propery for xaml f/iles
             CreateTimer();
@@ -164,7 +165,7 @@ namespace StoryRPG
                 if (combatWindow != null)
                 {
                     IsCombatWindowOpen = false;
-                    combatWindow.Close();
+                    combatWindow.Hide();
                 }
             }
         }
@@ -181,7 +182,7 @@ namespace StoryRPG
             {
                 if (tradeWindow != null)
                 {
-                    tradeWindow.Close();
+                    tradeWindow.Hide();
                 }
             }
         }
@@ -204,9 +205,13 @@ namespace StoryRPG
                 if(challengeWindow != null)
                 {
                     IsChallengeWindowOpen=false;
-                    challengeWindow.Close();
+                    challengeWindow.Hide();
                 }
             }
+        }
+        private void QuitGame(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
         }
 
         #endregion

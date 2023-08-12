@@ -19,6 +19,7 @@ namespace Engine.ViewModels
         public event EventHandler OnCharacterOpened;
         public event EventHandler<OnTradeEventArgs> OnTradeInitiated;
         public event EventHandler<OnChallengeEventArgs> OnChallengeInitiated;
+        public event EventHandler OnQuit;
 
         #region Private Variables
         private Player _currentPlayer;
@@ -73,7 +74,9 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
                 foreach(Encounter encounter in CurrentLocation.EncountersHere)
                      _messageBroker.RaiseMessage($"{encounter.Name}");
+                GenerateChallengeText();
                 ChallengeWatch();
+                GenerateChallengeText();
 
             }
         }
@@ -93,12 +96,15 @@ namespace Engine.ViewModels
                 if ( _currentEncounter != null)
                 {
                     _messageBroker.RaiseMessage("");
-                    _messageBroker.RaiseMessage($"You encounter a {CurrentEncounter.Name}");
                     CurrentEncounter.Monsters[0].OnActionPerformed += OnMonsterAction;
                 }
-                EncounterWatch();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(HasEncounter));
+                EncounterWatch();
+                if( _currentEncounter != null )
+                {
+                    _messageBroker.RaiseMessage("hi");
+                }
             }
         }
         public Merchant CurrentMerchant
@@ -337,7 +343,6 @@ namespace Engine.ViewModels
         public void EncounterWatch()
         {
             OnEncounterEngaged?.Invoke(this, new OnEncounterEventArgs(CurrentEncounter));
-
         }
         public void OnMonsterAction(object sender, string result)
         {
@@ -368,10 +373,9 @@ namespace Engine.ViewModels
         private void OnEncounterEnd()
         {
             Encounter tempEncounter = CurrentEncounter;
-
-
             CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
             EncounterWatch();
+            OnPropertyChanged(nameof(CurrentLocation.EncountersText));
             foreach (Monster monster in tempEncounter.Monsters)
             {
                 _messageBroker.RaiseMessage("");
@@ -384,8 +388,6 @@ namespace Engine.ViewModels
                     }
                 }
             }
-            //CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
-
         }
         private void GetEncounterAtLocation(string aString)
         {
@@ -394,6 +396,10 @@ namespace Engine.ViewModels
         #endregion
 
         public void ChallengeWatch()
+        {
+                OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
+        }
+        public void GenerateChallengeText()
         {
             int i;
             if (CurrentLocation.ChallengeHere != null)
@@ -406,19 +412,8 @@ namespace Engine.ViewModels
                 foreach (Obstacle obstacle in CurrentLocation.ChallengeHere.Obstacles)
                     _messageBroker.RaiseMessage($"{obstacle.SelectionNumber}. {obstacle.Description}");
                 _messageBroker.RaiseMessage($"{i}. Leave");
+            }
 
-                OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
-                if(CurrentLocation.ChallengeHere != null)
-                {
-                    foreach (Obstacle obstacle in CurrentLocation.ChallengeHere.Obstacles)
-                       _messageBroker.RaiseMessage($"{obstacle.SelectionNumber}. {obstacle.Description}");
-                       _messageBroker.RaiseMessage($"{i}. Leave");
-                }
-            }
-            else
-            {
-                OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
-            }
         }
         public void OnChallengeSucess()
         {
@@ -829,7 +824,7 @@ namespace Engine.ViewModels
                     Drop(noun);
                     break;
                 case "quit":
-                    Program.GameState = Program.GameStates.Quit;
+                    Quit();
                     break;
                 case "fullheal":
                     CurrentPlayer.FullHeal();
@@ -1087,6 +1082,10 @@ namespace Engine.ViewModels
             {
                 _messageBroker.RaiseMessage("There is nothing to unequip");
             }
+        }
+        public void Quit()
+        {
+            OnQuit?.Invoke(this, System.EventArgs.Empty);
         }
 
         #endregion
