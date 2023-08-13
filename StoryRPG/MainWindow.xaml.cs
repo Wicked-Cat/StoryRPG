@@ -56,12 +56,12 @@ namespace StoryRPG
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
-            if (IsCombatWindowOpen)
+            if (combatWindow.Visibility == Visibility.Visible)
             {
                 combatWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 combatWindow.GameMessages.ScrollToEnd();
             }
-            else if (IsChallengeWindowOpen)
+            else if (challengeWindow.Visibility == Visibility.Visible)
             {
                 challengeWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 challengeWindow.GameMessages.ScrollToEnd();
@@ -70,7 +70,6 @@ namespace StoryRPG
             {
                 GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 GameMessages.ScrollToEnd();
-                combatWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
             }
         }
         private void OnEnterPressed(object sender, KeyEventArgs e)
@@ -151,21 +150,18 @@ namespace StoryRPG
         }
         private void CombatWindowControl(object sender, OnEncounterEventArgs encounter)
         {
-            if (encounter.Encounter != null && _gameSession.AreAllMonstersDead == false)
+            if(combatWindow.Visibility == Visibility.Visible)
             {
-                combatWindow.GameMessages.Document.Blocks.Clear();
-                IsCombatWindowOpen = true;
-               // combatWindow = new CombatWindow();
-               combatWindow.Owner = this;
-               combatWindow.DataContext = _gameSession;
-               combatWindow.ShowDialog();
+                if(_gameSession.CurrentEncounter == null || _gameSession.AreAllMonstersDead)
+                    combatWindow.Hide();
             }
             else
             {
-                if (combatWindow != null)
+                if(_gameSession.CurrentEncounter != null)
                 {
-                    IsCombatWindowOpen = false;
-                    combatWindow.Hide();
+                    combatWindow.GameMessages.Document.Blocks.Clear();
+                    combatWindow.Owner = this;
+                    combatWindow.Show();
                 }
             }
         }
@@ -176,7 +172,7 @@ namespace StoryRPG
                 //tradeWindow = new TradeWindow();
                 tradeWindow.Owner = this;
                 //tradeWindow.DataContext = _gameSession;
-                tradeWindow.ShowDialog();
+                tradeWindow.Show();
             }
             else
             {
@@ -188,26 +184,20 @@ namespace StoryRPG
         }
         private void ChallengeWindowControl(object sender, EventArgs e)
         {
-            if(_gameSession.CurrentLocation.ChallengeHere != null)
-            {
-                if (_gameSession.CurrentLocation.ChallengeHere.ChallengeCompleted == false)
+           if (challengeWindow.Visibility == Visibility.Visible)
+           {
+                if (_gameSession.CurrentLocation.ChallengeHere == null || _gameSession.CurrentLocation.ChallengeHere.ChallengeCompleted)
+                    challengeWindow.Hide();
+           }
+           else
+           {
+                if (_gameSession.CurrentLocation.ChallengeHere != null && _gameSession.CurrentLocation.ChallengeHere.ChallengeCompleted == false)
                 {
                     challengeWindow.GameMessages.Document.Blocks.Clear();
-                    IsChallengeWindowOpen = true;
-                   // challengeWindow = new ChallengeWindow();
                     challengeWindow.Owner = this;
-                   // challengeWindow.DataContext = _gameSession;
-                    challengeWindow.ShowDialog();
+                    challengeWindow.Show();
                 }
-            }
-            else
-            {
-                if(challengeWindow != null)
-                {
-                    IsChallengeWindowOpen=false;
-                    challengeWindow.Hide();
-                }
-            }
+           }
         }
         private void QuitGame(object sender, EventArgs e)
         {

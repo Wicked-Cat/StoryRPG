@@ -7,6 +7,7 @@ using Engine.Factories;
 using StoryRPG;
 using System.Collections.ObjectModel;
 using Engine.Service;
+using Newtonsoft.Json;
 
 namespace Engine.ViewModels
 {
@@ -74,9 +75,10 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
                 foreach(Encounter encounter in CurrentLocation.EncountersHere)
                      _messageBroker.RaiseMessage($"{encounter.Name}");
-                GenerateChallengeText();
                 ChallengeWatch();
-                GenerateChallengeText();
+                if(CurrentLocation.ChallengeHere != null)
+                     if (!CurrentLocation.ChallengeHere.ChallengeCompleted)
+                         GenerateChallengeText();
 
             }
         }
@@ -103,7 +105,7 @@ namespace Engine.ViewModels
                 EncounterWatch();
                 if( _currentEncounter != null )
                 {
-                    _messageBroker.RaiseMessage("hi");
+                    _messageBroker.RaiseMessage($"You encounter a {CurrentEncounter.Name}");
                 }
             }
         }
@@ -223,14 +225,14 @@ namespace Engine.ViewModels
                 DoInTrade(aString);
             else if (CurrentEncounter != null)
                 DoInCombat(aString);
-            else if (CurrentLocation.ChallengeHere != null)
+            else if (CurrentLocation.ChallengeHere != null && !CurrentLocation.ChallengeHere.ChallengeCompleted)
                 DoInChallenge(aString);
             else
                 Do(aString);
         }
 
         #region Time Fuctions
-        public void PassTime(int minutePassed)
+        private void PassTime(int minutePassed)
         {
                 for (int i = 0; i < minutePassed; i++)
                 {
@@ -271,7 +273,7 @@ namespace Engine.ViewModels
         #endregion
 
         #region Movement Functions
-        public void MoveNorth()
+        private void MoveNorth()
         {
             if (HasNorthExit)
             {
@@ -282,7 +284,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
-        public void MoveSouth()
+        private void MoveSouth()
         {
             if (HasSouthExit)
             {
@@ -293,7 +295,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
-        public void MoveEast()
+        private void MoveEast()
         {
             if (HasEastExit)
             {
@@ -304,7 +306,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
-        public void MoveWest()
+        private void MoveWest()
         {
             if (HasWestExit)
             {
@@ -315,7 +317,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
-        public void MoveUp()
+        private void MoveUp()
         {
             if (HasUpExit)
             {
@@ -326,7 +328,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("There is no exit that way");
             }
         }
-        public void MoveDown()
+        private void MoveDown()
         {
             if (HasDownExit)
             {
@@ -340,11 +342,11 @@ namespace Engine.ViewModels
         #endregion
 
         #region Encounter Functions
-        public void EncounterWatch()
+        private void EncounterWatch()
         {
             OnEncounterEngaged?.Invoke(this, new OnEncounterEventArgs(CurrentEncounter));
         }
-        public void OnMonsterAction(object sender, string result)
+        private void OnMonsterAction(object sender, string result)
         {
             _messageBroker.RaiseMessage(result);
         }
@@ -395,11 +397,11 @@ namespace Engine.ViewModels
         }
         #endregion
 
-        public void ChallengeWatch()
+        private void ChallengeWatch()
         {
                 OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
         }
-        public void GenerateChallengeText()
+        private void GenerateChallengeText()
         {
             int i;
             if (CurrentLocation.ChallengeHere != null)
@@ -415,14 +417,60 @@ namespace Engine.ViewModels
             }
 
         }
-        public void OnChallengeSucess()
+        private void ChallengeTest(int num)
+        {
+            if (CurrentLocation.ChallengeHere.Obstacles[num - 1].Check is Item)
+            {
+                Item item = CurrentLocation.ChallengeHere.Obstacles[num - 1].Check as Item;
+                int quantity = CurrentLocation.ChallengeHere.Obstacles[num - 1].CheckValue;
+                if (CurrentPlayer.HasItem(item.Name))
+                {
+                    _messageBroker.RaiseMessage($"you use the {item.Name}");
+                    CurrentLocation.ChallengeHere.Obstacles[num - 1].Passed = true;
+                }
+                else
+                {
+                    _messageBroker.RaiseMessage($"You do not have the {item.Name}");
+                    return;
+                }
+            }
+            else if (CurrentLocation.ChallengeHere.Obstacles[num - 1].Check is Skill)
+            {
+                Skill skill = CurrentLocation.ChallengeHere.Obstacles[num - 1].Check as Skill;
+                if(CurrentPlayer.Skills.First(s => s.Name == skill.Name).EffectiveLevel >= CurrentLocation.ChallengeHere.Obstacles[num - 1].CheckValue)
+                {
+                    CurrentLocation.ChallengeHere.Obstacles[num - 1].Passed = true;
+                }
+                else
+                {
+                    _messageBroker.RaiseMessage($"Your {skill.Name} skill is not high enough");
+                    return;
+                }
+            }
+            else if (CurrentLocation.ChallengeHere.Obstacles[num - 1].Check is Characteristic)
+            {
+                Characteristic characteristiic = CurrentLocation.ChallengeHere.Obstacles[num - 1].Check as Characteristic;
+                if (CurrentPlayer.Characteristics.First(c => c.Name == characteristiic.Name).EffectiveLevel >= CurrentLocation.ChallengeHere.Obstacles[num - 1].CheckValue)
+                {
+                    CurrentLocation.ChallengeHere.Obstacles[num - 1].Passed = true;
+                }
+                _messageBroker.RaiseMessage($"Your {characteristiic.Name} level is not high enough");
+                return;
+            }
+            ChallengeWatch();
+        }
+        private void OnChallengeSucess()
         {
             if (CurrentChallenge.ChallengeCompleted)
             {
                 
             }
         }
-        public void OnChallengeExit()
+        private void OnChallengeFailure()
+        {
+
+        }
+        private void OnChallengeExit()
         {
             CurrentLocation = PreviousLocation;
             ChallengeWatch();
@@ -437,17 +485,17 @@ namespace Engine.ViewModels
             CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
             CurrentPlayer.FullHeal();
         }
-        public void OnPlayerAction(object sender, string result)
+        private void OnPlayerAction(object sender, string result)
         {
             _messageBroker.RaiseMessage(result);
         }
-      
+
         #endregion
 
         #region Player Action Functions
 
         #region Do
-        public void DoInCombat(string aString)
+        private void DoInCombat(string aString)
         {
             if (aString == "")
                 return;
@@ -532,7 +580,7 @@ namespace Engine.ViewModels
                     break;
             }
         }
-        public void DoInTrade(string aString)
+        private void DoInTrade(string aString)
         {
             if (aString == "")
                 return;
@@ -649,7 +697,7 @@ namespace Engine.ViewModels
                     break;
             }
         }
-        public void DoInChallenge(string aString)
+        private void DoInChallenge(string aString)
         {
             if (aString == "")
                 return;
@@ -674,7 +722,7 @@ namespace Engine.ViewModels
             {
                 if(num < maxnum)
                 {
-                    //function to do challange ehre
+                    ChallengeTest(num);
                 }
                 else
                 {
@@ -727,7 +775,7 @@ namespace Engine.ViewModels
                 }
             }
         }
-        public void Do(string aString)
+        private void Do(string aString)
         {
             if (aString == "")
                 return;
@@ -737,7 +785,7 @@ namespace Engine.ViewModels
             string tempNum = "";
             int num = 1;
 
-            if (aString.IndexOf(" ") > 0)
+            if (aString.IndexOf(" ") > 0) //if there is a space in the string, split the string into two partsb
             {
                 string[] temp = aString.Split(new char[] { ' ' }, 2);
                 verb = temp[0].ToLower();
@@ -748,7 +796,7 @@ namespace Engine.ViewModels
                 verb = aString.ToLower();
             }
 
-            if (noun.IndexOf(" ") > 0) //split to be acted on into two sections and determine if a number is involved
+            if (noun.IndexOf(" ") > 0) //if the split noun has a space, split it again and determine if a number is involved
             {
                 string[] temp = noun.Split(new char[] { ' ' }, 2);
                 tempNum = temp[0].ToLower();
@@ -891,7 +939,7 @@ namespace Engine.ViewModels
         }
         #endregion
 
-        public void Examine(string aString)
+        private void Examine(string aString)
         {
             Item item = CurrentPlayer.FindNumberedItem(aString);
             bool IsItem = false;
@@ -950,7 +998,7 @@ namespace Engine.ViewModels
                 }
             }
         }
-        public void Spawn(string aString)
+        private void Spawn(string aString)
         {
             int itemID = ItemFactory.ItemID(aString);
             if (itemID != default)
@@ -961,7 +1009,7 @@ namespace Engine.ViewModels
             else
                 _messageBroker.RaiseMessage($"{aString} does not exist");
         }
-        public void Pickup(string aString)
+        private void Pickup(string aString)
         {
             Item item = ItemFactory.GetItem(aString);
             if (item != null) //if item exists
@@ -980,7 +1028,7 @@ namespace Engine.ViewModels
             else
                 _messageBroker.RaiseMessage($"{aString} does not exist");
         }
-        public void Drop(string aString)
+        private void Drop(string aString)
         {
             Item item = CurrentPlayer.FindNumberedItem(aString);
             if (item != default)
@@ -994,7 +1042,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage($"You do not have any {aString}.");
             }
         }
-        public void MoveTo(string aString)
+        private void MoveTo(string aString)
         {
             PreviousLocation = CurrentLocation;
             PassTime(20);
@@ -1022,15 +1070,15 @@ namespace Engine.ViewModels
                     break;
             }
         }
-        public void Inventory()
+        private void Inventory()
         {
             OnInventoryOpened?.Invoke(this, System.EventArgs.Empty);
         }
-        public void Character()
+        private void Character()
         {
             OnCharacterOpened?.Invoke(this, System.EventArgs.Empty);
         }
-        public void Equip(string aString)
+        private void Equip(string aString)
         {
             Item item = CurrentPlayer.FindNumberedItem(aString);
 
@@ -1063,7 +1111,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage($"You do not have a {aString}");
             }
         }
-        public void Unequip(string aString)
+        private void Unequip(string aString)
         {
             if(CurrentPlayer.EquippedWeapon != null )
             {
@@ -1083,7 +1131,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("There is nothing to unequip");
             }
         }
-        public void Quit()
+        private void Quit()
         {
             OnQuit?.Invoke(this, System.EventArgs.Empty);
         }
@@ -1102,7 +1150,7 @@ namespace Engine.ViewModels
             }
             return null;
         }
-        public void Attack(string noun)
+        private void Attack(string noun)
         {
             PassTime(1);
             if (CurrentEncounter == null)
@@ -1149,7 +1197,7 @@ namespace Engine.ViewModels
             }
 
         }
-        public void Flee()
+        private void Flee()
         {
             _messageBroker.RaiseMessage($"You flee from the {CurrentEncounter.Name}");
             CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
@@ -1159,11 +1207,11 @@ namespace Engine.ViewModels
         #endregion
 
         #region Trade Functions
-        public void TradeWatch()
+        private void TradeWatch()
         {
             OnTradeInitiated?.Invoke(this, new OnTradeEventArgs(CurrentTrade));
         }
-        public void Trade(string aString)
+        private void Trade(string aString)
         {
             if (CurrentLocation.MerchantsHere.Any(m => m.Name.ToLower() == aString.ToLower()))
             {
@@ -1175,7 +1223,7 @@ namespace Engine.ViewModels
             }
             
         }
-        public void Buy(string aString, int num)
+        private void Buy(string aString, int num)
         {
             if (CurrentMerchant != null) //if a trade is in progress
             {
@@ -1209,7 +1257,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
-        public void Sell(string aString, int num)
+        private void Sell(string aString, int num)
         {
             if (CurrentMerchant != null)
             {
@@ -1244,7 +1292,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
-        public void RemoveBuy(string aString, int num)
+        private void RemoveBuy(string aString, int num)
         {
             if (CurrentMerchant != null) //if a trade is in progress
             {
@@ -1278,7 +1326,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
-        public void RemoveSell(string aString, int num) 
+        private void RemoveSell(string aString, int num) 
         {
             if (CurrentMerchant != null) //if a trade is in progress
             {
@@ -1312,7 +1360,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("You are not trading with a merchant");
             }
         }
-        public void ClearTrade()
+        private void ClearTrade()
         {
             foreach (ItemQuantity item in CurrentTrade.ToBuyInventory.ToList())
             {
@@ -1333,7 +1381,7 @@ namespace Engine.ViewModels
                 }
             }
         }
-        public void Exchange()
+        private void Exchange()
         {
             if (CurrentTrade.TotalBuyValue <= CurrentTrade.TotalSellValue)
             {
@@ -1364,7 +1412,7 @@ namespace Engine.ViewModels
                 _messageBroker.RaiseMessage("The merchant does not accept your offer");
             }
         }
-        public void CancelTrade()
+        private void CancelTrade()
         {
             if (CurrentTrade != null)
             {
@@ -1394,7 +1442,7 @@ namespace Engine.ViewModels
             }
             CurrentMerchant = null;
         }
-        public void DetermineItemValues()
+        private void DetermineItemValues()
         {
             if (CurrentMerchant != null)
             {
@@ -1437,7 +1485,5 @@ namespace Engine.ViewModels
 
         #endregion
 
-
-       
     }
 }
