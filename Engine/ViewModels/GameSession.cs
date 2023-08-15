@@ -27,7 +27,6 @@ namespace Engine.ViewModels
         private Location _currentLocation;
         private Encounter _currentEncounter;
         private Merchant _currentMerchant;
-        private Time _currentTime;
         private string _writtenTime;
 
         #endregion
@@ -72,7 +71,8 @@ namespace Engine.ViewModels
                 OnPropertyChanged(nameof(WestExit));
                 OnPropertyChanged(nameof(UpExit));
                 OnPropertyChanged(nameof(DownExit));
-                _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
+                if(CurrentLocation.ChallengeHere == null || CurrentLocation.ChallengeHere.ChallengeCompleted)
+                     _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
                 foreach(Encounter encounter in CurrentLocation.EncountersHere)
                      _messageBroker.RaiseMessage($"{encounter.Name}");
                 ChallengeWatch();
@@ -122,7 +122,6 @@ namespace Engine.ViewModels
         }
         public Trade CurrentTrade { get; set; }
         public Time CurrentTime { get; set; }
-        public Challenge CurrentChallenge { get; set; }
         public string WrittenTime 
         {
             get { return _writtenTime; }
@@ -253,6 +252,8 @@ namespace Engine.ViewModels
                             MerchantFactory.GenerateMerchants();
                             CurrentWorld.RefreshLocations();
                             CurrentLocation.EncountersText = CurrentLocation.WriteEncounterText();
+                            CurrentWorld.TickChallenges();
+                            CurrentWorld.RefreshChallenges(CurrentLocation);
 
                         if (CurrentTime.Day > 30)
                             {
@@ -411,6 +412,7 @@ namespace Engine.ViewModels
                     CurrentLocation.ChallengeHere.Obstacles[i - 1].SelectionNumber = i;
                 }
 
+                _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Description}");
                 foreach (Obstacle obstacle in CurrentLocation.ChallengeHere.Obstacles)
                     _messageBroker.RaiseMessage($"{obstacle.SelectionNumber}. {obstacle.Description}");
                 _messageBroker.RaiseMessage($"{i}. Leave");
@@ -419,18 +421,18 @@ namespace Engine.ViewModels
         }
         private void ChallengeTest(int num)
         {
+            string successText = CurrentLocation.ChallengeHere.Obstacles[num - 1].PassText;
             if (CurrentLocation.ChallengeHere.Obstacles[num - 1].Check is Item)
             {
                 Item item = CurrentLocation.ChallengeHere.Obstacles[num - 1].Check as Item;
                 int quantity = CurrentLocation.ChallengeHere.Obstacles[num - 1].CheckValue;
                 if (CurrentPlayer.HasItem(item.Name))
                 {
-                    _messageBroker.RaiseMessage($"you use the {item.Name}");
                     CurrentLocation.ChallengeHere.Obstacles[num - 1].Passed = true;
                 }
                 else
                 {
-                    _messageBroker.RaiseMessage($"You do not have the {item.Name}");
+                    _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Obstacles[num - 1].FailText}");
                     return;
                 }
             }
@@ -443,7 +445,7 @@ namespace Engine.ViewModels
                 }
                 else
                 {
-                    _messageBroker.RaiseMessage($"Your {skill.Name} skill is not high enough");
+                    _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Obstacles[num - 1].FailText}");
                     return;
                 }
             }
@@ -454,21 +456,21 @@ namespace Engine.ViewModels
                 {
                     CurrentLocation.ChallengeHere.Obstacles[num - 1].Passed = true;
                 }
-                _messageBroker.RaiseMessage($"Your {characteristiic.Name} level is not high enough");
-                return;
+                else
+                {
+                    _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Obstacles[num - 1].FailText}");
+                    return;
+                }
             }
             ChallengeWatch();
-        }
-        private void OnChallengeSucess()
-        {
-            if (CurrentChallenge.ChallengeCompleted)
-            {
-                
-            }
-        }
-        private void OnChallengeFailure()
-        {
 
+            if (CurrentLocation.ChallengeHere.ChallengeCompleted)
+                OnChallengeSucess(successText);
+        }
+        private void OnChallengeSucess(string successText)
+        {
+            _messageBroker.RaiseMessage($"{successText}");
+            _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
         }
         private void OnChallengeExit()
         {

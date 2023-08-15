@@ -115,7 +115,9 @@ namespace Engine.Factories
             {
                 challenge.Obstacles.Add(new Obstacle(DetermineObstacleType(node.AttributeAsString("Check")), 
                     node.AttributeAsString("Description"),
-                    node.AttributeAsInt("CheckValue")));
+                    node.AttributeAsInt("CheckValue"),
+                    node.AttributeAsString("PassText"),
+                    node.AttributeAsString("FailText")));
             }
         }
 
