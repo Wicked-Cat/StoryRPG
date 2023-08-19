@@ -29,7 +29,8 @@ namespace Engine.Models
         {
             BodyPart part = new BodyPart(Name, MaximumHealth, Coverage);
             part.CurrentHealth = MaximumHealth;
-            part.SubParts = new List<BodyPart>();
+            foreach(BodyPart subpart in  SubParts)
+                part.SubParts.Add(subpart);
             part.Wounds = new List<Wound>();
 
             return part;

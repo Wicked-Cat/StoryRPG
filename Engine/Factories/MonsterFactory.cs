@@ -86,7 +86,7 @@ namespace Engine.Factories
                         {
                             if (characteristic.Name.ToLower() == childNode.AttributeAsString("Name").ToLower())
                             {
-                                characteristic.BaseLevel = childNode.AttributeAsDouble("Level");
+                                characteristic.BaseLevel = childNode.AttributeAsInt("Level");
                             }
                         } 
                     }

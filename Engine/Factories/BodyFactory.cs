@@ -54,11 +54,23 @@ namespace Engine.Factories
                         childNode.AttributeAsDouble("Health"),
                         childNode.AttributeAsDouble("Coverage"));
 
+                        if(node.SelectNodes("SubParts/SubPart") is XmlNodeList subParts)
+                        {
+                            var xmlNodesSubParts = subParts.Cast<XmlNode>().ToList();
+                            foreach(XmlNode subNode in xmlNodesSubParts)
+                            {
+                                BodyPart subPart = new BodyPart(subNode.AttributeAsString("Name"),
+                                    subNode.AttributeAsDouble("Health"),
+                                    subNode.AttributeAsDouble("Coverage"));
+                                newPart.SubParts.Add(subPart);
+                            }
+                        }
+
                         body.Parts.Add(newPart);
 
                     }
                 }
-
+                /*
                 if(node.SelectNodes("Parts/BodyPart/SubParts/SubPart") is XmlNodeList subParts)
                 {
                     var xmlNodesSubParts = subParts.Cast<XmlNode>().ToList();
@@ -71,7 +83,7 @@ namespace Engine.Factories
 
                     }
                 }
-
+                */
                 _bodies.Add(body);
             }
         }

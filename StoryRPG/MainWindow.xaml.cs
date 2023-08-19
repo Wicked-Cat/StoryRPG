@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Engine.EventArgs;
 using System.Windows.Threading;
-using Engine.Models;
 using Engine.ViewModels;
 using System.Windows.Media;
 using Engine.Service;
 using System.ComponentModel;
+using Microsoft.Win32;
 
 namespace StoryRPG
 {
@@ -19,7 +17,9 @@ namespace StoryRPG
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly GameSession _gameSession;
+        private const string SAVE_GAME_FILE_EXTENSION = "StoryRPG";
+
+        private GameSession _gameSession;
         CombatWindow combatWindow;
         InventoryWindow inventoryWindow;
         CharacterWindow characterWindow;
@@ -37,14 +37,8 @@ namespace StoryRPG
         {
             InitializeComponent();
 
-            _gameSession = SaveGameService.LoadLastSavedOrCreateNew();
-            _messageBroker.OnMessageRaised += OnGameMessageRaised;
-            _gameSession.OnEncounterEngaged += CombatWindowControl;
-            _gameSession.OnInventoryOpened += OpenInventoryScreen;
-            _gameSession.OnCharacterOpened += OpenCharacterScreen;
-            _gameSession.OnTradeInitiated += TradeWindowControl;
-            _gameSession.OnChallengeInitiated += ChallengeWindowControl;
-            _gameSession.OnQuit += QuitGame;
+            //_gameSession = SaveGameService.LoadLastSavedOrCreateNew();
+            SetActiveGameSessionTo(new GameSession());
 
             DataContext = _gameSession; //built in propery for xaml f/iles
             CreateTimer();
@@ -85,9 +79,23 @@ namespace StoryRPG
             }
         }
 
+      
+        #region Timer Functions
+        private void CreateTimer()
+        {
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += TimerTick;
+            timer.Start();
+        }
+        private void TimerTick(object sender, EventArgs e)
+        {
+            //_gameSession.PassTime(10);
+            TimeOfDayToColourConverter();
+        }
         public void TimeOfDayToColourConverter()
         {
-            switch (_gameSession.CurrentTime.CurrentTimeOfDay.ToString().ToLower()) 
+            switch (_gameSession.CurrentTime.CurrentTimeOfDay.ToString().ToLower())
             {
                 case "day":
                     GameMessages.Background = new SolidColorBrush(Colors.Beige);
@@ -108,20 +116,6 @@ namespace StoryRPG
             }
 
 
-        }
-
-        #region Timer Functions
-        private void CreateTimer()
-        {
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += TimerTick;
-            timer.Start();
-        }
-        private void TimerTick(object sender, EventArgs e)
-        {
-            //_gameSession.PassTime(10);
-            TimeOfDayToColourConverter();
         }
 
         #endregion
@@ -208,11 +202,84 @@ namespace StoryRPG
         }
         private void MainWindow_OnClosing(object sender, CancelEventArgs e)
         {
-            SaveGameService.Save(_gameSession);
+            SaveGameService.Save(_gameSession, "autosave");
         }
 
         #endregion
 
+        #region Load/Save Functions
+        private void SetActiveGameSessionTo(GameSession gameSession)
+        {
+            _messageBroker.OnMessageRaised -= OnGameMessageRaised;
+            if (_gameSession != null)
+            {
+                 _gameSession.OnEncounterEngaged -= CombatWindowControl;
+                 _gameSession.OnInventoryOpened -= OpenInventoryScreen;
+                 _gameSession.OnCharacterOpened -= OpenCharacterScreen;
+                 _gameSession.OnTradeInitiated -= TradeWindowControl;
+                 _gameSession.OnChallengeInitiated -= ChallengeWindowControl; 
+                 _gameSession.OnQuit -= QuitGame;
+                 _gameSession.OnSave -= SaveGame;
+                 _gameSession.OnNewGame -= NewGame;
+            }
 
+            _gameSession = gameSession;
+            DataContext = _gameSession;
+
+            GameMessages.Document.Blocks.Clear();
+            if(combatWindow != null)
+                combatWindow.GameMessages.Document.Blocks.Clear();
+            if(challengeWindow != null)
+                challengeWindow.GameMessages.Document.Blocks.Clear();
+
+            _messageBroker.OnMessageRaised += OnGameMessageRaised;
+            _gameSession.OnEncounterEngaged += CombatWindowControl;
+            _gameSession.OnInventoryOpened += OpenInventoryScreen;
+            _gameSession.OnCharacterOpened += OpenCharacterScreen;
+            _gameSession.OnTradeInitiated += TradeWindowControl;
+            _gameSession.OnChallengeInitiated += ChallengeWindowControl;
+            _gameSession.OnQuit += QuitGame;
+            _gameSession.OnSave += SaveGame;
+            _gameSession.OnLoad += LoadGame;
+            _gameSession.OnNewGame += NewGame;
+        }
+
+        private void _gameSession_OnNewGame(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LoadGame(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog =
+                new OpenFileDialog
+                {
+                    InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                    Filter = $"Saved games (*.{SAVE_GAME_FILE_EXTENSION})|*.{SAVE_GAME_FILE_EXTENSION}"
+                };
+            if(openFileDialog.ShowDialog() == true)
+            {
+                SetActiveGameSessionTo(SaveGameService.LoadLastSavedOrCreateNew(openFileDialog.FileName));
+            }
+        }
+        private void SaveGame(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog =
+                new SaveFileDialog
+                {
+                    InitialDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                    Filter = $"Saved games (*.{SAVE_GAME_FILE_EXTENSION})|*.{SAVE_GAME_FILE_EXTENSION}"
+                };
+
+            if(saveFileDialog.ShowDialog() == true)
+            {
+                SaveGameService.Save(_gameSession, saveFileDialog.FileName);
+            }
+        }
+        private void NewGame(object sender, EventArgs e)
+        {
+            SetActiveGameSessionTo(new GameSession());
+        }
+        #endregion
     }
 }

@@ -30,8 +30,10 @@ namespace Engine.Models
         {
             Body body = new Body(Id, Name, Description);
             
-            foreach (BodyPart part in Parts)
+            foreach (BodyPart part in Parts.ToList())
             {
+                foreach(BodyPart subPart in part.SubParts.ToList())
+                    part.SubParts.Add(subPart.Clone());
                 body.Parts.Add(part.Clone());
             }
 

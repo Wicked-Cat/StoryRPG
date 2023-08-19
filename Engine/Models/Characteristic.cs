@@ -7,7 +7,7 @@ namespace Engine.Models
         #region Private Variables
         private string _name;
         private string _description;
-        private double _baseLevel;
+        private int _baseLevel;
         private double _levelMultiplier;
         private double _effectiveLevel;
         private double _experience;
@@ -38,7 +38,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public double BaseLevel
+        public int BaseLevel
         {
             get { return _baseLevel; }
             set
@@ -50,7 +50,7 @@ namespace Engine.Models
         }
         public double LevelMultiplier { get; set; }
         [JsonIgnore]
-        public double EffectiveLevel => BaseLevel * LevelMultiplier;
+        public double EffectiveLevel => Convert.ToInt32(BaseLevel * LevelMultiplier);
         [JsonIgnore]
         public double DifferenceBetween => EffectiveLevel - BaseLevel;
         public double Experience

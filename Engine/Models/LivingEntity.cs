@@ -200,8 +200,28 @@ namespace Engine.Models
             if (skill != null)
                  Skills.Add(skill);
         }
-
-
+        public void LoadSkills(string name, int baseLevel, double levelMulti)
+        {
+            Skill skill = SkillFactory._skills.FirstOrDefault(s => s.Name.ToLower() == name.ToLower());
+            if (skill != null)
+            {
+                skill.BaseLevel = baseLevel;
+                skill.CurrentRank = skill.DetermineRank();
+                skill.LevelMultiplier = levelMulti;
+                Skills.Add(skill);
+            }
+        }
+        public void LoadCharacteristics(string name, int baseLevel, double levelMulti)
+        {
+            Characteristic characteristic = CharacteristicFactory._characteristics.FirstOrDefault(c => c.Name.ToLower() == name.ToLower());
+            if(characteristic != null)
+            {
+                characteristic.BaseLevel = baseLevel;
+                characteristic.CurrentRank = characteristic.DetermineRank();
+                characteristic.LevelMultiplier = levelMulti;
+                Characteristics.Add(characteristic);
+            }
+        }
         #endregion
 
         public void Attack(LivingEntity target)

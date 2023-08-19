@@ -21,6 +21,9 @@ namespace Engine.ViewModels
         public event EventHandler<OnTradeEventArgs> OnTradeInitiated;
         public event EventHandler<OnChallengeEventArgs> OnChallengeInitiated;
         public event EventHandler OnQuit;
+        public event EventHandler OnSave;
+        public event EventHandler OnNewGame;
+        public event EventHandler OnLoad;
 
         #region Private Variables
         private Player _player;
@@ -83,7 +86,7 @@ namespace Engine.ViewModels
 
             }
         }
-        [JsonIgnore]
+        //[JsonIgnore]
         public Encounter CurrentEncounter
         {
             get { return _currentEncounter; }
@@ -374,7 +377,6 @@ namespace Engine.ViewModels
             }
         }
         #endregion
-
 
         #region Challenge Functions
         private void ChallengeWatch()
@@ -821,7 +823,13 @@ namespace Engine.ViewModels
                     MoveTo("down");
                     break;
                 case "save":
-                    //SaveGame.Save();
+                    Save();
+                    break;
+                case "newgame":
+                    NewGame();
+                    break;
+                case "load":
+                    Load();
                     break;
                 case "bag":
                 case "inventory":
@@ -864,37 +872,33 @@ namespace Engine.ViewModels
                 case "spawn":
                     Spawn(noun);
                     break;
-                case "self":
-                    foreach (BodyPart part in CurrentPlayer.CurrentBody.Parts)
-                    {
-                        _messageBroker.RaiseMessage($"{part.Name} {part.CurrentHealth}/{part.MaximumHealth}");
-                        foreach (BodyPart subPart in part.SubParts)
-                        {
-                            _messageBroker.RaiseMessage($"     {subPart.Name} {subPart.CurrentHealth}/{subPart.MaximumHealth}");
-                        }
-                    }
-                    break;
                 case "attack":
                     GetEncounterAtLocation(noun);
                     break;
-                case "items":
-                    foreach (LocationItems item in CurrentLocation.AllItemsHere)
+                case "godmode":
+                    foreach (Skill skill in CurrentPlayer.Skills)
+                        skill.AddExperience(9999);
+                    foreach (Characteristic chara in CurrentPlayer.Characteristics)
+                        chara.AddExperience(99999);
+                    break;
+                case "self":
+                    foreach (BodyPart part in CurrentPlayer.CurrentBody.Parts)
                     {
-                        _messageBroker.RaiseMessage($"{item.ID} Collected?{item.HasBeenCollected} Respawns?{item.Respawns}");
+                        _messageBroker.RaiseMessage("");
+                        _messageBroker.RaiseMessage($"{part.Name}");
+                        foreach (BodyPart subPart in part.SubParts)
+                            _messageBroker.RaiseMessage($"  {subPart.Name}");
                     }
                     break;
-                case "challenge":
-                    if (CurrentLocation.ChallengeHere != null)
+                case "bodies":
+                    foreach (Body body in BodyFactory._bodies)
                     {
-                        _messageBroker.RaiseMessage($"{CurrentLocation.ChallengeHere.Name}");
-                        foreach (var obstacle in CurrentLocation.ChallengeHere.Obstacles)
+                        foreach (BodyPart part in body.Parts)
                         {
-                            if (obstacle.Check is Item)
-                                _messageBroker.RaiseMessage($"{(obstacle.Check as Item).Name} {obstacle.CheckValue}");
-                            if (obstacle.Check is Skill)
-                                _messageBroker.RaiseMessage($"{(obstacle.Check as Skill).Name} {obstacle.CheckValue}");
-                            if (obstacle.Check is Characteristic)
-                                _messageBroker.RaiseMessage($"{(obstacle.Check as Characteristic).Name} {obstacle.CheckValue}");
+                            _messageBroker.RaiseMessage("");
+                            _messageBroker.RaiseMessage($"{part.Name}");
+                            foreach (BodyPart subPart in part.SubParts)
+                                _messageBroker.RaiseMessage($"  {subPart.Name}");
                         }
                     }
                     break;
@@ -1101,7 +1105,18 @@ namespace Engine.ViewModels
         {
             OnQuit?.Invoke(this, System.EventArgs.Empty);
         }
-
+        private void Save()
+        {
+            OnSave?.Invoke(this, System.EventArgs.Empty);
+        }
+        private void NewGame()
+        {
+            OnNewGame?.Invoke(this, System.EventArgs.Empty);
+        }
+        private void Load()
+        {
+            OnLoad?.Invoke(this, System.EventArgs.Empty);
+        }
         #endregion
 
         #region Combat Functions
@@ -1517,6 +1532,7 @@ namespace Engine.ViewModels
         }
 
         #endregion
+
 
     }
 }

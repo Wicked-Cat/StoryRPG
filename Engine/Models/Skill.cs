@@ -7,7 +7,7 @@ namespace Engine.Models
         #region Private Variables
         private string _name;
         private string _description;
-        private double _baseLevel;
+        private int _baseLevel;
         private double _effectiveLevel;
         private double _experience;
         private Rank _currentRank;
@@ -38,7 +38,7 @@ namespace Engine.Models
         public enum Categories { Survival, Combat, Mystic, Social, Crafting, Curse}
         [JsonIgnore]
         public Categories Category { get; set; }
-        public double BaseLevel
+        public int BaseLevel
         {
             get { return _baseLevel; }
             set
@@ -50,7 +50,7 @@ namespace Engine.Models
         }
         public double LevelMultiplier { get; set; }
         [JsonIgnore]
-        public double EffectiveLevel => BaseLevel * LevelMultiplier;
+        public double EffectiveLevel => Convert.ToInt32(BaseLevel * LevelMultiplier);
         public double Experience
         {
             get { return _experience; }
