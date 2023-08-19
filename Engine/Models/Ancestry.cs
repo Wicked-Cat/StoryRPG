@@ -1,11 +1,4 @@
-﻿using Engine.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Engine.Models.Item;
-using System.Xml.Linq;
+﻿using Newtonsoft.Json;
 
 namespace Engine.Models
 {
@@ -13,9 +6,11 @@ namespace Engine.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
         public string Description { get; set; }
+        [JsonIgnore]
         public List<Multiplier> Multipliers = new List<Multiplier>();
-
+        [JsonIgnore]
         public List<Tag> Tags = new List<Tag>();
 
         public Ancestry(int id, string name, string description)

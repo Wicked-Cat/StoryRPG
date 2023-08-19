@@ -54,7 +54,7 @@ namespace Engine.Factories
                     merchant.AddItemToDislikedItems(ItemFactory.GetTag(childNode.AttributeAsString("Name")));
                 }
 
-                merchant.CurrentAncestry = AncestryFactory.GetAncestry(node.AttributeAsString("Ancestry"));
+                merchant.Ancestry = AncestryFactory.GetAncestry(node.AttributeAsString("Ancestry"));
 
                 _merchants.Add(merchant);
                 GenerateMerchants();

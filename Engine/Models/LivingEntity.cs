@@ -1,10 +1,6 @@
 ﻿using Engine.Factories;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Engine.Models
 {
@@ -13,11 +9,7 @@ namespace Engine.Models
         #region Backing Variables
         private string? _name;
         private Ancestry? _ancestry;
-        private string? _charClass;
         private string? _description;
-        private int _experience;
-        private double _maximumHealth;
-        private double _currentHealth;
         private ObservableCollection<Skill>? _skills;
         private ObservableCollection<Characteristic>? _characteristics;
         private ObservableCollection<ItemQuantity>? _inventory;
@@ -35,7 +27,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public Ancestry? CurrentAncestry
+        public Ancestry? Ancestry
         {
             get { return _ancestry; }
             set
@@ -44,15 +36,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public string CharClass
-        {
-            get { return _charClass; }
-            private set
-            {
-                _charClass = value;
-                OnPropertyChanged();
-            }
-        }
+        public Background? Background { get; set; }
         public string Description
         {
             get { return _description; }
@@ -62,33 +46,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
-        public int Experience
-        {
-            get { return _experience; }
-            set
-            {
-                _experience = value;
-                OnPropertyChanged();
-            }
-        }
-        public double MaximumHealth
-        {
-            get { return _maximumHealth; }
-            set
-            {
-                _maximumHealth = value;
-                OnPropertyChanged();
-            }
-        }
-        public double CurrentHealth
-        {
-            get { return _currentHealth; }
-            set
-            {
-                _currentHealth = value;
-                OnPropertyChanged();
-            }
-        }
+
         public List<Tag> Tags = new List<Tag>();
         public ObservableCollection<Skill> Skills
         {
@@ -109,6 +67,7 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
+        [JsonIgnore]
         public bool IsDead => CurrentBody.Parts.Any(p => p.CurrentHealth <= 0);
 
         public event EventHandler<string>? OnActionPerformed;
@@ -149,15 +108,11 @@ namespace Engine.Models
 
         #region Constructor 
         protected LivingEntity(
-            string name, string charClass, double maxHealth, double currentHealth, 
-            string description, int experience)
+            string name,
+            string description)
         {
             Name = name;
-            CharClass = charClass;
-            MaximumHealth = maxHealth;
-            CurrentHealth = currentHealth;
             Description = description;
-            Experience = experience;
             Inventory = new ObservableCollection<ItemQuantity>();
             Characteristics = new ObservableCollection<Characteristic>();
             Skills = new ObservableCollection<Skill>();
@@ -258,17 +213,12 @@ namespace Engine.Models
             targetPart.CurrentHealth -= hitPointsOfDamage;
             if (IsDead)
             {
-                CurrentHealth = 0;
                 RaiseOnKilledEvent();
             }
         }
         public void Heal(int hitPointsToHeal)
         {
-            CurrentHealth += hitPointsToHeal;
-            if (CurrentHealth > MaximumHealth)
-            {
-                CurrentHealth = MaximumHealth;
-            }
+
         }
         public void FullHeal()
         {

@@ -7,9 +7,9 @@ namespace Engine.Models
     {
         public readonly List<MonsterLoot> _lootTable = new List<MonsterLoot>();
         public int ID { get; }
-        public Monster(int id, string name, string charClass, double maxHealth, double currentHealth, string description, int experience, 
+        public Monster(int id, string name, string description,
             Item equippedWeapon)
-            : base(name, charClass, maxHealth, currentHealth, description, experience)
+            : base(name, description)
         {
             ID = id;
             EquippedWeapon = equippedWeapon;
@@ -24,7 +24,7 @@ namespace Engine.Models
 
         public Monster Clone()
         {
-            Monster monster = new Monster(ID, Name, CharClass, MaximumHealth, CurrentHealth, Description, Experience,
+            Monster monster = new Monster(ID, Name, Description,
                 EquippedWeapon);
 
             foreach (MonsterLoot item in _lootTable)
@@ -41,7 +41,7 @@ namespace Engine.Models
                 }
             }
 
-            monster.CurrentAncestry = CurrentAncestry;
+            monster.Ancestry = Ancestry;
 
             foreach(Skill skill in Skills)
             {
@@ -53,7 +53,7 @@ namespace Engine.Models
 
             }
 
-            foreach (Multiplier multiplier in CurrentAncestry.Multipliers)
+            foreach (Multiplier multiplier in Ancestry.Multipliers)
             {
                 switch (multiplier.MultiplierType)
                 {

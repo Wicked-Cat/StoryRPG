@@ -1,4 +1,4 @@
-﻿using Engine.Factories;
+﻿using Newtonsoft.Json;
 namespace Engine.Models
 {
     public class ItemQuantity : BaseNotificationClass
@@ -23,6 +23,7 @@ namespace Engine.Models
                 OnPropertyChanged(nameof(Quantity));
             }
         }
+        [JsonIgnore]
         public string QuantityItemDescription => $"{Quantity} {BaseItem.Name}";
 
         public ItemQuantity(Item baseItem, int quantity) 

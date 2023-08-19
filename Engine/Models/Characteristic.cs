@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace Engine.Models
 {
@@ -30,7 +26,9 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
+        [JsonIgnore]
         public string DisplayName => $"{CurrentRank} {Name}";
+        [JsonIgnore]
         public string Description
         {
             get { return _description; }
@@ -51,7 +49,9 @@ namespace Engine.Models
             }
         }
         public double LevelMultiplier { get; set; }
+        [JsonIgnore]
         public double EffectiveLevel => BaseLevel * LevelMultiplier;
+        [JsonIgnore]
         public double DifferenceBetween => EffectiveLevel - BaseLevel;
         public double Experience
         {
@@ -64,6 +64,7 @@ namespace Engine.Models
         }
         public double ExperienceMultiplier { get; set; }
         public enum Rank { VeryLow, Low, BelowAverage, Average, AboveAverage, High, VeryHigh, Unnatural, Unused}
+        [JsonIgnore]
         public Rank CurrentRank
         {
             get { return _currentRank; }

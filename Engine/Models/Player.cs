@@ -14,14 +14,10 @@ namespace Engine.Models
     public class Player : LivingEntity
     {
         public double GlobalExperienceModifier { get; set; }
-        public Player(string name, string charClass, int maxHealth, int currentHealth, string description, int experience) 
-            : base(name, charClass, maxHealth, currentHealth, description, experience)
+        public Player(string name, string description) 
+            : base(name, description)
         {
-
-        }
-        public void AddExperience(int experience)
-        {
-            Experience += experience;
+            
         }
 
         public Item FindNumberedItem(string aString)

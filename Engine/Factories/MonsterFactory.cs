@@ -38,11 +38,7 @@ namespace Engine.Factories
                 Monster monster =
                     new Monster(node.AttributeAsInt("ID"),
                                 node.AttributeAsString("Name"),
-                                node.AttributeAsString("Class"),
-                                node.AttributeAsInt("MaximumHealth"),
-                                node.AttributeAsInt("MaximumHealth"), //current health
                                 node.AttributeAsString("Description"),
-                                node.AttributeAsInt("Experience"),
                                 ItemFactory.CreateGameItem(node.AttributeAsInt("WeaponID")));
 
                 XmlNodeList lootItems = node.SelectNodes("LootItems/LootItem");
@@ -56,7 +52,7 @@ namespace Engine.Factories
                     }
                 }
 
-                monster.CurrentAncestry =  AncestryFactory.GetAncestry(node.AttributeAsString("Ancestry"));
+                monster.Ancestry =  AncestryFactory.GetAncestry(node.AttributeAsString("Ancestry"));
                 monster.CurrentBody = BodyFactory.GetBodyById(node.AttributeAsInt("Body"));
 
                 foreach (Skill skill in SkillFactory._skills)
@@ -68,7 +64,7 @@ namespace Engine.Factories
                     monster.Characteristics.Add(characteristic.Clone());
                 }
 
-                foreach (Multiplier multiplier in monster.CurrentAncestry.Multipliers)
+                foreach (Multiplier multiplier in monster.Ancestry.Multipliers)
                 {
                     switch (multiplier.MultiplierType)
                     {

@@ -1,18 +1,21 @@
 ﻿using Engine.Factories;
+using Newtonsoft.Json;
 
 namespace Engine.Models
 {
     public class Merchant : LivingEntity
     {
         public int ID { get; }
-
+        [JsonIgnore]
         public readonly List<Tag> PreferredItems = new List<Tag>();
+        [JsonIgnore]
         public readonly List<Tag> DislikedItems = new List<Tag>();
+        [JsonIgnore]
         public int Markup { get; set; }
-
+        [JsonIgnore]
         public readonly List<MerchantStock> _sellList = new List<MerchantStock>();
         public Merchant(int id, string name,  string description, int markup) : 
-            base(name, "Merchant", 10, 10, description, 0)
+            base(name, description)
         {
             ID = id;
             Markup = markup;
@@ -78,7 +81,7 @@ namespace Engine.Models
                 merchant.AddItemToDislikedItems(properties);
             }
 
-            merchant.CurrentAncestry = CurrentAncestry;
+            merchant.Ancestry = Ancestry;
 
             //add skills
             foreach(Skill skill in SkillFactory._skills)

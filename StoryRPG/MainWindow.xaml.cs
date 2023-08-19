@@ -10,6 +10,7 @@ using Engine.Models;
 using Engine.ViewModels;
 using System.Windows.Media;
 using Engine.Service;
+using System.ComponentModel;
 
 namespace StoryRPG
 {
@@ -18,7 +19,7 @@ namespace StoryRPG
     /// </summary>
     public partial class MainWindow : Window
     {
-       private readonly GameSession _gameSession = new GameSession();
+        private readonly GameSession _gameSession;
         CombatWindow combatWindow;
         InventoryWindow inventoryWindow;
         CharacterWindow characterWindow;
@@ -35,6 +36,8 @@ namespace StoryRPG
         public MainWindow()
         {
             InitializeComponent();
+
+            _gameSession = SaveGameService.LoadLastSavedOrCreateNew();
             _messageBroker.OnMessageRaised += OnGameMessageRaised;
             _gameSession.OnEncounterEngaged += CombatWindowControl;
             _gameSession.OnInventoryOpened += OpenInventoryScreen;
@@ -202,6 +205,10 @@ namespace StoryRPG
         private void QuitGame(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        {
+            SaveGameService.Save(_gameSession);
         }
 
         #endregion

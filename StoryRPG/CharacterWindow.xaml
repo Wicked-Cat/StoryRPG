@@ -21,8 +21,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" Content="{Binding CurrentPlayer.Name}"/>
-            <Label Grid.Row="1" Grid.Column="0" Content="{Binding CurrentPlayer.CurrentAncestry.Name}" />
-            <Label Grid.Row="1" Grid.Column="1" Content="{Binding CurrentPlayer.CharClass}"/>
+            <Label Grid.Row="1" Grid.Column="0" Content="{Binding CurrentPlayer.Ancestry.Name}" />
 
             <Grid x:Name="CharacteristicList" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
                 <ListBox Margin="10" ItemsSource="{Binding CurrentPlayer.Characteristics}"/>

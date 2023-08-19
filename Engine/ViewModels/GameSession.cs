@@ -23,7 +23,7 @@ namespace Engine.ViewModels
         public event EventHandler OnQuit;
 
         #region Private Variables
-        private Player _currentPlayer;
+        private Player _player;
         private Location _currentLocation;
         private Encounter _currentEncounter;
         private Merchant _currentMerchant;
@@ -32,22 +32,23 @@ namespace Engine.ViewModels
         #endregion
 
         #region Public Variables
+        public string Version { get; } = "0.1.000";
         public World CurrentWorld { get; }
         public Player CurrentPlayer
         {
-            get { return _currentPlayer; }
+            get { return _player; }
             set
             {
-                if (_currentPlayer != null)
+                if (_player != null)
                 {
-                    _currentPlayer.OnActionPerformed -= OnPlayerAction;
-                    _currentPlayer.OnKilled -= OnPlayerKilled;
+                    _player.OnActionPerformed -= OnPlayerAction;
+                    _player.OnKilled -= OnPlayerKilled;
                 }
-                _currentPlayer = value;
-                if (_currentPlayer != null)
+                _player = value;
+                if (_player != null)
                 {
-                    _currentPlayer.OnActionPerformed += OnPlayerAction;
-                    _currentPlayer.OnKilled += OnPlayerKilled;
+                    _player.OnActionPerformed += OnPlayerAction;
+                    _player.OnKilled += OnPlayerKilled;
                 }
             }
         }
@@ -82,6 +83,7 @@ namespace Engine.ViewModels
 
             }
         }
+        [JsonIgnore]
         public Encounter CurrentEncounter
         {
             get { return _currentEncounter; }
@@ -109,6 +111,7 @@ namespace Engine.ViewModels
                 }
             }
         }
+        [JsonIgnore]
         public Merchant CurrentMerchant
         {
             get { return _currentMerchant; }
@@ -120,8 +123,10 @@ namespace Engine.ViewModels
                 TradeWatch();
             }
         }
+        [JsonIgnore]
         public Trade CurrentTrade { get; set; }
         public Time CurrentTime { get; set; }
+        [JsonIgnore]
         public string WrittenTime 
         {
             get { return _writtenTime; }
@@ -132,44 +137,59 @@ namespace Engine.ViewModels
             }
         }
 
+        [JsonIgnore]
         public bool HasNorthExit => 
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate + 1, CurrentLocation.ZCoordinate) != null;
+        [JsonIgnore]
         public bool HasSouthExit =>
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate - 1, CurrentLocation.ZCoordinate) != null;
+        [JsonIgnore]
         public bool HasEastExit =>
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate + 1, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate) != null;
+        [JsonIgnore]
         public bool HasWestExit =>
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate - 1, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate) != null;
+        [JsonIgnore]
         public bool HasUpExit => 
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate + 1) != null;
+        [JsonIgnore]
         public bool HasDownExit =>
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate - 1) != null;
-     
+
+        [JsonIgnore]
         public string NorthExit => 
             HasNorthExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate + 1, CurrentLocation.ZCoordinate).Name : "";
+        [JsonIgnore]
         public string SouthExit => 
             HasSouthExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate - 1, CurrentLocation.ZCoordinate).Name : "";
+        [JsonIgnore]
         public string EastExit => 
             HasEastExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate + 1, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate).Name : "";
+        [JsonIgnore]
         public string WestExit => 
             HasWestExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate - 1, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate).Name : "";
+        [JsonIgnore]
         public string UpExit =>
             HasUpExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate + 1).Name : "";
+        [JsonIgnore]
         public string DownExit =>
             HasDownExit ? CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate - 1).Name : "";
+        [JsonIgnore]
         public bool HasEncounter => CurrentEncounter != null;
+        [JsonIgnore]
         public bool AreAllMonstersDead => CurrentEncounter.Monsters.All(m => m.IsDead == true);
+        [JsonIgnore]
         public bool HasChallenge => CurrentLocation.ChallengeHere != null;
         #endregion
 
         #region Constructor
         public GameSession()
         {
-            #region Construct Player
-            CurrentPlayer = new Player("Laughing Zebra", "Druid", 100, 100, "A Human", 10);
-            CurrentPlayer.CurrentAncestry = AncestryFactory.GetAncestry("Human");
+            #region Construct Player 
+            CurrentPlayer = new Player("Laughing Zebra", "A Human");
+            CurrentPlayer.Ancestry = AncestryFactory.GetAncestry("Human");
             foreach (Tag tag in AncestryFactory.GetAncestry("Human").Tags.ToList())
-                CurrentPlayer.CurrentAncestry.Tags.Add(tag);
+                CurrentPlayer.Ancestry.Tags.Add(tag);
 
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(2001));
             CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(9001));
@@ -186,7 +206,7 @@ namespace Engine.ViewModels
                 CurrentPlayer.Characteristics.Add(attribute.Clone());
 
 
-            foreach (Multiplier multiplier in CurrentPlayer.CurrentAncestry.Multipliers)
+            foreach (Multiplier multiplier in CurrentPlayer.Ancestry.Multipliers)
             {
                 switch (multiplier.MultiplierType)
                 {
@@ -212,6 +232,19 @@ namespace Engine.ViewModels
             CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
             WrittenTime = CurrentTime.WriteTime();
 
+        }
+        public GameSession(Player player, int xCoordinate, int yCoordinate, int zCoordinate)
+        {
+            CurrentWorld = WorldFactory.CreateWorld();
+            CurrentPlayer = player;
+            CurrentLocation = CurrentWorld.LocationAt(xCoordinate, yCoordinate, zCoordinate);
+            CurrentWorld.RefreshLocations();
+
+            CurrentTrade = new Trade(new ObservableCollection<ItemQuantity>(), new ObservableCollection<ItemQuantity>());
+
+            CurrentTime = new Time(0, 1, 0, 1, Time.Days.Fridas, Time.Seasons.Spring, Time.Years.Catfish);
+            CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
+            WrittenTime = CurrentTime.WriteTime();
         }
 
         #endregion
@@ -342,62 +375,8 @@ namespace Engine.ViewModels
         }
         #endregion
 
-        #region Encounter Functions
-        private void EncounterWatch()
-        {
-            OnEncounterEngaged?.Invoke(this, new OnEncounterEventArgs(CurrentEncounter));
-        }
-        private void OnMonsterAction(object sender, string result)
-        {
-            _messageBroker.RaiseMessage(result);
-        }
-        private void OnMonsterKilled(object sender, System.EventArgs eventArgs)
-        {
-            _messageBroker.RaiseMessage("deaad");
-            /*
-            RaiseMessage("");
-            RaiseMessage($"You defeated the {CurrentMonster.Name}!");
-            RaiseMessage($"You receive {CurrentMonster.Experience} experience points.");
-            CurrentPlayer.AddExperience(CurrentMonster.Experience);
 
-            RaiseMessage($"You receive {CurrentMonster.Cats} cats.");
-            CurrentPlayer.ReceiveGold(CurrentMonster.Cats);
-
-            foreach (ItemQuantity gameItem in CurrentMonster.Inventory)
-            {
-                RaiseMessage($"You receive {gameItem.Quantity} {gameItem.BaseItem.Name}.");
-                for (int i = 0; i <= gameItem.Quantity; i++)
-                {
-                    CurrentPlayer.AddItemToInventory(gameItem.BaseItem);
-                }
-            }
-            */
-        }
-        private void OnEncounterEnd()
-        {
-            Encounter tempEncounter = CurrentEncounter;
-            CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
-            EncounterWatch();
-            OnPropertyChanged(nameof(CurrentLocation.EncountersText));
-            foreach (Monster monster in tempEncounter.Monsters)
-            {
-                _messageBroker.RaiseMessage("");
-                foreach (ItemQuantity item in monster.Inventory)
-                {
-                    _messageBroker.RaiseMessage($"You recieve {item.Quantity} {item.BaseItem.Name}.");
-                    for (int i = 0; i < item.Quantity; i++)
-                    {
-                        CurrentPlayer.AddItemToInventory(item.BaseItem);
-                    }
-                }
-            }
-        }
-        private void GetEncounterAtLocation(string aString)
-        {
-            CurrentEncounter = CurrentLocation.GetEncounter(aString);
-        }
-        #endregion
-
+        #region Challenge Functions
         private void ChallengeWatch()
         {
                 OnChallengeInitiated?.Invoke(this, new OnChallengeEventArgs(CurrentLocation.ChallengeHere));
@@ -477,21 +456,6 @@ namespace Engine.ViewModels
             CurrentLocation = PreviousLocation;
             ChallengeWatch();
         }
-
-        #region Player Functions
-        private void OnPlayerKilled(object sender, System.EventArgs eventArgs)
-        {
-            PassTime(900);
-            _messageBroker.RaiseMessage("");
-            _messageBroker.RaiseMessage("You have been killed.");
-            CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
-            CurrentPlayer.FullHeal();
-        }
-        private void OnPlayerAction(object sender, string result)
-        {
-            _messageBroker.RaiseMessage(result);
-        }
-
         #endregion
 
         #region Player Action Functions
@@ -560,7 +524,7 @@ namespace Engine.ViewModels
                     if (CurrentEncounter != null)
                         foreach (Monster monster in CurrentEncounter.Monsters)
                         {
-                            _messageBroker.RaiseMessage($"{monster.CurrentAncestry.Name}");
+                            _messageBroker.RaiseMessage($"{monster.Ancestry.Name}");
                             foreach (Tag tag in monster.Tags)
                             {
                                 _messageBroker.RaiseMessage($"{tag.Name}");
@@ -1141,6 +1105,73 @@ namespace Engine.ViewModels
         #endregion
 
         #region Combat Functions
+        #region Encounter Functions
+        private void EncounterWatch()
+        {
+            OnEncounterEngaged?.Invoke(this, new OnEncounterEventArgs(CurrentEncounter));
+        }
+        private void OnMonsterAction(object sender, string result)
+        {
+            _messageBroker.RaiseMessage(result);
+        }
+        private void OnMonsterKilled(object sender, System.EventArgs eventArgs)
+        {
+            _messageBroker.RaiseMessage("deaad");
+            /*
+            RaiseMessage("");
+            RaiseMessage($"You defeated the {CurrentMonster.Name}!");
+            RaiseMessage($"You receive {CurrentMonster.Experience} experience points.");
+            CurrentPlayer.AddExperience(CurrentMonster.Experience);
+
+            RaiseMessage($"You receive {CurrentMonster.Cats} cats.");
+            CurrentPlayer.ReceiveGold(CurrentMonster.Cats);
+
+            foreach (ItemQuantity gameItem in CurrentMonster.Inventory)
+            {
+                RaiseMessage($"You receive {gameItem.Quantity} {gameItem.BaseItem.Name}.");
+                for (int i = 0; i <= gameItem.Quantity; i++)
+                {
+                    CurrentPlayer.AddItemToInventory(gameItem.BaseItem);
+                }
+            }
+            */
+        }
+        private void OnEncounterEnd()
+        {
+            Encounter tempEncounter = CurrentEncounter;
+            CurrentLocation.EncountersHere.Remove(CurrentLocation.EncountersHere.First(e => e.Name.ToLower() == CurrentEncounter.Name.ToLower()));
+            EncounterWatch();
+            OnPropertyChanged(nameof(CurrentLocation.EncountersText));
+            foreach (Monster monster in tempEncounter.Monsters)
+            {
+                _messageBroker.RaiseMessage("");
+                foreach (ItemQuantity item in monster.Inventory)
+                {
+                    _messageBroker.RaiseMessage($"You recieve {item.Quantity} {item.BaseItem.Name}.");
+                    for (int i = 0; i < item.Quantity; i++)
+                    {
+                        CurrentPlayer.AddItemToInventory(item.BaseItem);
+                    }
+                }
+            }
+        }
+        private void GetEncounterAtLocation(string aString)
+        {
+            CurrentEncounter = CurrentLocation.GetEncounter(aString);
+        }
+        #endregion
+        private void OnPlayerKilled(object sender, System.EventArgs eventArgs)
+        {
+            PassTime(900);
+            _messageBroker.RaiseMessage("");
+            _messageBroker.RaiseMessage("You have been killed.");
+            CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
+            CurrentPlayer.FullHeal();
+        }
+        private void OnPlayerAction(object sender, string result)
+        {
+            _messageBroker.RaiseMessage(result);
+        }
         private Monster DetermineTarget(string aString)
         {
             foreach(Monster monster in CurrentEncounter.Monsters)

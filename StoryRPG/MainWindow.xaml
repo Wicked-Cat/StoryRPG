@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         FontSize="11pt"
         WindowStartupLocation="CenterScreen"
+        Closing="MainWindow_OnClosing"
         Title="StoryRPG" Height="768" Width="1024">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibility"/>

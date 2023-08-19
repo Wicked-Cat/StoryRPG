@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace Engine.Models
 {
@@ -27,7 +23,9 @@ namespace Engine.Models
                 OnPropertyChanged();
             }
         }
+        [JsonIgnore]
         public string DisplayName => $"{CurrentRank} {Name}";
+        [JsonIgnore]
         public string Description
         {
             get { return _description; }
@@ -38,6 +36,7 @@ namespace Engine.Models
             }
         }
         public enum Categories { Survival, Combat, Mystic, Social, Crafting, Curse}
+        [JsonIgnore]
         public Categories Category { get; set; }
         public double BaseLevel
         {
@@ -50,6 +49,7 @@ namespace Engine.Models
             }
         }
         public double LevelMultiplier { get; set; }
+        [JsonIgnore]
         public double EffectiveLevel => BaseLevel * LevelMultiplier;
         public double Experience
         {
@@ -63,6 +63,7 @@ namespace Engine.Models
         public double ExperienceMultiplier { get; set; }
         public enum Rank { Not, Dabbling, Novice, Competent, Skilled, Adept, Expert, 
             Master, Grandmaster, Legendary, Fledgeling, Blooded, Elder, Ancient}
+        [JsonIgnore]
         public Rank CurrentRank
         {
             get { return _currentRank; }

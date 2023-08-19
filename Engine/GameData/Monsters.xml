@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Monsters>
-	<Monster ID="1" Name="Rat" Ancestry="Rodent" Class="Beast" Description="A large rat" MaximumHealth="10" 
-			 Experience="10" WeaponID="1002" Body="3">
+	<Monster ID="1" Name="Rat" Ancestry="Rodent" Class="Beast" Description="A large rat"
+			 WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="5"/>
 			<Characteristic Name="Dexterity" Level="30"/>
@@ -25,8 +25,8 @@
 		</LootItems>
 	</Monster>
 	
-	<Monster ID="2" Name="Lioness" Ancestry="Feline" Class="Beast" Description="A fierce lioness" MaximumHealth="100" 
-			 Experience="100" WeaponID="1002" Body="1">
+	<Monster ID="2" Name="Lioness" Ancestry="Feline" Class="Beast" Description="A fierce lioness"
+			 WeaponID="1002" Body="1">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="50"/>
 			<Characteristic Name="Dexterity" Level="30"/>
@@ -47,8 +47,8 @@
 		</LootItems>
 	</Monster>
 	
-	<Monster ID="3" Name="Wild Dog" Ancestry="Canine" Class="Beast" Description="A wild dog" MaximumHealth="30" 
-			 Experience="30" WeaponID="1002" Body="1">
+	<Monster ID="3" Name="Wild Dog" Ancestry="Canine" Class="Beast" Description="A wild dog"
+			 WeaponID="1002" Body="1">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="20"/>
 			<Characteristic Name="Dexterity" Level="30"/>

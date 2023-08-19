@@ -7,20 +7,27 @@ namespace Engine.Models
     {
         private int _value;
         private int inventoryNumber;
-
+        [JsonIgnore]
         public List<Tag> Tags = new List<Tag>();
         public int ID { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
         public string Description { get; set; }
+        [JsonIgnore]
         public int ActualValue { get; set; }
+        [JsonIgnore]
         public int Value
         {
             get { return _value; }
             set { _value = value; OnPropertyChanged(); }
         }
+        [JsonIgnore]
         public bool IsUnique { get; set; }
+        [JsonIgnore]
         public bool IsEquipped { get; set; }
+        [JsonIgnore]
         public IAction Action { get; set; }
+        [JsonIgnore]
         public int InventoryNumber
         {
             get { return inventoryNumber; }

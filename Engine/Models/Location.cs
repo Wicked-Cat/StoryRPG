@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Engine.Factories;
-using Engine.Service;
+﻿using Newtonsoft.Json;
 
 namespace Engine.Models
 {
@@ -22,25 +15,35 @@ namespace Engine.Models
         public int YCoordinate { get; set; }
         public int ZCoordinate { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
         public string Description { get; set; }
+        [JsonIgnore]
         public List<Encounter> EncountersHere { get; set; } = new List<Encounter>();
+        [JsonIgnore]
         public List<EncounterPercent> AllEncountersHere { get; set; } = new List<EncounterPercent>();
+        [JsonIgnore]
         public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
+        [JsonIgnore]
         public List<MerchantPercent> AllMerchantsHere { get; set; } = new List<MerchantPercent>();
+        [JsonIgnore]
         public List<ItemQuantity> ItemsHere { get; set; } = new List<ItemQuantity>();
+        [JsonIgnore]
         public List<LocationItems> AllItemsHere { get; set; } = new List<LocationItems>();
+        [JsonIgnore]
         public Challenge ChallengeHere { get; set; }
+        [JsonIgnore]
         public string EncountersText
         {
             get { return WriteEncounterText(); }
             set { _encounterText = WriteEncounterText(); OnPropertyChanged();  }
         }
+        [JsonIgnore]
         public string MerchantsText
         {
             get { return WriteMerchantText(); }
             set { _merchantText = WriteMerchantText(); OnPropertyChanged(); }
         }
-
+        [JsonIgnore]
         public string ItemsText 
         {
             get { return WriteItemText(); }
