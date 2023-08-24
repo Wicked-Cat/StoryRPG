@@ -86,7 +86,7 @@ namespace Engine.ViewModels
 
             }
         }
-        //[JsonIgnore]
+        [JsonIgnore]
         public Encounter CurrentEncounter
         {
             get { return _currentEncounter; }
@@ -183,11 +183,14 @@ namespace Engine.ViewModels
         public bool AreAllMonstersDead => CurrentEncounter.Monsters.All(m => m.IsDead == true);
         [JsonIgnore]
         public bool HasChallenge => CurrentLocation.ChallengeHere != null;
+        [JsonIgnore]
+        public bool CharacterHasBeenCreated;
         #endregion
 
         #region Constructor
         public GameSession()
         {
+            CharacterHasBeenCreated = false;
             #region Construct Player 
             CurrentPlayer = new Player("Laughing Zebra", "A Human");
             CurrentPlayer.Ancestry = AncestryFactory.GetAncestry("Human");
@@ -231,21 +234,23 @@ namespace Engine.ViewModels
             CurrentWorld.RefreshLocations();
             CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
 
-            CurrentTime = new Time(0, 1, 0, 1, Time.Days.Fridas, Time.Seasons.Spring, Time.Years.Catfish);
+            CurrentTime = new Time(0, 1, 0, 1, "Lion day", "Spring", "Moon's tears");
             CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
             WrittenTime = CurrentTime.WriteTime();
 
         }
-        public GameSession(Player player, int xCoordinate, int yCoordinate, int zCoordinate)
+        public GameSession(Player player, World world, Time time, int xCoordinate, int yCoordinate, int zCoordinate)
         {
-            CurrentWorld = WorldFactory.CreateWorld();
+            CharacterHasBeenCreated = true;
+            CurrentWorld = world;
             CurrentPlayer = player;
+            CurrentTime = time;
             CurrentLocation = CurrentWorld.LocationAt(xCoordinate, yCoordinate, zCoordinate);
-            CurrentWorld.RefreshLocations();
+
+            CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
 
             CurrentTrade = new Trade(new ObservableCollection<ItemQuantity>(), new ObservableCollection<ItemQuantity>());
 
-            CurrentTime = new Time(0, 1, 0, 1, Time.Days.Fridas, Time.Seasons.Spring, Time.Years.Catfish);
             CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
             WrittenTime = CurrentTime.WriteTime();
         }
@@ -258,6 +263,8 @@ namespace Engine.ViewModels
             _messageBroker.RaiseMessage(aString);
             if (CurrentMerchant != null)
                 DoInTrade(aString);
+            else if (!CharacterHasBeenCreated)
+                DoInCreateCharacter(aString);
             else if (CurrentEncounter != null)
                 DoInCombat(aString);
             else if (CurrentLocation.ChallengeHere != null && !CurrentLocation.ChallengeHere.ChallengeCompleted)
@@ -296,7 +303,7 @@ namespace Engine.ViewModels
                                 CurrentTime.Day = 0;
                                 CurrentTime.CurrentSeason = CurrentTime.ProgressSeason(CurrentTime.CurrentSeason);
                                
-                                if (CurrentTime.CurrentSeason == Time.Seasons.Spring)
+                                if (CurrentTime.CurrentSeason == "Spring")
                                 {
                                       CurrentTime.CurrentYear = CurrentTime.ProgressYear(CurrentTime.CurrentYear);
                                 }
@@ -743,6 +750,29 @@ namespace Engine.ViewModels
                 }
             }
         }
+        private void DoInCreateCharacter(string aString)
+        {
+            if (aString == "")
+                return;
+            string verb = "";
+            string noun = "";
+
+            if (aString.IndexOf(" ") > 0)
+            {
+                string[] temp = aString.Split(new char[] { ' ' }, 2);
+                verb = temp[0].ToLower();
+                noun = temp[1].ToLower();
+            }
+            else
+            {
+                verb = aString.ToLower();
+            }
+
+            switch (verb)
+            {
+
+            }
+        }
         private void Do(string aString)
         {
             if (aString == "")
@@ -893,6 +923,7 @@ namespace Engine.ViewModels
                 case "bodies":
                     foreach (Body body in BodyFactory._bodies)
                     {
+                        _messageBroker.RaiseMessage($"{body.Name}");
                         foreach (BodyPart part in body.Parts)
                         {
                             _messageBroker.RaiseMessage("");
@@ -1116,6 +1147,10 @@ namespace Engine.ViewModels
         private void Load()
         {
             OnLoad?.Invoke(this, System.EventArgs.Empty);
+        }
+        private void CreateNewCharacter()
+        {
+
         }
         #endregion
 

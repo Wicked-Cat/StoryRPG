@@ -4,6 +4,7 @@
 		<Parts>
 			<BodyPart Name="Head" Health="40" Coverage="15">
 				<SubParts>
+					<SubPart Name="HumanPart" Health="1" Coverage="1"/>
 					<SubPart Name="Right Eye" Health="15" Coverage="5"/>
 					<SubPart Name="Left Eye" Health="15" Coverage="5"/>
 					<SubPart Name="Mouth" Health="25" Coverage="10"/>
@@ -53,6 +54,7 @@
 		<Parts>
 			<BodyPart Name="Head" Health="999999" Coverage="15">
 				<SubParts>
+					<SubPart Name="GodPart" Health="1" Coverage="1"/>
 					<SubPart Name="Right Eye" Health="999999" Coverage="5"/>
 					<SubPart Name="Left Eye" Health="999999" Coverage="5"/>
 					<SubPart Name="Mouth" Health="999999" Coverage="10"/>
@@ -100,6 +102,7 @@
 		<Parts>
 			<BodyPart Name="Head" Health="40" Coverage="15">
 				<SubParts>
+					<SubPart Name="RatPart" Health="1" Coverage="1"/>
 					<SubPart Name="Right Eye" Health="5" Coverage="5"/>
 					<SubPart Name="Left Eye" Health="5" Coverage="5"/>
 					<SubPart Name="Mouth" Health="5" Coverage="10"/>
@@ -144,6 +147,4 @@
 
 		</Parts>
 	</Body>
-	
-	
 </Bodies>

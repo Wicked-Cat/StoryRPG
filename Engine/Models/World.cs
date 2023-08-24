@@ -5,9 +5,9 @@ namespace Engine.Models
 {
     public class World
     {
-        private List<Location> _locations = new List<Location>();
+        public List<Location> _locations = new List<Location>();
 
-        internal void AddLocation(Location location)
+        public void AddLocation(Location location)
         {
             _locations.Add(location);
         }

@@ -26,7 +26,7 @@
 	</Monster>
 	
 	<Monster ID="2" Name="Lioness" Ancestry="Feline" Class="Beast" Description="A fierce lioness"
-			 WeaponID="1002" Body="1">
+			 WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="50"/>
 			<Characteristic Name="Dexterity" Level="30"/>
@@ -48,7 +48,7 @@
 	</Monster>
 	
 	<Monster ID="3" Name="Wild Dog" Ancestry="Canine" Class="Beast" Description="A wild dog"
-			 WeaponID="1002" Body="1">
+			 WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="20"/>
 			<Characteristic Name="Dexterity" Level="30"/>

@@ -28,6 +28,8 @@ namespace Engine.Service
 
                 //populate player object
                 Player player = CreatePlayer(data);
+                World world = CreateWorld(data);
+                Time time = CreateTime(data);
 
                 //multidimentional array
                 //find currentlocation, then find it's child property
@@ -36,7 +38,7 @@ namespace Engine.Service
                 int z = (int)data[nameof(GameSession.CurrentLocation)][nameof(Location.ZCoordinate)];
 
                 //create gamesession object with save game data
-                return new GameSession(player, x, y, z);
+                return new GameSession(player, world, time, x, y, z);
             }
             catch(Exception ex)
             {
@@ -61,8 +63,40 @@ namespace Engine.Service
                     throw new InvalidDataException($"File version '{fileVersion}' not recognized");
             }
             PopulatePlayerAttributes(data, player);
-            //PopulatePlayerInventory(data, player);
+            PopulatePlayerInventory(data, player);
             return player;
+        }
+        private static World CreateWorld(JObject data)
+        {
+            string fileVersion = FileVersion(data);
+            World world;
+            switch (fileVersion)
+            {
+                case "0.1.000":
+                    world = new World();
+
+
+                    break;
+                default:
+                    throw new InvalidDataException($"File version '{fileVersion}' not recognized");
+            }
+            PopulateLocations(data, world);
+            PopulateGameSessionAttributes(data);
+            return world;
+        }
+        private static Time CreateTime(JObject data)
+        {
+            int day = (int)data[nameof(GameSession.CurrentTime)][nameof(Time.Day)];
+            int hour = (int)data[nameof(GameSession.CurrentTime)][nameof(Time.Hour)];
+            int minute = (int)data[nameof(GameSession.CurrentTime)][nameof(Time.Minute)];
+            int daysPassed = (int)data[nameof(GameSession.CurrentTime)][nameof(Time.DaysPassed)];
+            string currentDay = (string)data[nameof(GameSession.CurrentTime)][nameof(Time.CurrentDay)];
+            string currentSeason = (string)data[nameof(GameSession.CurrentTime)][nameof(Time.CurrentSeason)];
+            string currentYear = (string)data[nameof(GameSession.CurrentTime)][nameof(Time.CurrentYear)];
+
+            Time time = new Time(daysPassed, day, hour, minute, currentDay, currentSeason, currentYear);
+
+            return time;
         }
         private static void PopulatePlayerInventory(JObject data, Player player)
         {
@@ -74,8 +108,12 @@ namespace Engine.Service
                         [nameof(Player.Inventory)])
                         //[nameof(BaseItem.Name)])
                     {
-                        int itemId = (int)itemToken[nameof(ItemQuantity.BaseItem.ID)];
-                        player.AddItemToInventory(ItemFactory.CreateGameItem(itemId));
+                        int itemId = (int)itemToken[nameof(ItemQuantity.BaseItem)]
+                            [nameof(ItemQuantity.BaseItem.ID)];
+                        int quantity = (int)itemToken[nameof(ItemQuantity.Quantity)];
+                        int weaponId = (int)data[nameof(GameSession.CurrentPlayer)][nameof(Player.EquippedWeapon)][nameof(Item.ID)];
+                        player.AddItemsToInventory(ItemFactory.CreateGameItem(itemId), quantity);
+                        player.EquippedWeapon = ItemFactory.CreateGameItem(weaponId);
                     }
                     player.NumberInventory();
                     break;
@@ -105,14 +143,82 @@ namespace Engine.Service
                         double levelMulti = (double)charToken[nameof(Characteristic.LevelMultiplier)];
                         player.LoadCharacteristics(charName, baseLevel, levelMulti);
                     }
-                   
-
+                    player.CurrentBody = BodyFactory.GetBody
+                        ($"{(string)data[nameof(GameSession.CurrentPlayer)][nameof(Player.CurrentBody)][nameof(Body.Name)]}").Clone();
                     break;
             }
         }
-        private static void PopulateWorldState(JObject data)
+        private static void PopulateLocations(JObject data, World world)
         {
+            string fileVersion = FileVersion(data);
+            switch(fileVersion)
+            {
+                case "0.1.000":
+                    foreach(JToken locToken in (JArray)data[nameof(GameSession.CurrentWorld)][nameof(World._locations)])
+                    {
+                        Location loc;
+                        int xCoord = (int)locToken[nameof(Location.XCoordinate)];
+                        int yCoord = (int)locToken[nameof(Location.YCoordinate)];
+                        int zCoord = (int)locToken[nameof(Location.ZCoordinate)];
+                        string name = (string)locToken[nameof(Location.Name)];
+                        string description = (string)locToken[nameof(Location.Description)];
+                        loc = new Location(xCoord, yCoord, zCoord, name, description);
 
+                        foreach (JToken itemToken in (JArray)locToken[nameof(Location.ItemsHere)])
+                        {
+                            int itemID = (int)itemToken[nameof(ItemQuantity.BaseItem)][nameof(ItemQuantity.BaseItem.ID)];
+                            int quantity = (int)itemToken[nameof(ItemQuantity.Quantity)];
+                            loc.AddItemsToLocation(ItemFactory.GetItemByID(itemID), quantity);
+                        }
+                        foreach (JToken itemToken in (JArray)locToken[nameof(Location.AllItemsHere)])
+                        {
+                            int itemID = (int)itemToken[nameof(LocationItems.ID)];
+                            int percent = (int)itemToken[nameof(LocationItems.Percentage)];
+                            int quantity = (int)itemToken[nameof(LocationItems.Quantity)];
+                            bool respawns = (bool)itemToken[nameof(LocationItems.Respawns)];
+                            bool collected = (bool)itemToken[nameof(LocationItems.HasBeenCollected)];
+                            loc.LoadAllItems(itemID, percent, quantity, respawns, collected);
+                        }
+                        foreach(JToken encounterToken in (JArray)locToken[nameof(Location.EncountersHere)])
+                        {
+                            int encID = (int)encounterToken[nameof(Encounter.ID)];
+                            Encounter encounter = EncounterFactory.GetEncounter(encID);
+                            loc.EncountersHere.Add(encounter);
+                        }
+                        foreach(JToken encounterToken in (JArray)locToken[nameof(Location.AllEncountersHere)])
+                        {
+                            int encID = (int)encounterToken[nameof(EncounterPercent.EncounterID)];
+                            int percent = (int)encounterToken[nameof(EncounterPercent.ChanceOfEncounter)];
+                            loc.AddEncounter(encID, percent);
+                        }
+                        foreach(JToken merchToken in (JArray)locToken[nameof(Location.MerchantsHere)])
+                        {
+                            int merchID = (int)merchToken[nameof(Merchant.ID)];
+                            loc.MerchantsHere.Add(MerchantFactory.GetMerchantByID(merchID));
+                        }
+                        foreach (JToken merchToken in (JArray)locToken[nameof(Location.AllMerchantsHere)])
+                        {
+                            int merchID = (int)merchToken[nameof(MerchantPercent.MerchantID)];
+                            int percent = (int)merchToken[nameof(MerchantPercent.ChanceOfEncounter)];
+                            loc.AddMerchant(merchID, percent);
+                        }
+                        world.AddLocation(loc);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        private static void PopulateGameSessionAttributes(JObject data)
+        {
+            string fileVersion = FileVersion(data);
+            switch (fileVersion)
+            {
+                case "0.1.000":
+                    break;
+                default:
+                    throw new InvalidDataException($"File version '{fileVersion}' not recognized");
+            }
         }
         private static string FileVersion(JObject data)
         {

@@ -98,7 +98,10 @@ namespace Engine.Factories
         }
         public static Item GetItem(string aString)
         {
-            return _gameItems.FirstOrDefault(i => i.Name.ToLower() == aString.ToLower()).Clone();
+            Item item = _gameItems.FirstOrDefault(i => i.Name.ToLower() == aString.ToLower());
+            if (item != null)
+              return item.Clone();
+            return null;
         }
         public static bool IsItem(string aString)
         {

@@ -12,7 +12,7 @@ namespace Engine.Models
         public double MaximumHealth { get; set; }
         public double CurrentHealth { get; set; }
         public double Coverage { get; set; }
-        public List<BodyPart> SubParts { get; set; }
+        public List<BodyPart> SubParts { get; }
         public List<Wound> Wounds { get; set; }
 
         public BodyPart(string name, double maximumHealth, double coverage)

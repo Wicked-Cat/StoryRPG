@@ -27,6 +27,7 @@ namespace StoryRPG
         TradeWindow tradeWindow;
         SkillWindow skillWindow;
         ChallengeWindow challengeWindow;
+        CreateCharacterWindow createCharacterWindow;
 
         private bool IsCombatWindowOpen;
         private bool IsChallengeWindowOpen;
@@ -50,6 +51,8 @@ namespace StoryRPG
             tradeWindow.DataContext = _gameSession;
             challengeWindow = new ChallengeWindow();
             challengeWindow.DataContext = _gameSession;
+            createCharacterWindow = new CreateCharacterWindow();
+            createCharacterWindow.DataContext = _gameSession;
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -62,6 +65,11 @@ namespace StoryRPG
             {
                 challengeWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run(e.Message)));
                 challengeWindow.GameMessages.ScrollToEnd();
+            }
+            else if(createCharacterWindow.Visibility == Visibility.Visible)
+            {
+                createCharacterWindow.GameMessages.Document.Blocks.Add(new Paragraph(new Run((e.Message))));
+                createCharacterWindow.GameMessages.ScrollToEnd();
             }
             else
             {
@@ -196,6 +204,19 @@ namespace StoryRPG
                 }
            }
         }
+        private void CreateCharacterWindowControl(object sender, EventArgs e)
+        {
+            if(createCharacterWindow.Visibility == Visibility.Visible)
+            {
+                createCharacterWindow.Hide();
+            }
+            else
+            {
+                createCharacterWindow.GameMessages.Document.Blocks.Clear();
+                createCharacterWindow.Owner = this;
+                createCharacterWindow.Show();
+            }
+        }
         private void QuitGame(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
@@ -225,6 +246,15 @@ namespace StoryRPG
 
             _gameSession = gameSession;
             DataContext = _gameSession;
+
+            combatWindow = new CombatWindow();
+            combatWindow.DataContext = _gameSession;
+            tradeWindow = new TradeWindow();
+            tradeWindow.DataContext = _gameSession;
+            challengeWindow = new ChallengeWindow();
+            challengeWindow.DataContext = _gameSession;
+            createCharacterWindow = new CreateCharacterWindow();
+            createCharacterWindow.DataContext = _gameSession;
 
             GameMessages.Document.Blocks.Clear();
             if(combatWindow != null)

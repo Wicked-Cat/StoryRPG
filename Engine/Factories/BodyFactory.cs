@@ -1,4 +1,5 @@
 ﻿using Engine.Models;
+using Engine.Service;
 using Engine.Shared;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Engine.Factories
     
     public static class BodyFactory
     {
+        private static readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
         private const string GAME_DATA_FILENAME = ".\\GameData\\Bodies.xml";
         public static readonly List<Body> _bodies = new List<Body>();
 
@@ -43,7 +45,7 @@ namespace Engine.Factories
                     new Body(node.AttributeAsInt("ID"),
                         node.AttributeAsString("Name"),
                         node.AttributeAsString("Description"));
-
+                
                 //XmlNodeList list = node.SelectNodes("/Parts/BodyPart");
                 if(node.SelectNodes("Parts/BodyPart") is XmlNodeList bodyParts)
                 {
@@ -53,8 +55,8 @@ namespace Engine.Factories
                         BodyPart newPart = new BodyPart(childNode.AttributeAsString("Name"),
                         childNode.AttributeAsDouble("Health"),
                         childNode.AttributeAsDouble("Coverage"));
-
-                        if(node.SelectNodes("SubParts/SubPart") is XmlNodeList subParts)
+                        /*
+                        if(childNode.SelectNodes("SubParts/SubPart") is XmlNodeList subParts)
                         {
                             var xmlNodesSubParts = subParts.Cast<XmlNode>().ToList();
                             foreach(XmlNode subNode in xmlNodesSubParts)
@@ -62,28 +64,12 @@ namespace Engine.Factories
                                 BodyPart subPart = new BodyPart(subNode.AttributeAsString("Name"),
                                     subNode.AttributeAsDouble("Health"),
                                     subNode.AttributeAsDouble("Coverage"));
-                                newPart.SubParts.Add(subPart);
+                                newPart.SubParts.Add(subPart); 
                             }
-                        }
-
+                        }*/
                         body.Parts.Add(newPart);
-
                     }
                 }
-                /*
-                if(node.SelectNodes("Parts/BodyPart/SubParts/SubPart") is XmlNodeList subParts)
-                {
-                    var xmlNodesSubParts = subParts.Cast<XmlNode>().ToList();
-                    foreach (XmlNode childNode in xmlNodesSubParts)
-                    {
-                            body.Parts.First(p => p.Name.ToLower() == childNode.AttributeAsString("Parent").ToLower()).SubParts.
-                            Add(new BodyPart(childNode.AttributeAsString("Name"),
-                            childNode.AttributeAsDouble("Health"),
-                            childNode.AttributeAsDouble("Coverage")));
-
-                    }
-                }
-                */
                 _bodies.Add(body);
             }
         }

@@ -15,23 +15,14 @@ namespace Engine.Models
         public int YCoordinate { get; set; }
         public int ZCoordinate { get; set; }
         public string Name { get; set; }
-        [JsonIgnore]
         public string Description { get; set; }
-        [JsonIgnore]
         public List<Encounter> EncountersHere { get; set; } = new List<Encounter>();
-        [JsonIgnore]
         public List<EncounterPercent> AllEncountersHere { get; set; } = new List<EncounterPercent>();
-        [JsonIgnore]
         public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
-        [JsonIgnore]
         public List<MerchantPercent> AllMerchantsHere { get; set; } = new List<MerchantPercent>();
-        [JsonIgnore]
         public List<ItemQuantity> ItemsHere { get; set; } = new List<ItemQuantity>();
-        [JsonIgnore]
         public List<LocationItems> AllItemsHere { get; set; } = new List<LocationItems>();
-        [JsonIgnore]
         public Challenge ChallengeHere { get; set; }
-        [JsonIgnore]
         public string EncountersText
         {
             get { return WriteEncounterText(); }
@@ -103,10 +94,18 @@ namespace Engine.Models
             }
             else
             {
-                    AllItemsHere.Add(new LocationItems(itemID, percent, quantity, respawns));
+                    AllItemsHere.Add(new LocationItems(itemID, percent, quantity, respawns, false));
 
             }
         }
+        public void LoadAllItems(int itemID, int percent, int quantity, bool respawns, bool hasBeenCollected)
+        {
+            if (AllItemsHere.Exists(i => i.ID == itemID))
+                AllItemsHere.First(i => i.ID == itemID).Quantity++;
+            else
+                AllItemsHere.Add(new LocationItems(itemID, percent, quantity, respawns, hasBeenCollected));
+        }
+
         #endregion 
 
         public void AddItemToLocation(Item item)
@@ -118,12 +117,25 @@ namespace Engine.Models
             ItemsHere.First(i => i.BaseItem.ID == item.ID).Quantity++;
             ItemsText = WriteItemText();
         }
+        public void AddItemsToLocation(Item item, int quantity)
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                if (!ItemsHere.Any(i => i.BaseItem.ID == item.ID))
+                {
+                    ItemsHere.Add(new ItemQuantity(item, 0));
+                }
+                ItemsHere.First(i => i.BaseItem.ID == item.ID).Quantity++;
+                ItemsText = WriteItemText();
+            }
+        }
         public void RemoveItemFromLocation(Item item)
         {
             ItemQuantity itemToRemove = ItemsHere.FirstOrDefault(i => i.BaseItem.Name == item.Name);
             if (itemToRemove != null)
             {
-                AllItemsHere.First(i => i.ID == itemToRemove.BaseItem.ID).HasBeenCollected = true;
+                if(AllItemsHere.Any(i => i.ID == itemToRemove.BaseItem.ID))
+                    AllItemsHere.First(i => i.ID == itemToRemove.BaseItem.ID).HasBeenCollected = true;
 
                 if (itemToRemove.Quantity == 1)
                 {

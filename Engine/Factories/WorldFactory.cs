@@ -24,7 +24,10 @@ namespace Engine.Factories
             }
             return world;
         }
-
+        internal static World LoadWorld(World world)
+        {
+            return world;
+        }
         private static void LoadLocationsFromNodes(World world, XmlNodeList nodes)
         {
             if(nodes == null)

@@ -2,14 +2,10 @@
 {
     public class Time
     {
-        public enum Years { MoonsTears, BoarsTusks, Catfish, }
-        public enum Seasons { Winter, Spring, Summer, Fall } //months
-        public enum Days { Mondas, Turdas, Wendas, Tirdas, Fridas, Sardas, Sundas }
-        public enum TimeOfDay { Dawn, Day, Dusk, Night}
-        public TimeOfDay CurrentTimeOfDay { get; set; }
-        public Days CurrentDay { get; set; }
-        public Seasons CurrentSeason { get; set; }
-        public Years CurrentYear { get; set; }
+        public string CurrentTimeOfDay { get; set; }
+        public string CurrentDay { get; set; }
+        public string CurrentSeason { get; set; }
+        public string CurrentYear { get; set; }
         public int DaysPassed;
         public int Week;
         public int Day;
@@ -17,7 +13,7 @@
         public int Minute;
         public bool IsMonthEnd => Day > 31;
 
-        public Time(int daysPassed, int day, int hour, int minute, Days currentDay, Seasons currentSeason, Years currentYear)
+        public Time(int daysPassed, int day, int hour, int minute, string currentDay, string currentSeason, string currentYear)
         {
             DaysPassed = daysPassed;
             Day = day;
@@ -33,73 +29,77 @@
             return $"{CurrentSeason} of {CurrentYear}, {CurrentDay}, {(Hour >= 10 ? $"{Hour}" : $"0{Hour}")} : {(Minute >= 10 ? $"{Minute}" : $"0{Minute}")} ({CurrentTimeOfDay})";
             //t{(damage > 1 ? "s" : "")}.");
         }
-        public TimeOfDay ProgressTimeOfDay(TimeOfDay timeOfDay, int hour)
+        public string ProgressTimeOfDay(string timeOfDay, int hour)
         {
             if (Hour >= 0 && Hour < 5)
-                return TimeOfDay.Night;
+                return "Night";
             else if (Hour >= 5 && Hour < 7)
-                return TimeOfDay.Dawn;
+                return "Dawn";
             else if (Hour >= 7 && Hour < 19)
-                return TimeOfDay.Day;
+                return "Day";
             else if (Hour >= 19 && Hour < 21)
-                return TimeOfDay.Dusk;
+                return "Dusk";
             else if (Hour >= 21 && Hour <= 24)
-                return TimeOfDay.Night;
+                return "Night";
 
-            return TimeOfDay.Night;
+            return "Night";
 
         }
-        public Days ProgressDay(Days day)
+        public string ProgressDay(string day)
         {
             switch(day)
             {
-                case Days.Mondas:
-                    return Days.Turdas;
-                case Days.Turdas:
-                    return Days.Wendas;
-                case Days.Wendas:
-                    return Days.Tirdas;
-                case Days.Tirdas:
-                    return Days.Fridas;
-                case Days.Fridas:
-                    return Days.Sardas;
-                case Days.Sardas:
-                    return Days.Sundas;
-                case Days.Sundas:
-                    return Days.Mondas;
+                case "Wolf day":
+                    return "Salmon day";
+                case "Salmon day":
+                    return "Lion day";
+                case "Lion day":
+                    return "Buffalo day";
+                case "Buffalo day":
+                    return "Goose day";
+                case "Goose day":
+                    return "Antelope day";
+                case "Antelope day":
+                    return "Hare day";
+                case "Hare day":
+                    return "Wolf day";
             }
 
-            return Days.Mondas;
+            return "Salmon day";
         }
-        public Seasons ProgressSeason(Seasons season)
+        public string ProgressSeason(string season)
         {
             switch (season)
             {
-                case Seasons.Spring:
-                    return Seasons.Summer;
-                case Seasons.Summer:
-                    return Seasons.Fall;
-                case Seasons.Fall:
-                    return Seasons.Winter;
-                case Seasons.Winter:
-                    return Seasons.Spring;
+                case "Spring":
+                    return "Summer";
+                case "Summer":
+                    return "Fall";
+                case "Fall":
+                    return "Winter";
+                case "Winter":
+                    return "Spring";
             }
 
-            return Seasons.Summer;
+            return "Summer";
         }
-        public Years ProgressYear(Years years)
+        public string ProgressYear(string years)
         {
             switch (years)
             {
-                case Years.MoonsTears:
-                    return Years.BoarsTusks;
-                case Years.BoarsTusks:
-                    return Years.Catfish;
-                case Years.Catfish:
-                    return Years.MoonsTears;
+                case "Moon's tears":
+                    return "Boar's tusks";
+                case "Boar's tusks":
+                    return "Cat and fish";
+                case "Cat and fish":
+                    return "Moon's tears";
             }
 
-            return Years.Catfish;
+            return "Cat and fish";
         }
+       /* public Days GetDayByInt(int day)
+        {
+
+        }*/
     }
 }

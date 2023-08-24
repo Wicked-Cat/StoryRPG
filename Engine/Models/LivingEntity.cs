@@ -135,6 +135,24 @@ namespace Engine.Models
             }
             NumberInventory();
         }
+        public void AddItemsToInventory(Item item, int quantity)
+        {
+            for (int i = 0; i < quantity; i++)
+            {
+                if (item.IsUnique)
+                    Inventory.Add(new ItemQuantity(item, 1));
+                else
+                {
+                    if (!Inventory.Any(i => i.BaseItem.ID == item.ID))
+                    {
+                        Inventory.Add(new ItemQuantity(item, 0));
+                    }
+
+                    Inventory.First(i => i.BaseItem.ID == item.ID).Quantity++;
+                }
+            }
+            NumberInventory();
+        }
         public void RemoveItemFromInventory(Item item)
         {
             ItemQuantity itemToRemove = Inventory.FirstOrDefault(i => i.BaseItem == item);

@@ -14,13 +14,13 @@ namespace Engine.Models
         public bool Respawns { get; set; }
         public bool HasBeenCollected { get; set; }
 
-        public LocationItems(int iD, int percentage, int quantity, bool respawns)
+        public LocationItems(int iD, int percentage, int quantity, bool respawns, bool collected)
         {
             ID = iD;
             Percentage = percentage;
             Quantity = quantity;
             Respawns = respawns;
-            HasBeenCollected = false;
+            HasBeenCollected = collected;
         }
     }
 }
