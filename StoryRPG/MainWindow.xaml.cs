@@ -21,16 +21,9 @@ namespace StoryRPG
 
         private GameSession _gameSession;
         CombatWindow combatWindow;
-        InventoryWindow inventoryWindow;
-        CharacterWindow characterWindow;
-        EquipmentWindow equipmentWindow;
         TradeWindow tradeWindow;
-        SkillWindow skillWindow;
         ChallengeWindow challengeWindow;
         CreateCharacterWindow createCharacterWindow;
-
-        private bool IsCombatWindowOpen;
-        private bool IsChallengeWindowOpen;
 
         private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
 
@@ -42,7 +35,6 @@ namespace StoryRPG
             SetActiveGameSessionTo(new GameSession());
 
             DataContext = _gameSession; //built in propery for xaml f/iles
-            CreateTimer();
             TimeOfDayToColourConverter();
 
             combatWindow = new CombatWindow();
@@ -53,6 +45,8 @@ namespace StoryRPG
             challengeWindow.DataContext = _gameSession;
             createCharacterWindow = new CreateCharacterWindow();
             createCharacterWindow.DataContext = _gameSession;
+            if(!_gameSession.CharacterHasBeenCreated)
+               createCharacterWindow.Show();
         }
         private void OnGameMessageRaised(object sender, GameMessageEventArgs e)
         {
@@ -89,13 +83,6 @@ namespace StoryRPG
 
       
         #region Timer Functions
-        private void CreateTimer()
-        {
-            DispatcherTimer timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += TimerTick;
-            timer.Start();
-        }
         private void TimerTick(object sender, EventArgs e)
         {
             //_gameSession.PassTime(10);
@@ -130,29 +117,6 @@ namespace StoryRPG
 
         #region Window Control Functions
 
-        private void OpenInventoryScreen(object sender, EventArgs e)
-        {
-            inventoryWindow = new InventoryWindow();
-            inventoryWindow.Owner = this;
-            inventoryWindow.DataContext = _gameSession;
-            equipmentWindow = new EquipmentWindow();
-            equipmentWindow.Owner = this;
-            equipmentWindow.DataContext = _gameSession;
-            equipmentWindow.Show();
-            inventoryWindow.Show();
-        }
-        private void OpenCharacterScreen(object sender, EventArgs e)
-        {
-            characterWindow = new CharacterWindow();
-            characterWindow.Owner = this;
-            characterWindow.DataContext = _gameSession;
-            characterWindow.Show();
-
-            skillWindow = new SkillWindow();
-            skillWindow.Owner = this;
-            skillWindow.DataContext = _gameSession;
-            skillWindow.Show();
-        }
         private void CombatWindowControl(object sender, OnEncounterEventArgs encounter)
         {
             if(combatWindow.Visibility == Visibility.Visible)
@@ -212,9 +176,12 @@ namespace StoryRPG
             }
             else
             {
-                createCharacterWindow.GameMessages.Document.Blocks.Clear();
-                createCharacterWindow.Owner = this;
-                createCharacterWindow.Show();
+                if (!_gameSession.CharacterHasBeenCreated)
+                {
+                    createCharacterWindow.GameMessages.Document.Blocks.Clear();
+                    createCharacterWindow.Owner = this;
+                    createCharacterWindow.Show();
+                }
             }
         }
         private void QuitGame(object sender, EventArgs e)
@@ -235,10 +202,9 @@ namespace StoryRPG
             if (_gameSession != null)
             {
                  _gameSession.OnEncounterEngaged -= CombatWindowControl;
-                 _gameSession.OnInventoryOpened -= OpenInventoryScreen;
-                 _gameSession.OnCharacterOpened -= OpenCharacterScreen;
                  _gameSession.OnTradeInitiated -= TradeWindowControl;
                  _gameSession.OnChallengeInitiated -= ChallengeWindowControl; 
+                 _gameSession.OnCharacterCreation -= CreateCharacterWindowControl;
                  _gameSession.OnQuit -= QuitGame;
                  _gameSession.OnSave -= SaveGame;
                  _gameSession.OnNewGame -= NewGame;
@@ -261,17 +227,20 @@ namespace StoryRPG
                 combatWindow.GameMessages.Document.Blocks.Clear();
             if(challengeWindow != null)
                 challengeWindow.GameMessages.Document.Blocks.Clear();
+            if (createCharacterWindow != null)
+                createCharacterWindow.GameMessages.Document.Blocks.Clear();
 
             _messageBroker.OnMessageRaised += OnGameMessageRaised;
             _gameSession.OnEncounterEngaged += CombatWindowControl;
-            _gameSession.OnInventoryOpened += OpenInventoryScreen;
-            _gameSession.OnCharacterOpened += OpenCharacterScreen;
             _gameSession.OnTradeInitiated += TradeWindowControl;
             _gameSession.OnChallengeInitiated += ChallengeWindowControl;
+            _gameSession.OnCharacterCreation += CreateCharacterWindowControl;
             _gameSession.OnQuit += QuitGame;
             _gameSession.OnSave += SaveGame;
             _gameSession.OnLoad += LoadGame;
             _gameSession.OnNewGame += NewGame;
+              if (createCharacterWindow.Visibility == Visibility.Visible || createCharacterWindow.Visibility == Visibility.Collapsed)
+                  createCharacterWindow.Hide();
         }
 
         private void _gameSession_OnNewGame(object? sender, EventArgs e)

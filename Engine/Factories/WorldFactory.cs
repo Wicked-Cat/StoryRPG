@@ -8,6 +8,7 @@ namespace Engine.Factories
     internal static class WorldFactory
     {
         private const string GAME_DATA_FILENAME = ".\\GameData\\Locations.xml";
+        private static List<Location> locations = new List<Location>();
         internal static World CreateWorld()
         {
             World world = new World();
@@ -17,6 +18,7 @@ namespace Engine.Factories
                 data.LoadXml(File.ReadAllText(GAME_DATA_FILENAME));
                 LoadLocationsFromNodes(world,
                     data.SelectNodes("/Locations/Location"));
+                LoadInteriorLocations(world, data.SelectNodes("/Locations/Location"));
             }
             else
             {
@@ -28,6 +30,16 @@ namespace Engine.Factories
         {
             return world;
         }
+        private static void LoadInteriorLocations(World world, XmlNodeList nodes)
+        {
+            foreach(XmlNode node in nodes)
+            {
+                XmlNodeList interiorNodes = node.SelectNodes("./Interior/InteriorLoc");
+
+                foreach(XmlNode intNode in interiorNodes)
+                     world._locations.First(l => l.ID == node.AttributeAsInt("ID")).InteriorLocations.Add(GetLocationById(intNode.AttributeAsInt("ID")));
+            }
+        }
         private static void LoadLocationsFromNodes(World world, XmlNodeList nodes)
         {
             if(nodes == null)
@@ -37,7 +49,8 @@ namespace Engine.Factories
             foreach(XmlNode node in nodes)
             {
                 Location location =
-                    new Location(node.AttributeAsInt("X"),
+                    new Location(node.AttributeAsInt("ID"),
+                    node.AttributeAsInt("X"),
                     node.AttributeAsInt("Y"),
                     node.AttributeAsInt("Z"),
                     node.AttributeAsString("Name"),
@@ -48,9 +61,17 @@ namespace Engine.Factories
                 AddChallenge(location, node.SelectNodes("./Challenge"));
                 AddObstacles(location.ChallengeHere, node.SelectNodes("./Challenge/Obstacles/Obstacle"));
                 world.AddLocation(location);
+                locations.Add(location);
             }
         }
 
+        private static Location GetLocationById(int id)
+        {
+            Location location = locations.FirstOrDefault(l => l.ID == id);
+            if (location != null)
+                return location;
+            return null;
+        }
         private static void AddEncounters(Location location, XmlNodeList encounter)
         {
             if (encounter == null)
@@ -123,7 +144,6 @@ namespace Engine.Factories
                     node.AttributeAsString("FailText")));
             }
         }
-
         private static object DetermineObstacleType(string aString)
         {
             bool parse = int.TryParse(aString, out int num);
@@ -151,5 +171,6 @@ namespace Engine.Factories
             }
             return null;
         }
+       
     }
 }

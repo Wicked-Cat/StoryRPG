@@ -3,7 +3,7 @@
 	<Ancestry Id="1" Name="Malu" Description="">
 		<Multipliers>
 			<CharacteristicMultiplier Name="Strength" Value="0.9"/>
-			<CharacteristicMultipllier Name="Dexterity" Value="1.2"/>
+			<CharacteristicMultiplier Name="Dexterity" Value="1.2"/>
 			<SkillMultiplier Name="Lock Picker" Value="3"/>
 		</Multipliers>
 		<Tags>
@@ -21,15 +21,15 @@
 	</Tags>
 	</Ancestry>
 	
-	<Ancestry Id="3" Name="Rodent" Description=""/>
+	<Ancestry Id="3" Name="Rat" Description=""/>
 
-	<Ancestry Id="4" Name="Feline" Description="">
+	<Ancestry Id="4" Name="Lion" Description="">
 		<Multipliers>
 			<CharacteristicMultiplier Name="Strength" Value="1.5"/>
 			<CharacteristicMultiplier Name="Dexterity" Value="1.5"/>
 		</Multipliers>
 	</Ancestry>
 	
-	<Ancestry Id="5" Name="Canine" Description=""/>
+	<Ancestry Id="5" Name="Wolf" Description=""/>
 	
 </Ancestries>

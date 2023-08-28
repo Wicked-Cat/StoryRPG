@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Monsters>
-	<Monster ID="1" Name="Rat" Ancestry="Rodent" Class="Beast" Description="A large rat"
+	<Monster ID="1" Name="Rat" Ancestry="Rat" Class="Beast" Description="A large rat"
 			 WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="5"/>
@@ -25,7 +25,7 @@
 		</LootItems>
 	</Monster>
 	
-	<Monster ID="2" Name="Lioness" Ancestry="Feline" Class="Beast" Description="A fierce lioness"
+	<Monster ID="2" Name="Lioness" Ancestry="lion" Class="Beast" Description="A fierce lioness"
 			 WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="50"/>
@@ -47,7 +47,7 @@
 		</LootItems>
 	</Monster>
 	
-	<Monster ID="3" Name="Wild Dog" Ancestry="Canine" Class="Beast" Description="A wild dog"
+	<Monster ID="3" Name="Wolf" Ancestry="Wolf" Class="Beast" Description="A wild dog"
 			 WeaponID="1002" Body="3">
 		<Characteristics>
 			<Characteristic Name="Strength" Level="20"/>

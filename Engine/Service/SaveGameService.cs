@@ -26,7 +26,6 @@ namespace Engine.Service
             {
                 JObject data = JObject.Parse(File.ReadAllText(fileName));
 
-                //populate player object
                 Player player = CreatePlayer(data);
                 World world = CreateWorld(data);
                 Time time = CreateTime(data);
@@ -106,7 +105,6 @@ namespace Engine.Service
                 case "0.1.000":
                     foreach(JToken itemToken in (JArray)data[nameof(GameSession.CurrentPlayer)]
                         [nameof(Player.Inventory)])
-                        //[nameof(BaseItem.Name)])
                     {
                         int itemId = (int)itemToken[nameof(ItemQuantity.BaseItem)]
                             [nameof(ItemQuantity.BaseItem.ID)];
@@ -157,12 +155,13 @@ namespace Engine.Service
                     foreach(JToken locToken in (JArray)data[nameof(GameSession.CurrentWorld)][nameof(World._locations)])
                     {
                         Location loc;
+                        int id = (int)locToken[nameof(Location.ID)];
                         int xCoord = (int)locToken[nameof(Location.XCoordinate)];
                         int yCoord = (int)locToken[nameof(Location.YCoordinate)];
                         int zCoord = (int)locToken[nameof(Location.ZCoordinate)];
                         string name = (string)locToken[nameof(Location.Name)];
                         string description = (string)locToken[nameof(Location.Description)];
-                        loc = new Location(xCoord, yCoord, zCoord, name, description);
+                        loc = new Location(id, xCoord, yCoord, zCoord, name, description);
 
                         foreach (JToken itemToken in (JArray)locToken[nameof(Location.ItemsHere)])
                         {

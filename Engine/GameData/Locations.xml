@@ -1,8 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Locations>
-	<Location X="0" Y="0" Z="0" Name="Front Gate">
+	<Location X="-999" Y="-999" Z="-999" Name="Starting Location" ID="0"/>
+	
+	<Location X="0" Y="0" Z="0" Name="Front Gate" ID="1">
 		<Description><![CDATA[A large sandstone gate, crowds of people. This is the front gate of the capital city of Purrjata. 
-		To the east through the gate is the Dust District.]]></Description>
+		To the east through the gate is the Dust District. There is a small hut in the middle of the street]]></Description>
+		<Interior>
+			<InteriorLoc ID="9"/>
+		</Interior>
 		<Items>
 			<Item ID="1001" Quantity="3" Percent="100" Respawns="true"/>
 			<Item ID="2001" Quantity="10" Percent="50" Respawns="true"/>
@@ -10,7 +15,7 @@
 		</Items>
 	</Location>
 	
-	<Location X="1" Y="0" Z="0" Name="Dust District">
+	<Location X="1" Y="0" Z="0" Name="Dust District" ID="2">
 		<Description><![CDATA[The district of travelers, full of inns and traders.]]></Description>
 		<Merchants>
 			<Merchant ID="1" Percent="100"/>
@@ -18,14 +23,14 @@
 		</Merchants>
 	</Location>
 	
-	<Location X="0" Y="1" Z="0" Name="Stick District">
+	<Location X="0" Y="1" Z="0" Name="Stick District" ID="3">
 		<Description><![CDATA[The district of the stick people, beggars selling what little they can find.]]></Description>
 		<Encounters>
 			<Encounter ID="1" Percent="100"/>
 		</Encounters>
 	</Location>
 	
-	<Location X="-1" Y="0" Z="0" Name="Savannah">
+	<Location X="-1" Y="0" Z="0" Name="Savannah" ID="4">
 		<Description><![CDATA[The barren savannah, full of wild animamls]]></Description>
 		<Encounters>
 			<Encounter ID="2" Percent="50"/>
@@ -33,18 +38,18 @@
 		</Encounters>
 	</Location>
 	
-	<Location X="0" Y="-1" Z="0" Name="Animal Stew">
+	<Location X="0" Y="-1" Z="0" Name="Animal Stew" ID="5">
 		<Description><![CDATA[steeew]]></Description>
 		<Encounters>
 			<Encounter ID="3" Percent="100"/>
 		</Encounters>
 	</Location>
 	
-	<Location X="1" Y="-1" Z="0" Name="Temple District">
+	<Location X="1" Y="-1" Z="0" Name="Temple District" ID="6">
 		<Description><![CDATA[Tempes]]></Description>
 	</Location>
 	
-	<Location X="1" Y="0" Z="-1" Name="Sewer LEvel">
+	<Location X="1" Y="0" Z="-1" Name="Sewer LEvel" ID="7">
 		<Description><![CDATA[lkdjflsf]]></Description>
 		<Challenge Name="Blocked sewer grate" Resets="false"
 				   Description="A locked grate. You can use a key, pick the lock, break the door, be smol">
@@ -56,7 +61,7 @@
 		</Challenge>
 	</Location>
 	
-	<Location X="1" Y="0" Z="1" Name="Shapeshifter Challenge">
+	<Location X="1" Y="0" Z="1" Name="Shapeshifter Challenge" ID="8">
 		<Description><![CDATA[weeeeeeee]]></Description>
 		<Challenge Name="Learn to fly" Resets="true" DaysUntilReset="2"
 		   Description="borb">
@@ -64,6 +69,16 @@
 				<Obstacle Check="Shapeshifter" CheckValue="10" Description="Turn into borb" PassText="shpsftr pass" FailText="shpsftr fail"/>
 			</Obstacles>
 		</Challenge>
+	</Location>
+
+	<Location X="9999" Y="9999" Z="9999" Name="Stick Hut" ID="9">
+		<Description><![CDATA[The interior of a small stick hut. Not much is in here. It smells like cats.]]></Description>
+		<Interior>
+			<InteriorLoc ID="1"/>
+		</Interior>
+		<Items>
+			<Item ID="9010" Quantity="1" Percent="100" Respawns="true"/>
+		</Items>
 	</Location>
 
 	

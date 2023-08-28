@@ -18,6 +18,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="120"/>
         </Grid.RowDefinitions>
@@ -33,7 +34,7 @@
                Grid.ColumnSpan="2"/>
 
         <!-- Game Messages -->
-        <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="2">
+        <Border Grid.Row="1" Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="2" Grid.RowSpan="2">
             <RichTextBox x:Name="GameMessages" VerticalScrollBarVisibility="Auto">
                 <RichTextBox.Resources>
                     <Style TargetType="{x:Type Paragraph}">
@@ -44,13 +45,13 @@
         </Border>
         
         <!-- Text Box -->
-        <Label Grid.Row="2" Grid.Column="1" Background="RosyBrown">
+        <Label Grid.Row="3" Grid.Column="1" Background="RosyBrown">
             <TextBox Width="590" Name="TextBoxInput" 
                      KeyDown="OnEnterPressed"/>
         </Label>
 
         <!-- Location -->
-        <Border Grid.Row="3" Grid.Column="1" BorderBrush="Aqua" BorderThickness="2">
+        <Border Grid.Row="4" Grid.Column="1" BorderBrush="Aqua" BorderThickness="2">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -78,10 +79,13 @@
                            TextWrapping="Wrap"/>
                 <TextBlock Grid.Row="0" Grid.Column="2"
                            HorizontalAlignment="Center"
-                           Text="NPC's"/>
-                <TextBlock Grid.Row="0" Grid.Column="3"
+                           Text="Interior"/>
+                <TextBlock Grid.Row="0" Grid.Column="2"
                            HorizontalAlignment="Center"
-                           Text="Items"/>
+                           Text="Interior"/>
+                <TextBlock Grid.Row="1" Grid.Column="2"
+                           HorizontalAlignment="Center"
+                           Text="{Binding CurrentLocation.InteriorText}"/>
                 <TextBlock Grid.Row="0" Grid.Column="3"
                            HorizontalAlignment="Center"
                            Text="{Binding CurrentLocation.ItemsText}"/>
@@ -89,7 +93,7 @@
         </Border>
         
         <!-- Exits -->
-        <Grid Grid.Row="3" Grid.Column="2">
+        <Grid Grid.Row="4" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -115,6 +119,98 @@
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Down: "/>
             <TextBlock Grid.Row="5" Grid.Column="1" Visibility="{Binding HasDownExit, Converter={StaticResource BooleanToVisibility}}" Text="{Binding DownExit}"/>
         </Grid>
+            
+        <!--Inventory-->
+        <Grid Grid.Row="1" Grid.Column="2" Background="Black">
+            <DataGrid ItemsSource="{Binding CurrentPlayer.Inventory}"
+                      AutoGenerateColumns="False"
+                      HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Num"
+                                        Binding="{Binding BaseItem.InventoryNumber, Mode=OneWay}"
+                                        Width="Auto"/>
+                    <DataGridTextColumn Header="Name"
+                                        Binding="{Binding BaseItem.Name, Mode=OneWay}"
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Qty"
+                                        Binding="{Binding Quantity, Mode=OneWay}"
+                                        IsReadOnly="True"
+                                        Width="Auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+        
+        <!--Skills-->
+        <Grid Grid.Row="1" Grid.Column="0" Background="Black">
+            <DataGrid ItemsSource="{Binding CurrentPlayer.Skills}"
+                      AutoGenerateColumns="False"
+                      HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Skill"
+                                        Binding="{Binding DisplayName, Mode=OneWay}"
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Lvl"
+                                        Binding="{Binding EffectiveLevel, Mode=OneWay}"
+                                        IsReadOnly="True"
+                                        Width="Auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
 
+        <!--Characteristics-->
+        <Grid Grid.Row="2" Grid.Column="0" Background="Black">
+            <DataGrid ItemsSource="{Binding CurrentPlayer.Characteristics}"
+                      AutoGenerateColumns="False"
+                      HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Characteristic"
+                                        Binding="{Binding DisplayName, Mode=OneWay}"
+                                        Width="*"/>
+                    <DataGridTextColumn Header="Lvl"
+                                        Binding="{Binding EffectiveLevel, Mode=OneWay}"
+                                        IsReadOnly="True"
+                                        Width="Auto"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="2" Background="Beige" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Content="Helm: " />
+            <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" Content="Neck: " />
+            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" Content="Chest: " />
+            <Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Content="Hands: " />
+            <Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" Content="Legs: " />
+            <Label Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="5" Grid.Column="0" HorizontalAlignment="Left" Content="Feet: " />
+            <Label Grid.Row="5" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="6" Grid.Column="0" HorizontalAlignment="Left" Content="Trinket: " />
+            <Label Grid.Row="6" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="7" Grid.Column="0" HorizontalAlignment="Left" Content="Trinket: " />
+            <Label Grid.Row="7" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+            <Label Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" Content="Main Hand: " />
+            <Label Grid.Row="9" Grid.Column="0" HorizontalAlignment="Right" Content="{Binding CurrentPlayer.EquippedWeapon.Name}" />
+            <Label Grid.Row="10" Grid.Column="0" HorizontalAlignment="Left" Content="Off Hand: " />
+            <Label Grid.Row="10" Grid.Column="0" HorizontalAlignment="Right" Content="" />
+        </Grid>
     </Grid>
 </Window>

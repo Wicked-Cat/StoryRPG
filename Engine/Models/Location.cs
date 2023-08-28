@@ -8,14 +8,17 @@ namespace Engine.Models
         private string _encounterText;
         private string _merchantText;
         private string _itemText;
+        private string _interiorText;
         #endregion
 
         #region Public Variables
+        public int ID { get; set; }
         public int XCoordinate { get; set; }
         public int YCoordinate { get; set; }
         public int ZCoordinate { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public List<Location> InteriorLocations { get; set; } = new List<Location>();
         public List<Encounter> EncountersHere { get; set; } = new List<Encounter>();
         public List<EncounterPercent> AllEncountersHere { get; set; } = new List<EncounterPercent>();
         public List<Merchant> MerchantsHere { get; set; } = new List<Merchant>();
@@ -40,6 +43,11 @@ namespace Engine.Models
             get { return WriteItemText(); }
             set { _itemText = WriteItemText(); OnPropertyChanged(); }
         }
+        public string InteriorText
+        {
+            get { return WriteInteriorText(); }
+            set { _interiorText = WriteInteriorText(); OnPropertyChanged(); }
+        }
 
         public enum LandSeaSky { Land, Sea, Sky }
         public enum Depth { Underground, Aboveground }
@@ -47,12 +55,14 @@ namespace Engine.Models
         #endregion
 
         public Location(
+            int id,
             int xCoordinate,
             int yCoordinate,
             int zCoordinate,
             string name,
             string description) 
         {
+            ID = id;
             XCoordinate = xCoordinate;
             YCoordinate = yCoordinate;
             ZCoordinate = zCoordinate;
@@ -203,6 +213,15 @@ namespace Engine.Models
             foreach(ItemQuantity item in ItemsHere)
             {
                 text = $"{text} \n {item.Quantity} {item.BaseItem.Name}";
+            }
+            return text;
+        }
+        public string WriteInteriorText()
+        {
+            string text = "";
+            foreach(Location location in InteriorLocations)
+            {
+                text = $"{text} \n {location.Name}";
             }
             return text;
         }

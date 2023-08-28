@@ -14,23 +14,22 @@ namespace Engine.ViewModels
     public class GameSession : BaseNotificationClass
     {
         private readonly MessageBroker _messageBroker = MessageBroker.GetInstance();
-        public event EventHandler<GameMessageEventArgs> OnMessageRaised;
-        public event EventHandler<OnEncounterEventArgs> OnEncounterEngaged;
-        public event EventHandler OnInventoryOpened;
-        public event EventHandler OnCharacterOpened;
-        public event EventHandler<OnTradeEventArgs> OnTradeInitiated;
-        public event EventHandler<OnChallengeEventArgs> OnChallengeInitiated;
-        public event EventHandler OnQuit;
-        public event EventHandler OnSave;
-        public event EventHandler OnNewGame;
-        public event EventHandler OnLoad;
+        public event EventHandler<GameMessageEventArgs>? OnMessageRaised;
+        public event EventHandler<OnEncounterEventArgs>? OnEncounterEngaged;
+        public event EventHandler<OnTradeEventArgs>? OnTradeInitiated;
+        public event EventHandler<OnChallengeEventArgs>? OnChallengeInitiated;
+        public event EventHandler? OnCharacterCreation;
+        public event EventHandler? OnQuit;
+        public event EventHandler? OnSave;
+        public event EventHandler? OnNewGame;
+        public event EventHandler? OnLoad;
 
         #region Private Variables
-        private Player _player;
-        private Location _currentLocation;
-        private Encounter _currentEncounter;
-        private Merchant _currentMerchant;
-        private string _writtenTime;
+        private Player? _player;
+        private Location? _currentLocation;
+        private Encounter? _currentEncounter;
+        private Merchant? _currentMerchant;
+        private string? _writtenTime;
 
         #endregion
 
@@ -55,7 +54,7 @@ namespace Engine.ViewModels
                 }
             }
         }
-        public Location PreviousLocation { get; set; }
+        public Location? PreviousLocation { get; set; }
         public Location CurrentLocation
         {
             get { return _currentLocation; }
@@ -79,6 +78,8 @@ namespace Engine.ViewModels
                      _messageBroker.RaiseMessage($"{CurrentLocation.Description}");
                 foreach(Encounter encounter in CurrentLocation.EncountersHere)
                      _messageBroker.RaiseMessage($"{encounter.Name}");
+                foreach (Location interior in CurrentLocation.InteriorLocations)
+                    _messageBroker.RaiseMessage($"{interior.Name}");
                 ChallengeWatch();
                 if(CurrentLocation.ChallengeHere != null)
                      if (!CurrentLocation.ChallengeHere.ChallengeCompleted)
@@ -158,6 +159,9 @@ namespace Engine.ViewModels
         [JsonIgnore]
         public bool HasDownExit =>
             CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate - 1) != null;
+        [JsonIgnore]
+        public bool HasInteriorExit =>
+            CurrentWorld.LocationAt(CurrentLocation.XCoordinate, CurrentLocation.YCoordinate, CurrentLocation.ZCoordinate).InteriorLocations.Any();
 
         [JsonIgnore]
         public string NorthExit => 
@@ -185,22 +189,15 @@ namespace Engine.ViewModels
         public bool HasChallenge => CurrentLocation.ChallengeHere != null;
         [JsonIgnore]
         public bool CharacterHasBeenCreated;
+        string tempName;
+        Ancestry tempAncestry;
         #endregion
 
         #region Constructor
         public GameSession()
         {
             CharacterHasBeenCreated = false;
-            #region Construct Player 
-            CurrentPlayer = new Player("Laughing Zebra", "A Human");
-            CurrentPlayer.Ancestry = AncestryFactory.GetAncestry("Human");
-            foreach (Tag tag in AncestryFactory.GetAncestry("Human").Tags.ToList())
-                CurrentPlayer.Ancestry.Tags.Add(tag);
-
-            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(2001));
-            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(9001));
-            CurrentPlayer.NumberInventory();
-
+            CurrentPlayer = new Player("", "This is you");
             foreach (Skill skill in SkillFactory._skills)
             {
                 if (skill.Category != Skill.Categories.Curse)
@@ -211,33 +208,15 @@ namespace Engine.ViewModels
             foreach (Characteristic attribute in CharacteristicFactory._characteristics)
                 CurrentPlayer.Characteristics.Add(attribute.Clone());
 
-
-            foreach (Multiplier multiplier in CurrentPlayer.Ancestry.Multipliers)
-            {
-                switch (multiplier.MultiplierType)
-                {
-                    case Multiplier.Type.Skill:
-                        CurrentPlayer.Skills.FirstOrDefault(s => s.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
-                        break;
-                    case Multiplier.Type.Characteristic:
-                        CurrentPlayer.Characteristics.FirstOrDefault(c => c.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
-                        break;
-                }
-            }
-            CurrentPlayer.CurrentBody = BodyFactory.GetBody("Immortal").Clone();
-            CurrentPlayer.EquippedWeapon = (ItemFactory.CreateGameItem(1001));
-            #endregion 
-
             CurrentTrade = new Trade(new ObservableCollection<ItemQuantity>(), new ObservableCollection<ItemQuantity>());
 
             CurrentWorld = WorldFactory.CreateWorld();
             CurrentWorld.RefreshLocations();
-            CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
+            CurrentLocation = CurrentWorld.LocationAt(-999, -999, -999);
 
             CurrentTime = new Time(0, 1, 0, 1, "Lion day", "Spring", "Moon's tears");
             CurrentTime.CurrentTimeOfDay = CurrentTime.ProgressTimeOfDay(CurrentTime.CurrentTimeOfDay, CurrentTime.Hour);
             WrittenTime = CurrentTime.WriteTime();
-
         }
         public GameSession(Player player, World world, Time time, int xCoordinate, int yCoordinate, int zCoordinate)
         {
@@ -271,6 +250,10 @@ namespace Engine.ViewModels
                 DoInChallenge(aString);
             else
                 Do(aString);
+        }
+        private void CreateCharacterWindow()
+        {
+            OnCharacterCreation?.Invoke(this, System.EventArgs.Empty);
         }
 
         #region Time Fuctions
@@ -382,6 +365,18 @@ namespace Engine.ViewModels
             {
                 _messageBroker.RaiseMessage("There is no exit that way");
             }
+        }
+        private void MoveInterior(string aString)
+        {
+            if (CurrentLocation.InteriorLocations.Any(l => l.Name.ToLower() == aString.ToLower()))
+            {
+                int x = CurrentLocation.InteriorLocations.First(l => l.Name.ToLower() == aString.ToLower()).XCoordinate;
+                int y = CurrentLocation.InteriorLocations.First(l => l.Name.ToLower() == aString.ToLower()).YCoordinate;
+                int z = CurrentLocation.InteriorLocations.First(l => l.Name.ToLower() == aString.ToLower()).ZCoordinate;
+                CurrentLocation = CurrentWorld.LocationAt(x, y, z);
+            }
+            else
+                _messageBroker.RaiseMessage("There is no exit that way");
         }
         #endregion
 
@@ -501,13 +496,6 @@ namespace Engine.ViewModels
                     //SaveGame.Save();
                     break;
                 case "bag":
-                case "inventory":
-                    Inventory();
-                    break;
-                case "character":
-                case "char":
-                    Character();
-                    break;
                 case "use":
                     //Use(noun);
                     break;
@@ -604,14 +592,6 @@ namespace Engine.ViewModels
                     break;
                 case "save":
                     //SaveGame.Save();
-                    break;
-                case "bag":
-                case "inventory":
-                    Inventory();
-                    break;
-                case "character":
-                case "char":
-                    Character();
                     break;
                 case "buy":
                     Buy(noun, num);
@@ -721,14 +701,6 @@ namespace Engine.ViewModels
                     case "drink":
                         // Drink(noun);
                         break;
-                    case "bag":
-                    case "inventory":
-                        Inventory();
-                        break;
-                    case "character":
-                    case "char":
-                        Character();
-                        break;
                     case "use":
                         //Use(noun);
                         break;
@@ -770,7 +742,25 @@ namespace Engine.ViewModels
 
             switch (verb)
             {
-
+                case "info":
+                    Info(noun);
+                    break;
+                case "name":
+                    SetName(noun);
+                    break;
+                case "ancestry":
+                    SetAncestry(noun);
+                    break;
+                case "finish":
+                case "done":
+                    FinishCharacterCreation();
+                    break;
+                case "load":
+                    Load();
+                    break;
+                default:
+                    _messageBroker.RaiseMessage($"{verb} is not valid");
+                    break;
             }
         }
         private void Do(string aString)
@@ -861,14 +851,6 @@ namespace Engine.ViewModels
                 case "load":
                     Load();
                     break;
-                case "bag":
-                case "inventory":
-                    Inventory();
-                    break;
-                case "character":
-                case "char":
-                    Character();
-                    break;
                 case "use":
                     //Use(noun);
                     break;
@@ -940,6 +922,67 @@ namespace Engine.ViewModels
         }
         #endregion
 
+        private void Info(string aString)
+        {
+
+        }
+        private void SetName(string aString)
+        {
+            tempName = aString;
+            _messageBroker.RaiseMessage($"Your name is now {tempName}");
+        }
+        private void SetAncestry(string aString)
+        {
+            Ancestry ancestry = AncestryFactory.GetAncestry(aString);
+            if (ancestry != null)
+            {
+                tempAncestry = ancestry;
+               
+                _messageBroker.RaiseMessage($"Your ancestry is now {tempAncestry.Name}");
+            }
+        }
+        private void FinishCharacterCreation()
+        {
+            if(tempAncestry == null)
+            {
+                _messageBroker.RaiseMessage($"You need to pick an ancestry before starting");
+                return;
+            }
+            if (tempName == null)
+            {
+                _messageBroker.RaiseMessage($"You need to pick a name before starting");
+                return;
+            }
+
+            
+            CurrentPlayer.Name = tempName;
+            CurrentPlayer.Ancestry = tempAncestry;
+            foreach (Tag tag in AncestryFactory.GetAncestry(CurrentPlayer.Ancestry.Name).Tags.ToList())
+                CurrentPlayer.Ancestry.Tags.Add(tag);
+            CurrentPlayer.CurrentBody = BodyFactory.GetBody("Immortal").Clone();
+
+            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(2001));
+            CurrentPlayer.AddItemToInventory(ItemFactory.CreateGameItem(9001));
+            CurrentPlayer.NumberInventory();
+
+         
+            foreach (Multiplier multiplier in CurrentPlayer.Ancestry.Multipliers)
+            {
+                switch (multiplier.MultiplierType)
+                {
+                    case Multiplier.Type.Skill:
+                        CurrentPlayer.Skills.FirstOrDefault(s => s.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
+                        break;
+                    case Multiplier.Type.Characteristic:
+                        CurrentPlayer.Characteristics.FirstOrDefault(c => c.Name.ToLower() == multiplier.Name.ToLower()).LevelMultiplier = multiplier.MultiplierValue;
+                        break;
+                }
+            }
+            CharacterHasBeenCreated = true;
+            CreateCharacterWindow();
+            _messageBroker.RaiseMessage($"You created your character");
+            CurrentLocation = CurrentWorld.LocationAt(0, 0, 0);
+        }
         private void Examine(string aString)
         {
             Item item = CurrentPlayer.FindNumberedItem(aString);
@@ -1047,6 +1090,7 @@ namespace Engine.ViewModels
         {
             PreviousLocation = CurrentLocation;
             PassTime(20);
+
             switch (aString.ToLower())
             {
                 case "north":
@@ -1068,16 +1112,9 @@ namespace Engine.ViewModels
                     MoveDown();
                     break;
                 default:
+                    MoveInterior(aString.ToLower());
                     break;
             }
-        }
-        private void Inventory()
-        {
-            OnInventoryOpened?.Invoke(this, System.EventArgs.Empty);
-        }
-        private void Character()
-        {
-            OnCharacterOpened?.Invoke(this, System.EventArgs.Empty);
         }
         private void Equip(string aString)
         {
@@ -1146,11 +1183,9 @@ namespace Engine.ViewModels
         }
         private void Load()
         {
+            CharacterHasBeenCreated = true;
+            CreateCharacterWindow();
             OnLoad?.Invoke(this, System.EventArgs.Empty);
-        }
-        private void CreateNewCharacter()
-        {
-
         }
         #endregion
 

@@ -46,6 +46,7 @@ namespace Engine.Models
                 _baseLevel = value;
                 OnPropertyChanged(nameof(DisplayName));
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(EffectiveLevel));
             }
         }
         public double LevelMultiplier { get; set; }

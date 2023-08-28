@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Xml;
 namespace Engine.Shared
 {
@@ -28,5 +29,17 @@ namespace Engine.Shared
             return Convert.ToBoolean(node.AttributeAsString(attributeName));
         }
 
+        public static string StringValueOf(this JObject jobj, string key)
+        {
+            return jobj[key].ToString();
+        }
+        public static string StringValueOf(this JToken jtok, string key)
+        {
+            return jtok[key].ToString();
+        }
+        public static int IntValueOf(this JToken jtok, string key)
+        {
+            return Convert.ToInt32(jtok[key]);
+        }
     }
 }

@@ -77,8 +77,10 @@ namespace Engine.Factories
             return TagFactory._tags.FirstOrDefault(t => t.Name.ToLower() == aString.ToLower());
         }
         public static Ancestry GetAncestry(string aString)
-        {
-                return _ancestries.FirstOrDefault(a => a.Name.ToLower() == aString.ToLower()).Clone();
+        {   
+                if(_ancestries.Any(a => a.Name.ToLower() == aString.ToLower()))
+                  return _ancestries.FirstOrDefault(a => a.Name.ToLower() == aString.ToLower()).Clone();
+            return null;
         }
     }
 }
